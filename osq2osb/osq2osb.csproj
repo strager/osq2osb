@@ -54,6 +54,7 @@
     <Compile Include="Parser\TreeNode\LetNode.cs" />
     <Compile Include="Parser\TreeNode\NodeBase.cs" />
     <Compile Include="Parser\TreeNode\RawTextNode.cs" />
+    <Compile Include="Parser\TreeNode\RepNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
