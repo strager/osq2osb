@@ -11,7 +11,7 @@ namespace osq2osb.Parser.TreeNode {
 
         static DirectiveNode() {
             directiveExpressions[new Regex(@"^#(?<name>def(ine)?)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(DefineNode);
-            directiveExpressions[new Regex(@"^#(?<name>let?)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(LetNode);
+            directiveExpressions[new Regex(@"^#(?<name>let)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(LetNode);
             directiveExpressions[new Regex(@"^#(?<name>end\w+)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(EndDirectiveNode);
         }
 
