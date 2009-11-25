@@ -50,6 +50,7 @@
     <Compile Include="Parser\TreeNode\DefineNode.cs" />
     <Compile Include="Parser\TreeNode\DirectiveNode.cs" />
     <Compile Include="Parser\TreeNode\EndDirectiveNode.cs" />
+    <Compile Include="Parser\TreeNode\LetNode.cs" />
     <Compile Include="Parser\TreeNode\NodeBase.cs" />
     <Compile Include="Parser\TreeNode\RawTextNode.cs" />
     <Compile Include="Program.cs" />
