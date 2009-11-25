@@ -14,6 +14,7 @@ namespace osq2osb.Parser.TreeNode {
             directiveExpressions[new Regex(@"^#(?<name>let)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(LetNode);
             directiveExpressions[new Regex(@"^#(?<name>each)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(EachNode);
             directiveExpressions[new Regex(@"^#(?<name>rep)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(RepNode);
+            directiveExpressions[new Regex(@"^#(?<name>for)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(ForNode);
             directiveExpressions[new Regex(@"^#(?<name>end\w+)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(EndDirectiveNode);
         }
 
@@ -87,7 +88,7 @@ namespace osq2osb.Parser.TreeNode {
                 return newNode;
             }
 
-            throw new InvalidDataException("Unknown directive");
+            throw new InvalidDataException("Unknown directive: " + line);
         }
     }
 }
