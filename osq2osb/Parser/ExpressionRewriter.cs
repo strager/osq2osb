@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace osq2osb {
+namespace osq2osb.Parser {
     class ExpressionRewriter {
         public enum TokenType {
             None,

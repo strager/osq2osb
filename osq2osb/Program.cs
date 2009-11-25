@@ -10,9 +10,9 @@ namespace osq2osb {
             if(args.Length == 0) {
                 Console.WriteLine("Parsing from console...");
 
-                var parser = new Parser();
+                var parser = new Parser.Parser();
 
-                parser.Parse(Console.In, Console.Out);
+                parser.ParseAndExecute(Console.In, Console.Out);
             } else {
                 List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
 
@@ -38,12 +38,12 @@ namespace osq2osb {
 
             using(var inputFile = File.Open(filename, FileMode.Open, FileAccess.Read))
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
-                var parser = new Parser();
+                var parser = new Parser.Parser();
 
                 using(var reader = new StreamReader(inputFile))
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
-                        parser.Parse(reader, writer);
+                        parser.ParseAndExecute(reader, writer);
                     } catch(Exception e) {
                         Console.WriteLine("\nError: " + e.Message);
                         Console.WriteLine("Stack trace:");
