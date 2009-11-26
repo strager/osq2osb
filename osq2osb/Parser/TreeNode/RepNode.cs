@@ -36,14 +36,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public override void Execute(TextWriter output) {
             for(int i = 0; i < Count; ++i) {
-                foreach(var child in ChildrenNodes) {
-                    child.Execute(output);
-                }
-
-                if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Parser);
-                    contentNode.Execute(output);
-                }
+                ExecuteChildren(output);
             }
         }
     }

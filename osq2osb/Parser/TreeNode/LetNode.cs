@@ -43,14 +43,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public override void Execute(TextWriter output) {
             using(var varWriter = new StringWriter()) {
-                foreach(var child in ChildrenNodes) {
-                    child.Execute(varWriter);
-                }
-
-                if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Parser);
-                    contentNode.Execute(varWriter);
-                }
+                ExecuteChildren(varWriter);
 
                 Parser.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
             }

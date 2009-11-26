@@ -65,14 +65,7 @@ namespace osq2osb.Parser.TreeNode {
 
                 Parser.SetVariable(Variable, counter);
 
-                foreach(var child in ChildrenNodes) {
-                    child.Execute(output);
-                }
-
-                if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Parser);
-                    contentNode.Execute(output);
-                }
+                ExecuteChildren(output);
 
                 counter = System.Convert.ToDouble(Parser.GetVariable(Variable));
                 counter += step;

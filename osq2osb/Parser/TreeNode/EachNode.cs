@@ -47,14 +47,7 @@ namespace osq2osb.Parser.TreeNode {
             foreach(var value in Values) {
                 Parser.SetVariable(Variable, value);
 
-                foreach(var child in ChildrenNodes) {
-                    child.Execute(output);
-                }
-
-                if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Parser);
-                    contentNode.Execute(output);
-                }
+                ExecuteChildren(output);
             }
         }
     }

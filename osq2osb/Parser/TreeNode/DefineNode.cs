@@ -54,14 +54,7 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 using(var stackOutput = new StringWriter()) {
-                    foreach(var child in ChildrenNodes) {
-                        child.Execute(stackOutput);
-                    }
-
-                    if(Content != null) {
-                        var contentNode = new RawTextNode(Content, Parser);
-                        contentNode.Execute(stackOutput);
-                    }
+                    ExecuteChildren(stackOutput);
 
                     stack.Push(stackOutput.ToString().Trim(Environment.NewLine.ToCharArray()));
                 }

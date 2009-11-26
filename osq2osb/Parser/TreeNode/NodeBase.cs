@@ -18,7 +18,11 @@ namespace osq2osb.Parser.TreeNode {
 
         public virtual int LineNumber {
             get {
-                return LineNumber;
+                return lineNumber;
+            }
+
+            set {
+                lineNumber = value;
             }
         }
 
@@ -41,5 +45,16 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public abstract void Execute(TextWriter output);
+
+        public void ExecuteChildren(TextWriter output) {
+            foreach(var child in ChildrenNodes) {
+                child.Execute(output);
+            }
+
+            if(Content != null) {
+                var contentNode = new RawTextNode(Content, Parser, this.LineNumber);
+                contentNode.Execute(output);
+            }
+        }
     }
 }
