@@ -16,15 +16,18 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
-        public int LineNumber {
-            get;
-            protected set;
+        public virtual int LineNumber {
+            get {
+                return LineNumber;
+            }
         }
 
         public Parser Parser {
             get;
             private set;
         }
+
+        private int lineNumber;
 
         public NodeBase(Parser parser) :
             this(null, parser) {
@@ -34,7 +37,7 @@ namespace osq2osb.Parser.TreeNode {
             ChildrenNodes = new List<NodeBase>();
             Content = content;
             Parser = parser;
-            LineNumber = parser.LineNumber;
+            lineNumber = parser.LineNumber;
         }
 
         public abstract void Execute(TextWriter output);
