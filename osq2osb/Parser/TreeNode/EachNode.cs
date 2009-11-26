@@ -39,17 +39,21 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public override void Execute(Parser parser, TextWriter output) {
+        public EachNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
             foreach(var value in Values) {
-                parser.SetVariable(Variable, value);
+                Parser.SetVariable(Variable, value);
 
                 foreach(var child in ChildrenNodes) {
-                    child.Execute(parser, output);
+                    child.Execute(output);
                 }
 
                 if(Content != null) {
-                    var contentNode = new RawTextNode(Content);
-                    contentNode.Execute(parser, output);
+                    var contentNode = new RawTextNode(Content, Parser);
+                    contentNode.Execute(output);
                 }
             }
         }

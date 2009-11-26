@@ -6,7 +6,11 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class EndDirectiveNode : DirectiveNode {
-        public override void Execute(Parser parser, TextWriter output) {
+        public EndDirectiveNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
             throw new InvalidOperationException();
         }
     }

@@ -37,20 +37,23 @@ namespace osq2osb.Parser.TreeNode {
 
         private bool isMultiline = false;
 
-        public override void Execute(Parser parser, TextWriter output) {
+        public LetNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
             using(var varWriter = new StringWriter()) {
                 foreach(var child in ChildrenNodes) {
-                    child.Execute(parser, varWriter);
+                    child.Execute(varWriter);
                 }
 
                 if(Content != null) {
-                    var contentNode = new RawTextNode(Content);
-                    contentNode.Execute(parser, varWriter);
+                    var contentNode = new RawTextNode(Content, Parser);
+                    contentNode.Execute(varWriter);
                 }
 
-                parser.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
+                Parser.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
             }
-
         }
     }
 }

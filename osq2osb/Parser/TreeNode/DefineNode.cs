@@ -43,20 +43,24 @@ namespace osq2osb.Parser.TreeNode {
 
         private bool isMultiline = false;
 
-        public override void Execute(Parser parser, TextWriter output) {
-            parser.SetVariable(Name, new Action<Stack<object>>((Stack<object> stack) => {
+        public DefineNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
+            Parser.SetVariable(Name, new Action<Stack<object>>((Stack<object> stack) => {
                 foreach(string paramName in FunctionParameters.Reverse()) { // Reverse because pop order is backwards.
-                    parser.SetVariable(paramName, stack.Pop());
+                    Parser.SetVariable(paramName, stack.Pop());
                 }
 
                 using(var stackOutput = new StringWriter()) {
                     foreach(var child in ChildrenNodes) {
-                        child.Execute(parser, stackOutput);
+                        child.Execute(stackOutput);
                     }
 
                     if(Content != null) {
-                        var contentNode = new RawTextNode(Content);
-                        contentNode.Execute(parser, stackOutput);
+                        var contentNode = new RawTextNode(Content, Parser);
+                        contentNode.Execute(stackOutput);
                     }
 
                     stack.Push(stackOutput.ToString().Trim(Environment.NewLine.ToCharArray()));

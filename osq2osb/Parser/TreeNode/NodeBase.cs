@@ -16,15 +16,27 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
-        public NodeBase() :
-            this(null) {
-        }
-        
-        public NodeBase(string content) {
-            ChildrenNodes = new List<NodeBase>();
-            Content = content;
+        public int LineNumber {
+            get;
+            protected set;
         }
 
-        public abstract void Execute(Parser parser, TextWriter output);
+        public Parser Parser {
+            get;
+            private set;
+        }
+
+        public NodeBase(Parser parser) :
+            this(null, parser) {
+        }
+        
+        public NodeBase(string content, Parser parser) {
+            ChildrenNodes = new List<NodeBase>();
+            Content = content;
+            Parser = parser;
+            LineNumber = parser.LineNumber;
+        }
+
+        public abstract void Execute(TextWriter output);
     }
 }

@@ -35,7 +35,8 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        protected DirectiveNode() {
+        protected DirectiveNode(Parser parser) :
+            base(parser) {
         }
 
         public static DirectiveNode Create(string line, TextReader input, Parser parser) {
@@ -51,9 +52,9 @@ namespace osq2osb.Parser.TreeNode {
 
                 string name = match.Groups["name"].Value;
                 string parameters = match.Groups["params"].Value;
-                
-                var ctor = nodeType.GetConstructor(new Type[] { });
-                var newNode = ctor.Invoke(new object[] { }) as DirectiveNode;
+
+                var ctor = nodeType.GetConstructor(new Type[] { typeof(Parser)  });
+                var newNode = ctor.Invoke(new object[] { parser }) as DirectiveNode;
                 newNode.Parameters = parameters;
                 newNode.DirectiveName = name;
 

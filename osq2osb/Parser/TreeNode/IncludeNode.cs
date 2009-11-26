@@ -26,10 +26,14 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public override void Execute(Parser parser, TextWriter output) {
+        public IncludeNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
             using(var inputFile = File.Open(Filename, FileMode.Open, FileAccess.Read)) {
                 using(var reader = new StreamReader(inputFile)) {
-                    parser.ParseAndExecute(reader, output);
+                    Parser.ParseAndExecute(reader, output);
                 }
             }
         }

@@ -39,12 +39,16 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public override void Execute(Parser parser, TextWriter output) {
+        public ForNode(Parser parser) :
+            base(parser) {
+        }
+
+        public override void Execute(TextWriter output) {
             double counter = double.NaN;
 
             while(true) {
                 // Syntax: min max [step]
-                string str = parser.ReplaceExpressions(Values);
+                string str = Parser.ReplaceExpressions(Values);
                 var parts = str.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if(parts.Length < 2 || parts.Length > 3) {
@@ -59,18 +63,18 @@ namespace osq2osb.Parser.TreeNode {
                     counter = min;
                 }
 
-                parser.SetVariable(Variable, counter);
+                Parser.SetVariable(Variable, counter);
 
                 foreach(var child in ChildrenNodes) {
-                    child.Execute(parser, output);
+                    child.Execute(output);
                 }
 
                 if(Content != null) {
-                    var contentNode = new RawTextNode(Content);
-                    contentNode.Execute(parser, output);
+                    var contentNode = new RawTextNode(Content, Parser);
+                    contentNode.Execute(output);
                 }
 
-                counter = System.Convert.ToDouble(parser.GetVariable(Variable));
+                counter = System.Convert.ToDouble(Parser.GetVariable(Variable));
                 counter += step;
 
                 if(counter >= max) {

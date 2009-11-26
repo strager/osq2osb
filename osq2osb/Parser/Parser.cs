@@ -77,15 +77,26 @@ namespace osq2osb.Parser {
             };
         }
 
+        public int LineNumber {
+            get {
+                return lineNumber;
+            }
+        }
+
+        private int lineNumber;
+
         public Parser() {
         }
 
         public void ParseAndExecute(TextReader input, TextWriter output) {
+            lineNumber = 0;
+
             string line;
 
             while((line = input.ReadLine()) != null) {
                 var node = ParseLine(line, input);
-                node.Execute(this, output);
+                node.Execute(output);
+                ++lineNumber;
             }
         }
 
@@ -97,7 +108,7 @@ namespace osq2osb.Parser {
             if(line.Length != 0 && line[0] == '#') {
                 return DirectiveNode.Create(line, input, this);
             } else {
-                return new RawTextNode(line + Environment.NewLine);
+                return new RawTextNode(line + Environment.NewLine, this);
             }
         }
 
