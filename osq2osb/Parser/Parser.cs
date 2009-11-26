@@ -80,13 +80,6 @@ namespace osq2osb.Parser {
         public Parser() {
         }
 
-        public Parser(Parser parent) :
-            this() {
-            foreach(var pair in parent.variables) {
-                variables.Add(pair);
-            }
-        }
-
         public void ParseAndExecute(TextReader input, TextWriter output) {
             string line;
 
@@ -125,7 +118,7 @@ namespace osq2osb.Parser {
                 output.Append(input.Substring(i, expressionStart - i));
 
                 /* Output evaluated expression. */
-                int expressionEnd = input.IndexOf("}", expressionStart);
+                int expressionEnd = input.IndexOf("}", expressionStart, StringComparison.Ordinal);
 
                 if(expressionEnd < 0) {
                     throw new InvalidDataException("${ has no matching }");

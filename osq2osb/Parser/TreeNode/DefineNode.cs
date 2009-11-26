@@ -19,7 +19,7 @@ namespace osq2osb.Parser.TreeNode {
                 Name = match.Groups["name"].Value;
                 FunctionParameters = match.Groups["params"].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select((string s) => { return s.Trim(); }).ToList();
                 Content = match.Groups["value"].Value;
-                isMultiline = Content.Trim() == "";
+                isMultiline = string.IsNullOrEmpty(Content.Trim());
 
                 base.Parameters = value;
             }

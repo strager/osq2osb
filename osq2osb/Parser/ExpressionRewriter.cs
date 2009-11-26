@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace osq2osb.Parser {
-    class ExpressionRewriter {
+    static class ExpressionRewriter {
         public static IList<Tokenizer.Token> InfixToPostfix(IEnumerable<Tokenizer.Token> tokens) {
             List<Tokenizer.Token> output = new List<Tokenizer.Token>();
             Stack<Tokenizer.Token> operators = new Stack<Tokenizer.Token>();

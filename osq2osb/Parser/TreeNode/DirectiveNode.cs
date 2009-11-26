@@ -70,9 +70,9 @@ namespace osq2osb.Parser.TreeNode {
 
                         NodeBase node = parser.ParseLine(curLine, input);
 
-                        if(node is EndDirectiveNode) {
-                            var endNode = node as EndDirectiveNode;
-
+                        var endNode = node as EndDirectiveNode; 
+                        
+                        if(endNode != null) {
                             if(endNode.DirectiveName != endName) {
                                 throw new InvalidDataException("Poorly balanced directives: got #" + endNode.DirectiveName + ", expected #" + endName);
                             }

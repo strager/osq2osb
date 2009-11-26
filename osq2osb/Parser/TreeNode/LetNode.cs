@@ -18,7 +18,7 @@ namespace osq2osb.Parser.TreeNode {
 
                 Variable = match.Groups["variable"].Value;
                 Content = match.Groups["value"].Value;
-                isMultiline = Content.Trim() == "";
+                isMultiline = string.IsNullOrEmpty(Content.Trim());
 
                 base.Parameters = value;
             }
