@@ -17,7 +17,7 @@ namespace osq2osb.Parser {
             builtinFunctions = new Dictionary<string, Action<Stack<object>>>();
 
             builtinFunctions["int"] = (stack) => {
-                stack.Push(System.Convert.ToInt64(stack.Pop()));
+                stack.Push((int)System.Convert.ToDouble(stack.Pop()));
             };
 
             builtinFunctions["sqrt"] = (stack) => {
