@@ -40,6 +40,12 @@ namespace osq2osb.Parser {
                 stack.Push(Math.Tan(System.Convert.ToDouble(stack.Pop())));
             };
 
+            builtinFunctions["concat"] = (stack) => {
+                string second = stack.Pop().ToString();
+                string first = stack.Pop().ToString();
+                stack.Push(string.Concat(first, second));
+            };
+
             builtinFunctions["+"] = (stack) => {
                 stack.Push(System.Convert.ToDouble(stack.Pop()) + System.Convert.ToDouble(stack.Pop()));
             };
@@ -136,24 +142,24 @@ namespace osq2osb.Parser {
         }
 
         public string EvaluateExpression(string expression) {
-            IEnumerable<string> tokens = ExpressionRewriter.InfixToPostfix(ExpressionRewriter.Tokenize(expression));
+            IEnumerable<Tokenizer.Token> tokens = ExpressionRewriter.InfixToPostfix(Tokenizer.Tokenize(expression));
             Stack<object> stack = new Stack<object>();
 
             foreach(var token in tokens) {
-                switch(ExpressionRewriter.GetTokenType(token)) {
-                    case ExpressionRewriter.TokenType.Symbol:
-                    case ExpressionRewriter.TokenType.Identifier:
-                        if(builtinFunctions.ContainsKey(token)) {
-                            builtinFunctions[token](stack);
+                switch(token.Type) {
+                    case Tokenizer.TokenType.Symbol:
+                    case Tokenizer.TokenType.Identifier:
+                        if(builtinFunctions.ContainsKey(token.Value)) {
+                            builtinFunctions[token.Value](stack);
 
                             break;
                         }
 
-                        if(!variables.ContainsKey(token)) {
+                        if(!variables.ContainsKey(token.Value)) {
                             throw new InvalidDataException("Identifier " + token + " not defined.");
                         }
 
-                        var item = variables[token];
+                        var item = variables[token.Value];
 
                         var func = item as Action<Stack<object>>;
 
@@ -165,8 +171,12 @@ namespace osq2osb.Parser {
 
                         break;
 
-                    case ExpressionRewriter.TokenType.Number:
-                        stack.Push(double.Parse(token));
+                    case Tokenizer.TokenType.Number:
+                        stack.Push(double.Parse(token.Value));
+                        break;
+
+                    case Tokenizer.TokenType.String:
+                        stack.Push(token.Value);
                         break;
                 }
             }

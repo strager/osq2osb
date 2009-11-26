@@ -47,17 +47,20 @@
   <ItemGroup>
     <Compile Include="Parser\ExpressionRewriter.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Tokenizer.cs" />
     <Compile Include="Parser\TreeNode\DefineNode.cs" />
     <Compile Include="Parser\TreeNode\DirectiveNode.cs" />
     <Compile Include="Parser\TreeNode\EachNode.cs" />
     <Compile Include="Parser\TreeNode\EndDirectiveNode.cs" />
     <Compile Include="Parser\TreeNode\ForNode.cs" />
+    <Compile Include="Parser\TreeNode\IncludeNode.cs" />
     <Compile Include="Parser\TreeNode\LetNode.cs" />
     <Compile Include="Parser\TreeNode\NodeBase.cs" />
     <Compile Include="Parser\TreeNode\RawTextNode.cs" />
     <Compile Include="Parser\TreeNode\RepNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextReaderExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
