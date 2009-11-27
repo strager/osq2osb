@@ -38,9 +38,9 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected override bool EndsWith(NodeBase node) {
-            var directive = node as DirectiveNode;
+            var endDirective = node as EndDirectiveNode;
 
-            if(directive != null && directive.DirectiveName == "end" + this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
                 return true;
             }
 
