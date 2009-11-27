@@ -13,7 +13,7 @@ namespace osq2osb.Parser.TreeNode {
                 var match = re.Match(value);
 
                 if(!match.Success) {
-                    throw new ArgumentException("Bad form for #" + DirectiveName + " directive");
+                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
                 }
 
                 Variable = match.Groups["variable"].Value;
@@ -39,8 +39,8 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public EachNode(Parser parser) :
-            base(parser) {
+        public EachNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
         public override void Execute(TextWriter output) {

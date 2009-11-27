@@ -35,11 +35,11 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        protected DirectiveNode(Parser parser) :
-            base(parser) {
+        protected DirectiveNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
-        public static DirectiveNode Create(string line, TextReader input, Parser parser) {
+        public static DirectiveNode Create(string line, TextReader input, Parser parser, Location location) {
             foreach(var pair in directiveExpressions) {
                 Regex re = pair.Key;
                 Type nodeType = pair.Value;
@@ -53,8 +53,8 @@ namespace osq2osb.Parser.TreeNode {
                 string name = match.Groups["name"].Value;
                 string parameters = match.Groups["params"].Value;
 
-                var ctor = nodeType.GetConstructor(new Type[] { typeof(Parser)  });
-                var newNode = ctor.Invoke(new object[] { parser }) as DirectiveNode;
+                var ctor = nodeType.GetConstructor(new Type[] { typeof(Parser), typeof(Location) });
+                var newNode = ctor.Invoke(new object[] { parser, location }) as DirectiveNode;
                 newNode.Parameters = parameters;
                 newNode.DirectiveName = name;
 
@@ -66,7 +66,7 @@ namespace osq2osb.Parser.TreeNode {
                         string curLine = input.ReadLine();
 
                         if(curLine == null) {
-                            throw new InvalidDataException("Unmatched #" + name + " directive");
+                            throw new ParserException("Unmatched #" + name + " directive", parser, location);
                         }
 
                         NodeBase node = parser.ParseLine(curLine, input);
@@ -75,7 +75,7 @@ namespace osq2osb.Parser.TreeNode {
                         
                         if(endNode != null) {
                             if(endNode.DirectiveName != endName) {
-                                throw new InvalidDataException("Poorly balanced directives: got #" + endNode.DirectiveName + ", expected #" + endName);
+                                throw new ParserException("Poorly balanced directives: got #" + endNode.DirectiveName + ", expected #" + endName, endNode.Parser, endNode.Location);
                             }
 
                             break;
@@ -90,7 +90,7 @@ namespace osq2osb.Parser.TreeNode {
                 return newNode;
             }
 
-            throw new InvalidDataException("Unknown directive: " + line);
+            throw new ParserException("Unknown directive: " + line, parser, location);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace osq2osb.Parser {
     using TreeNode;
 
-    partial class Parser {
+    public class Parser {
         private IDictionary<string, object> variables = new Dictionary<string, object>();
 
         private static IDictionary<string, Action<Stack<object>>> builtinFunctions;
@@ -77,27 +77,25 @@ namespace osq2osb.Parser {
             };
         }
 
-        public int LineNumber {
-            get {
-                return lineNumber;
-            }
-        }
-
-        private int lineNumber;
+        private Location currentLocation;
 
         public Parser() {
         }
 
         public void ParseAndExecute(TextReader input, TextWriter output) {
-            lineNumber = 0;
+            Location oldLocation = currentLocation;
+
+            currentLocation = new Location();
+            currentLocation.LineNumber = 0;
 
             string line;
 
             while((line = input.ReadLine()) != null) {
                 var node = ParseLine(line, input);
                 node.Execute(output);
-                ++lineNumber;
             }
+
+            currentLocation = oldLocation;
         }
 
         public NodeBase ParseLine(string line, TextReader input) {
@@ -105,11 +103,17 @@ namespace osq2osb.Parser {
                 throw new ArgumentNullException("line");
             }
 
+            ++currentLocation.LineNumber;
+
+            NodeBase node;
+
             if(line.Length != 0 && line[0] == '#') {
-                return DirectiveNode.Create(line, input, this);
+                node = DirectiveNode.Create(line, input, this, currentLocation.Clone());
             } else {
-                return new RawTextNode(line + Environment.NewLine, this);
+                node = new RawTextNode(line + Environment.NewLine, this, currentLocation.Clone());
             }
+
+            return node;
         }
 
         public string ReplaceExpressions(string input) {

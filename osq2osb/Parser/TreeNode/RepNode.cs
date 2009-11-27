@@ -12,7 +12,7 @@ namespace osq2osb.Parser.TreeNode {
                 try {
                     Count = int.Parse(value);
                 } catch(FormatException e) {
-                    throw new ArgumentException("Bad form for #" + DirectiveName + " directive", e);
+                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location, e);
                 }
 
                 base.Parameters = value;
@@ -30,8 +30,8 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public RepNode(Parser parser) :
-            base(parser) {
+        public RepNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
         public override void Execute(TextWriter output) {

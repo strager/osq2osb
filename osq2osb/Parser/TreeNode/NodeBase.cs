@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
-    abstract class NodeBase {
+    public abstract class NodeBase {
         public IList<NodeBase> ChildrenNodes {
             get;
             set;
@@ -16,14 +16,9 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
-        public virtual int LineNumber {
-            get {
-                return lineNumber;
-            }
-
-            set {
-                lineNumber = value;
-            }
+        public Location Location {
+            get;
+            set;
         }
 
         public Parser Parser {
@@ -31,17 +26,15 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        private int lineNumber;
-
-        public NodeBase(Parser parser) :
-            this(null, parser) {
+        public NodeBase(Parser parser, Location location) :
+            this(null, parser, location) {
         }
         
-        public NodeBase(string content, Parser parser) {
+        public NodeBase(string content, Parser parser, Location location) {
             ChildrenNodes = new List<NodeBase>();
             Content = content;
             Parser = parser;
-            lineNumber = parser.LineNumber;
+            Location = location;
         }
 
         public abstract void Execute(TextWriter output);
@@ -52,7 +45,7 @@ namespace osq2osb.Parser.TreeNode {
             }
 
             if(Content != null) {
-                var contentNode = new RawTextNode(Content, Parser, this.LineNumber);
+                var contentNode = new RawTextNode(Content, Parser, Location);
                 contentNode.Execute(output);
             }
         }

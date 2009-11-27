@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Location.cs" />
+    <Compile Include="Parser\ParserException.cs" />
     <Compile Include="Parser\ExpressionRewriter.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\Tokenizer.cs" />

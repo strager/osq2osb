@@ -12,7 +12,13 @@ namespace osq2osb {
 
                 var parser = new Parser.Parser();
 
-                parser.ParseAndExecute(Console.In, Console.Out);
+                while(true) {
+                    try {
+                        parser.ParseAndExecute(Console.In, Console.Out);
+                    } catch(Exception e) {
+                        Console.WriteLine("Error: " + e.ToString());
+                    }
+                }
             } else {
                 List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
 
@@ -45,9 +51,9 @@ namespace osq2osb {
                     try {
                         parser.ParseAndExecute(reader, writer);
                     } catch(Exception e) {
-                        Console.WriteLine("\nError: " + e.Message);
-                        Console.WriteLine("Stack trace:");
-                        Console.Write(e.StackTrace);
+                        Console.WriteLine("\nError: " + e.ToString());
+
+                        return;
                     }
                 }
             }

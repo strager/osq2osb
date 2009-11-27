@@ -26,8 +26,8 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public IncludeNode(Parser parser) :
-            base(parser) {
+        public IncludeNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
         public override void Execute(TextWriter output) {

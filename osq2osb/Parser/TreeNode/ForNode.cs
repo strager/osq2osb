@@ -13,7 +13,7 @@ namespace osq2osb.Parser.TreeNode {
                 var match = re.Match(value);
 
                 if(!match.Success) {
-                    throw new ArgumentException("Bad form for #" + DirectiveName + " directive");
+                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
                 }
 
                 Variable = match.Groups["variable"].Value;
@@ -39,8 +39,8 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public ForNode(Parser parser) :
-            base(parser) {
+        public ForNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
         public override void Execute(TextWriter output) {
@@ -52,7 +52,7 @@ namespace osq2osb.Parser.TreeNode {
                 var parts = str.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if(parts.Length < 2 || parts.Length > 3) {
-                    throw new InvalidDataException("Bad #for form: " + str);
+                    throw new ParserException("Bad #for form: " + str, Parser, Location);
                 }
 
                 double min = double.Parse(parts[0]);

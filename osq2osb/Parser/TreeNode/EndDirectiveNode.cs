@@ -6,8 +6,8 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class EndDirectiveNode : DirectiveNode {
-        public EndDirectiveNode(Parser parser) :
-            base(parser) {
+        public EndDirectiveNode(Parser parser, Location location) :
+            base(parser, location) {
         }
 
         public override void Execute(TextWriter output) {
