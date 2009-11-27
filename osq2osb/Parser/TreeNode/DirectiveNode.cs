@@ -29,15 +29,11 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
-        protected virtual bool IsMultiline {
-            get {
-                return false;
-            }
-        }
-
         protected DirectiveNode(Parser parser, Location location) :
             base(parser, location) {
         }
+
+        protected abstract bool EndsWith(NodeBase node);
 
         public static DirectiveNode Create(string line, TextReader input, Parser parser, Location location) {
             foreach(var pair in directiveExpressions) {
@@ -58,33 +54,20 @@ namespace osq2osb.Parser.TreeNode {
                 newNode.Parameters = parameters;
                 newNode.DirectiveName = name;
 
-                if(newNode.IsMultiline) {
-                    string endName = "end" + name;
-                    IList<NodeBase> children = new List<NodeBase>();
+                NodeBase curNode = newNode;
 
-                    while(true) {
-                        string curLine = input.ReadLine();
+                while(!newNode.EndsWith(curNode)) {
+                    string curLine = input.ReadLine();
 
-                        if(curLine == null) {
-                            throw new ParserException("Unmatched #" + name + " directive", parser, location);
-                        }
-
-                        NodeBase node = parser.ParseLine(curLine, input);
-
-                        var endNode = node as EndDirectiveNode; 
-                        
-                        if(endNode != null) {
-                            if(endNode.DirectiveName != endName) {
-                                throw new ParserException("Poorly balanced directives: got #" + endNode.DirectiveName + ", expected #" + endName, endNode.Parser, endNode.Location);
-                            }
-
-                            break;
-                        }
-
-                        children.Add(node);
+                    if(curLine == null) {
+                        throw new ParserException("Unmatched #" + name + " directive", parser, location);
                     }
 
-                    newNode.ChildrenNodes = children;
+                    curNode = parser.ParseLine(curLine, input);
+
+                    if(!newNode.EndsWith(curNode)) {
+                        newNode.ChildrenNodes.Add(curNode);
+                    }
                 }
 
                 return newNode;

@@ -20,14 +20,12 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        protected override bool IsMultiline {
-            get {
-                return false;
-            }
-        }
-
         public IncludeNode(Parser parser, Location location) :
             base(parser, location) {
+        }
+
+        protected override bool EndsWith(NodeBase node) {
+            return node == this;
         }
 
         public override void Execute(TextWriter output) {

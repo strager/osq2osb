@@ -19,7 +19,6 @@ namespace osq2osb.Parser.TreeNode {
                 Name = match.Groups["name"].Value;
                 FunctionParameters = match.Groups["params"].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select((string s) => { return s.Trim(); }).ToList();
                 Content = match.Groups["value"].Value;
-                isMultiline = string.IsNullOrEmpty(Content.Trim());
 
                 base.Parameters = value;
             }
@@ -35,16 +34,22 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        protected override bool IsMultiline {
-            get {
-                return isMultiline;
-            }
-        }
-
-        private bool isMultiline = false;
-
         public DefineNode(Parser parser, Location location) :
             base(parser, location) {
+        }
+
+        protected override bool EndsWith(NodeBase node) {
+            if(!string.IsNullOrEmpty(Content.Trim()) && node == this) {
+                return true;
+            }
+
+            var directive = node as DirectiveNode;
+
+            if(directive != null && directive.DirectiveName == "end" + this.DirectiveName) {
+                return true;
+            }
+
+            return false;
         }
 
         public override void Execute(TextWriter output) {

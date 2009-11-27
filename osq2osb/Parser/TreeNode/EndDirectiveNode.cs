@@ -10,6 +10,10 @@ namespace osq2osb.Parser.TreeNode {
             base(parser, location) {
         }
 
+        protected override bool EndsWith(NodeBase node) {
+            return node == this;
+        }
+
         public override void Execute(TextWriter output) {
             throw new InvalidOperationException();
         }

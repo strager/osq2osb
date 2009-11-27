@@ -24,14 +24,18 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        protected override bool IsMultiline {
-            get {
-                return true;
-            }
-        }
-
         public RepNode(Parser parser, Location location) :
             base(parser, location) {
+        }
+
+        protected override bool EndsWith(NodeBase node) {
+            var directive = node as DirectiveNode;
+
+            if(directive != null && directive.DirectiveName == "end" + this.DirectiveName) {
+                return true;
+            }
+
+            return false;
         }
 
         public override void Execute(TextWriter output) {
