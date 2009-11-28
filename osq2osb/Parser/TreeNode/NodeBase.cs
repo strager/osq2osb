@@ -11,6 +11,19 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
+        public IEnumerable<NodeBase> ExecutableChildren {
+            get {
+                foreach(var child in ChildrenNodes) {
+                    yield return child;
+                }
+
+                if(Content != null) {
+                    var contentNode = new RawTextNode(Content, Parser, Location);
+                    yield return contentNode;
+                }
+            }
+        }
+
         public string Content {
             get;
             set;
@@ -40,13 +53,8 @@ namespace osq2osb.Parser.TreeNode {
         public abstract void Execute(TextWriter output);
 
         public void ExecuteChildren(TextWriter output) {
-            foreach(var child in ChildrenNodes) {
+            foreach(var child in ExecutableChildren) {
                 child.Execute(output);
-            }
-
-            if(Content != null) {
-                var contentNode = new RawTextNode(Content, Parser, Location);
-                contentNode.Execute(output);
             }
         }
     }
