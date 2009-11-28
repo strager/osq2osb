@@ -17,7 +17,7 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 Variable = match.Groups["variable"].Value;
-                Values = match.Groups["values"].Value.Split(new char[] { ',' });
+                Values = match.Groups["values"].Value;
 
                 base.Parameters = value;
             }
@@ -28,7 +28,7 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        public IList<string> Values {
+        public string Values {
             get;
             private set;
         }
@@ -48,7 +48,9 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            foreach(var value in Values) {
+            var values = Parser.ReplaceExpressions(Values).Split(new char[] { ',' });
+
+            foreach(var value in values) {
                 Parser.SetVariable(Variable, value);
 
                 ExecuteChildren(output);
