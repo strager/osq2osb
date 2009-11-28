@@ -16,6 +16,9 @@ namespace osq2osb.Parser.TreeNode {
             directiveExpressions[new Regex(@"^#(?<name>rep)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(RepNode);
             directiveExpressions[new Regex(@"^#(?<name>for)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(ForNode);
             directiveExpressions[new Regex(@"^#(?<name>inc(lude)?)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(IncludeNode);
+            directiveExpressions[new Regex(@"^#(?<name>if)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(IfNode);
+            directiveExpressions[new Regex(@"^#(?<name>else)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(ElseNode);
+            directiveExpressions[new Regex(@"^#(?<name>el(se)?if)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(ElseIfNode);
             directiveExpressions[new Regex(@"^#(?<name>end\w+)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(EndDirectiveNode);
         }
 
@@ -65,9 +68,7 @@ namespace osq2osb.Parser.TreeNode {
 
                     curNode = parser.ParseLine(curLine, input);
 
-                    if(!newNode.EndsWith(curNode)) {
-                        newNode.ChildrenNodes.Add(curNode);
-                    }
+                    newNode.ChildrenNodes.Add(curNode);
                 }
 
                 return newNode;
