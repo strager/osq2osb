@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 
 namespace osq2osb.Parser {
-    static class Tokenizer {
+    public static class Tokenizer {
         public enum TokenType {
             Symbol,
             Number,
@@ -19,20 +19,20 @@ namespace osq2osb.Parser {
                 set;
             }
 
-            public string Value {
+            public object Value {
                 get;
                 set;
             }
 
-            public Token(TokenType type, string value) {
+            public Token(TokenType type, object value) {
                 this.Type = type;
                 this.Value = value;
             }
 
             public override string ToString() {
-                return Value;
+                return Value.ToString();
             }
-            
+
             public static Token ReadSymbol(TextReader input) {
                 return new Token(TokenType.Symbol, ((char)input.Read()).ToString());
             }
@@ -44,7 +44,7 @@ namespace osq2osb.Parser {
                     token.Append((char)input.Read());
                 }
 
-                return new Token(TokenType.Number, token.ToString());
+                return new Token(TokenType.Number, Convert.ToDouble(token.ToString()));
             }
 
             public static Token ReadIdentifier(TextReader input) {

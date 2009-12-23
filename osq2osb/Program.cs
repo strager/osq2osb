@@ -13,11 +13,11 @@ namespace osq2osb {
                 var parser = new Parser.Parser();
 
                 while(true) {
-                    try {
+                    //try {
                         parser.ParseAndExecute(Console.In, Console.Out);
-                    } catch(Exception e) {
-                        Console.WriteLine("Error: " + e.ToString());
-                    }
+                    //} catch(Exception e) {
+                    //    Console.WriteLine("Error: " + e.ToString());
+                    //}
                 }
             } else {
                 List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();

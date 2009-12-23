@@ -11,69 +11,69 @@ namespace osq2osb.Parser {
     public class Parser {
         private IDictionary<string, object> variables = new Dictionary<string, object>();
 
-        private static IDictionary<string, Action<Stack<object>>> builtinFunctions;
+        private static IDictionary<string, Func<TokenNode, object>> builtinFunctions;
 
         static Parser() {
-            builtinFunctions = new Dictionary<string, Action<Stack<object>>>();
+            builtinFunctions = new Dictionary<string, Func<TokenNode, object>>();
 
-            builtinFunctions["int"] = (stack) => {
-                stack.Push((int)System.Convert.ToDouble(stack.Pop()));
+            builtinFunctions["int"] = (token) => {
+                return (int)(double)token.TokenChildren[0].Value;
             };
 
-            builtinFunctions["sqrt"] = (stack) => {
-                stack.Push(Math.Sqrt(System.Convert.ToDouble(stack.Pop())));
+            builtinFunctions["sqrt"] = (token) => {
+                return Math.Sqrt((double)token.TokenChildren[0].Value);
             };
 
-            builtinFunctions["pi"] = (stack) => {
-                stack.Push(Math.PI);
+            builtinFunctions["pi"] = (token) => {
+                return Math.PI;
             };
 
-            builtinFunctions["sin"] = (stack) => {
-                stack.Push(Math.Sin(System.Convert.ToDouble(stack.Pop())));
+            builtinFunctions["sin"] = (token) => {
+                return Math.Sin((double)token.TokenChildren[0].Value);
             };
 
-            builtinFunctions["cos"] = (stack) => {
-                stack.Push(Math.Cos(System.Convert.ToDouble(stack.Pop())));
+            builtinFunctions["cos"] = (token) => {
+                return Math.Cos((double)token.TokenChildren[0].Value);
             };
 
-            builtinFunctions["tan"] = (stack) => {
-                stack.Push(Math.Tan(System.Convert.ToDouble(stack.Pop())));
+            builtinFunctions["tan"] = (token) => {
+                return Math.Tan((double)token.TokenChildren[0].Value);
             };
 
-            builtinFunctions["concat"] = (stack) => {
-                string second = stack.Pop().ToString();
-                string first = stack.Pop().ToString();
-                stack.Push(string.Concat(first, second));
+            builtinFunctions["concat"] = (token) => {
+                return new Tokenizer.Token(Tokenizer.TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Value).ToArray()));
             };
 
-            builtinFunctions["+"] = (stack) => {
-                stack.Push(System.Convert.ToDouble(stack.Pop()) + System.Convert.ToDouble(stack.Pop()));
+            builtinFunctions["+"] = (token) => {
+                return token.TokenChildren.Aggregate((double)0, (r, t) => r + (double)t.Value);
             };
 
-            builtinFunctions["-"] = (stack) => {
-                double second = System.Convert.ToDouble(stack.Pop());
-                double first = System.Convert.ToDouble(stack.Pop());
-                stack.Push(first - second);
+            builtinFunctions["-"] = (token) => {
+                var children = token.TokenChildren;
+
+                return (double)children[0].Value - (double)children[1].Value;
             };
 
-            builtinFunctions["*"] = (stack) => {
-                stack.Push(System.Convert.ToDouble(stack.Pop()) * System.Convert.ToDouble(stack.Pop()));
+            builtinFunctions["*"] = (token) => {
+                return token.TokenChildren.Aggregate((double)1, (r, t) => r * (double)t.Value);
             };
 
-            builtinFunctions["/"] = (stack) => {
-                double second = System.Convert.ToDouble(stack.Pop());
-                double first = System.Convert.ToDouble(stack.Pop());
-                stack.Push(first / second);
+            builtinFunctions["/"] = (token) => {
+                var children = token.TokenChildren;
+
+                return (double)children[0].Value / (double)children[1].Value;
             };
 
-            builtinFunctions["%"] = (stack) => {
-                stack.Push(System.Convert.ToDouble(stack.Pop()) % System.Convert.ToDouble(stack.Pop()));
+            builtinFunctions["%"] = (token) => {
+                var children = token.TokenChildren;
+
+                return (double)children[0].Value % (double)children[1].Value;
             };
 
-            builtinFunctions["^"] = (stack) => {
-                double second = System.Convert.ToDouble(stack.Pop());
-                double first = System.Convert.ToDouble(stack.Pop());
-                stack.Push(Math.Pow(first, second));
+            builtinFunctions["^"] = (token) => {
+                var children = token.TokenChildren;
+
+                return Math.Pow((double)children[0].Value, (double)children[1].Value);
             };
         }
 
@@ -150,46 +150,9 @@ namespace osq2osb.Parser {
         }
 
         public string EvaluateExpression(string expression) {
-            IEnumerable<Tokenizer.Token> tokens = ExpressionRewriter.InfixToPostfix(Tokenizer.Tokenize(expression));
-            Stack<object> stack = new Stack<object>();
-
-            foreach(var token in tokens) {
-                switch(token.Type) {
-                    case Tokenizer.TokenType.Symbol:
-                    case Tokenizer.TokenType.Identifier:
-                        if(builtinFunctions.ContainsKey(token.Value)) {
-                            builtinFunctions[token.Value](stack);
-
-                            break;
-                        }
-
-                        if(!variables.ContainsKey(token.Value)) {
-                            throw new InvalidDataException("Identifier " + token + " not defined.");
-                        }
-
-                        var item = variables[token.Value];
-
-                        var func = item as Action<Stack<object>>;
-
-                        if(func != null) {
-                            func(stack);
-                        } else {
-                            stack.Push(item);
-                        }
-
-                        break;
-
-                    case Tokenizer.TokenType.Number:
-                        stack.Push(double.Parse(token.Value));
-                        break;
-
-                    case Tokenizer.TokenType.String:
-                        stack.Push(token.Value);
-                        break;
-                }
-            }
-
-            return stack.Pop().ToString();
+            TokenNode token = ExpressionRewriter.Rewrite(Tokenizer.Tokenize(expression), this);
+            token.Print();
+            return token.Value.ToString();
         }
 
         public void SetVariable(string name, object value) {
@@ -197,7 +160,15 @@ namespace osq2osb.Parser {
         }
 
         public object GetVariable(string name) {
-            return variables[name];
+            if(variables.ContainsKey(name)) {
+                return variables[name];
+            }
+
+            if(builtinFunctions.ContainsKey(name)) {
+                return builtinFunctions[name];
+            }
+
+            throw new IndexOutOfRangeException("Unknown variable: " + name);
         }
     }
 }

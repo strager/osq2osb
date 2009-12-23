@@ -63,6 +63,7 @@
     <Compile Include="Parser\TreeNode\NodeBase.cs" />
     <Compile Include="Parser\TreeNode\RawTextNode.cs" />
     <Compile Include="Parser\TreeNode\RepNode.cs" />
+    <Compile Include="Parser\TreeNode\TokenNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextReaderExtensions.cs" />
