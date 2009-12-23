@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osq2osb", "osq2osb\osq2osb.csproj", "{CDED8B0F-A069-419E-A619-E29FB2B251BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osq2osbTests", "osq2osbTests\osq2osbTests.csproj", "{BA4278D3-4A09-421E-B9BD-92D33EE380BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{CDED8B0F-A069-419E-A619-E29FB2B251BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDED8B0F-A069-419E-A619-E29FB2B251BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDED8B0F-A069-419E-A619-E29FB2B251BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA4278D3-4A09-421E-B9BD-92D33EE380BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4278D3-4A09-421E-B9BD-92D33EE380BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4278D3-4A09-421E-B9BD-92D33EE380BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4278D3-4A09-421E-B9BD-92D33EE380BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
