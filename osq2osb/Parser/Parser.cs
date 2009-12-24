@@ -51,6 +51,10 @@ namespace osq2osb.Parser {
             builtinFunctions["-"] = (token) => {
                 var children = token.TokenChildren;
 
+                if(children.Count == 1) {
+                    return -(double)children[0].Value;
+                }
+
                 return (double)children[0].Value - (double)children[1].Value;
             };
 

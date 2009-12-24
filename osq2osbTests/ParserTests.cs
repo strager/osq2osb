@@ -30,9 +30,9 @@ namespace osq2osb.Tests {
         [Test]
         public void MathEvaluation() {
             var parser = new Parser.Parser();
-            var tree = parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - (8/2)*4");
+            var tree = parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
 
-            Assert.AreEqual(8, tree.Value);
+            Assert.AreEqual(40, tree.Value);
         }
 
         [Test]
