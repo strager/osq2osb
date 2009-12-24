@@ -85,10 +85,6 @@ namespace osq2osb.Parser {
 
                     var sub = ReadLevel(0);
 
-                    if(sub != null) {
-                        sub.Print();
-                    }
-
                     // Lay tree into list.
                     while(sub != null) {
                         node.ChildrenNodes.Add(new TokenNode(sub.Token, parser, sub.Location));
