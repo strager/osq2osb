@@ -7,20 +7,56 @@ namespace osq2osb.Parser {
     public class Location {
         public string Filename {
             get;
-            set;
+            private set;
         }
 
         public int LineNumber {
             get;
-            set;
+            private set;
         }
+
+        public int Column {
+            get;
+            private set;
+        }
+
+        private int lastChar;
 
         public Location() {
+            LineNumber = 1;
+            Column = 1;
         }
 
-        public Location(string filename, int lineNumber) {
+        public Location(string filename) {
+            Filename = filename;
+        }
+
+        public Location(string filename, int lineNumber, int column) {
             Filename = filename;
             LineNumber = lineNumber;
+            Column = column;
+        }
+
+        public void AdvanceCharacter(char c) {
+            if(c == '\n' || c == '\r') {
+                if((lastChar == '\n' || lastChar == '\r') && c != lastChar) {
+                    lastChar = -1;
+
+                    return;
+                }
+
+                ++LineNumber;
+                Column = 1;
+                lastChar = c;
+            }
+
+            lastChar = c;
+        }
+
+        public void AdvanceLine() {
+            ++LineNumber;
+            Column = 1;
+            lastChar = -1;
         }
 
         public override string ToString() {
@@ -32,7 +68,7 @@ namespace osq2osb.Parser {
         }
 
         public Location Clone() {
-            return new Location(Filename, LineNumber);
+            return new Location(Filename, LineNumber, Column);
         }
     }
 }
