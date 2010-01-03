@@ -59,6 +59,16 @@ namespace osq2osb.Tests {
                     4
                 },
                 parser.ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
+
+            CheckTree(new object[] {
+                    "a",
+                    new object[] {
+                        "b",
+                        "c",
+                        "d"
+                    }
+                },
+                parser.ExpressionToTokenNode("a(b, c, d)"));
         }
     }
 }
