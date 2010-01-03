@@ -16,18 +16,23 @@ namespace osq2osb.Tests {
             var location = new Location();
 
             Assert.AreEqual(1, location.LineNumber);
+            Assert.AreEqual(1, location.Column);
 
             location.AdvanceCharacter('\n');
             Assert.AreEqual(2, location.LineNumber);
+            Assert.AreEqual(1, location.Column);
 
             location.AdvanceCharacter('\n');
             Assert.AreEqual(3, location.LineNumber);
+            Assert.AreEqual(1, location.Column);
 
             location.AdvanceCharacter('\r');
             Assert.AreEqual(3, location.LineNumber);
+            Assert.AreEqual(1, location.Column);
 
             location.AdvanceCharacter('\r');
             Assert.AreEqual(4, location.LineNumber);
+            Assert.AreEqual(1, location.Column);
         }
     }
 }
