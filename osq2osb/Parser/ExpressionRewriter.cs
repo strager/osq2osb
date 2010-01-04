@@ -86,14 +86,8 @@ namespace osq2osb.Parser {
                     var sub = ReadLevel(0);
 
                     // Lay tree into list.
-                    while(sub != null) {
-                        node.ChildrenNodes.Add(new TokenNode(sub.Token, parser, sub.Location));
-
-                        if(sub.Token.Type != Tokenizer.TokenType.Symbol || (string)sub.Token.Value != ",") {
-                            break;
-                        }
-
-                        sub = sub.TokenChildren[1];
+                    foreach(var child in FlattenTokenTree(sub, (n) => n.Token.Type == Tokenizer.TokenType.Symbol && (string)n.Token.Value == ",")) {
+                        node.ChildrenNodes.Add(child);
                     }
 
                     // Eat the ).
@@ -117,6 +111,24 @@ namespace osq2osb.Parser {
 
                 return new TokenNode(token, parser, null);
             }
+        }
+
+        static IEnumerable<TokenNode> FlattenTokenTree(TokenNode root, Func<TokenNode, bool> shouldFlatten) {
+            var tokens = new List<TokenNode>();
+
+            if(root == null) {
+                return tokens;
+            }
+
+            if(shouldFlatten(root)) {
+                foreach(var child in root.TokenChildren) {
+                    tokens.AddRange(FlattenTokenTree(child, shouldFlatten));
+                }
+            } else {
+                tokens.Add(root);
+            }
+
+            return tokens;
         }
     }
 }

@@ -13,11 +13,13 @@ namespace osq2osb.Tests {
     class ParserTests {
         private void CheckTree(object expected, Parser.TreeNode.TokenNode tree) {
             object[] array = expected as object[];
-
+            
             if(array != null) {
                 CheckTree(array[0], tree);
 
                 var tokenChildren = tree.TokenChildren;
+
+                Assert.AreEqual(array.Length - 1, tokenChildren.Count);
 
                 for(int i = 1; i < array.Length; ++i) {
                     CheckTree(array[i], tokenChildren[i - 1]);
@@ -62,11 +64,9 @@ namespace osq2osb.Tests {
 
             CheckTree(new object[] {
                     "a",
-                    new object[] {
-                        "b",
-                        "c",
-                        "d"
-                    }
+                    "b",
+                    "c",
+                    "d"
                 },
                 parser.ExpressionToTokenNode("a(b, c, d)"));
         }
