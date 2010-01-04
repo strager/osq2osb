@@ -7,19 +7,19 @@ using System.Text.RegularExpressions;
 
 namespace osq2osb.Parser.TreeNode {
     abstract class DirectiveNode : NodeBase {
-        private static IDictionary<Regex, Type> directiveExpressions = new Dictionary<Regex, Type>();
+        private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>();
 
         static DirectiveNode() {
-            directiveExpressions[new Regex(@"^#(?<name>def(ine)?)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(DefineNode);
-            directiveExpressions[new Regex(@"^#(?<name>let)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(LetNode);
-            directiveExpressions[new Regex(@"^#(?<name>each)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(EachNode);
-            directiveExpressions[new Regex(@"^#(?<name>rep)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(RepNode);
-            directiveExpressions[new Regex(@"^#(?<name>for)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(ForNode);
-            directiveExpressions[new Regex(@"^#(?<name>inc(lude)?)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(IncludeNode);
-            directiveExpressions[new Regex(@"^#(?<name>if)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(IfNode);
-            directiveExpressions[new Regex(@"^#(?<name>else)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(ElseNode);
-            directiveExpressions[new Regex(@"^#(?<name>el(se)?if)\s+(?<params>.*)$", RegexOptions.ExplicitCapture)] = typeof(ElseIfNode);
-            directiveExpressions[new Regex(@"^#(?<name>end\w+)\b(?<params>).*$", RegexOptions.ExplicitCapture)] = typeof(EndDirectiveNode);
+            directiveTypes["def(ine)?"] = typeof(DefineNode);
+            directiveTypes["let"] = typeof(LetNode);
+            directiveTypes["each"] = typeof(EachNode);
+            directiveTypes["rep"] = typeof(RepNode);
+            directiveTypes["for"] = typeof(ForNode);
+            directiveTypes["inc(lude)?"] = typeof(IncludeNode);
+            directiveTypes["if"] = typeof(IfNode);
+            directiveTypes["else"] = typeof(ElseNode);
+            directiveTypes["el(se)?if"] = typeof(ElseIfNode);
+            directiveTypes["end([^\\s]+)"] = typeof(EndDirectiveNode);
         }
 
         public virtual string Parameters {
@@ -39,9 +39,11 @@ namespace osq2osb.Parser.TreeNode {
         protected abstract bool EndsWith(NodeBase node);
 
         public static DirectiveNode Create(string line, TextReader input, Parser parser, Location location) {
-            foreach(var pair in directiveExpressions) {
-                Regex re = pair.Key;
+            foreach(var pair in directiveTypes) {
+                string type = pair.Key;
                 Type nodeType = pair.Value;
+
+                Regex re = new Regex("^#(?<name>" + type + ")\\s*(?<params>.*)$", RegexOptions.ExplicitCapture);
 
                 var match = re.Match(line);
 
@@ -60,13 +62,11 @@ namespace osq2osb.Parser.TreeNode {
                 NodeBase curNode = newNode;
 
                 while(!newNode.EndsWith(curNode)) {
-                    string curLine = input.ReadLine();
-
-                    if(curLine == null) {
+                    curNode = parser.ReadNode(input);
+                    
+                    if(curNode == null) {
                         throw new ParserException("Unmatched #" + name + " directive", parser, location);
                     }
-
-                    curNode = parser.ParseLine(curLine, input);
 
                     newNode.ChildrenNodes.Add(curNode);
                 }

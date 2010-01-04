@@ -48,7 +48,8 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            var values = Parser.ReplaceExpressions(Values).Split(new char[] { ',' });
+            //var values = Parser.ReplaceExpressions(Values).Split(new char[] { ',' });
+            var values = Values.Split(new char[] { ',' });
 
             foreach(var value in values) {
                 Parser.SetVariable(Variable, value);

@@ -18,7 +18,20 @@ namespace osq2osb.Parser.TreeNode {
 
                 Name = match.Groups["name"].Value;
                 FunctionParameters = match.Groups["params"].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select((string s) => { return s.Trim(); }).ToList();
-                Content = match.Groups["value"].Value;
+                
+                this.ChildrenNodes.Clear();
+
+                string data = match.Groups["value"].Value;
+
+                using(StringReader reader = new StringReader(data)) {
+                    NodeBase node = Parser.ReadNode(reader);
+
+                    while(node != null) {
+                        this.ChildrenNodes.Add(node);
+
+                        node = Parser.ReadNode(reader);
+                    }
+                }
 
                 base.Parameters = value;
             }
@@ -39,7 +52,7 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected override bool EndsWith(NodeBase node) {
-            if(!string.IsNullOrEmpty(Content.Trim()) && node == this) {
+            if(this.ChildrenNodes.Count != 0 && node == this) {
                 return true;
             }
 
@@ -53,15 +66,25 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            Parser.SetVariable(Name, new Action<Stack<object>>((Stack<object> stack) => {
-                foreach(string paramName in FunctionParameters.Reverse()) { // Reverse because pop order is backwards.
-                    Parser.SetVariable(paramName, stack.Pop());
+            Parser.SetVariable(Name, new Func<TokenNode, object>((TokenNode token) => {
+                int paramNumber = 0;
+
+                foreach(var child in token.TokenChildren) {
+                    if(paramNumber >= FunctionParameters.Count) {
+                        throw new ParserException("Invokation uses too many parameters", Parser, new Location());
+                    }
+
+                    object value = child.Value;
+
+                    Parser.SetVariable(FunctionParameters[paramNumber], value);
+
+                    ++paramNumber;
                 }
 
-                using(var stackOutput = new StringWriter()) {
-                    ExecuteChildren(stackOutput);
+                using(var funcOutput = new StringWriter()) {
+                    ExecuteChildren(funcOutput);
 
-                    stack.Push(stackOutput.ToString().Trim(Environment.NewLine.ToCharArray()));
+                    return funcOutput.ToString().TrimEnd(Environment.NewLine.ToCharArray());
                 }
             }));
         }

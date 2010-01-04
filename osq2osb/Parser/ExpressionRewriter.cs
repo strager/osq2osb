@@ -43,7 +43,7 @@ namespace osq2osb.Parser {
 
             while(tokens.Count != 0 && tokens.Peek().Type == Tokenizer.TokenType.Symbol && GetOperatorTier(tokens.Peek().Value.ToString()[0], binaryOperatorTiers) >= level) {
                 var opToken = tokens.Dequeue();
-                var right = ReadLevel(level + 1);
+                var right = ReadLevel(GetOperatorTier(opToken.Value.ToString()[0], binaryOperatorTiers) + 1);
 
                 var opTree = new TokenNode(opToken, parser, null);
 

@@ -9,13 +9,13 @@ namespace osq2osb.Parser.TreeNode {
     class RepNode : DirectiveNode {
         public override string Parameters {
             set {
-                Value = value;
+                Value = Parser.ExpressionToTokenNode(value);
 
                 base.Parameters = value;
             }
         }
 
-        public string Value {
+        public TokenNode Value {
             get;
             private set;
         }
@@ -35,14 +35,8 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            var value = Parser.ReplaceExpressions(Value);
-            double count;
-
-            try {
-                count = double.Parse(value);
-            } catch(FormatException e) {
-                throw new ParserException("Bad form for #" + DirectiveName + " directive: " + value, Parser, Location, e);
-            }
+            object value = Value.Value;
+            double count = (double)value;
 
             for(int i = 0; i < count; ++i) {
                 ExecuteChildren(output);

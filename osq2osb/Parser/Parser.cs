@@ -9,19 +9,38 @@ namespace osq2osb.Parser {
     using TreeNode;
 
     public class Parser {
+        private static Random rand = new Random(31337);
+
         private IDictionary<string, object> variables = new Dictionary<string, object>();
 
         private static IDictionary<string, Func<TokenNode, object>> builtinFunctions;
 
+        public bool Debug {
+            get {
+                return debug;
+            }
+
+            set {
+                debug = value;
+            }
+        }
+
+        private bool debug = false;
+
         static Parser() {
+            Func<object, double> num = (object o) => (System.Convert.ToDouble(o));
+
             builtinFunctions = new Dictionary<string, Func<TokenNode, object>>();
 
             builtinFunctions["int"] = (token) => {
-                return (int)(double)token.TokenChildren[0].Value;
+                return (int)num(token.TokenChildren[0].Value);
             };
 
             builtinFunctions["sqrt"] = (token) => {
-                return Math.Sqrt((double)token.TokenChildren[0].Value);
+                return Math.Sqrt(num(token.TokenChildren[0].Value));
+            };
+            builtinFunctions["rand"] = (token) => {
+                return rand.NextDouble();
             };
 
             builtinFunctions["pi"] = (token) => {
@@ -29,15 +48,15 @@ namespace osq2osb.Parser {
             };
 
             builtinFunctions["sin"] = (token) => {
-                return Math.Sin((double)token.TokenChildren[0].Value);
+                return Math.Sin(num(token.TokenChildren[0].Value));
             };
 
             builtinFunctions["cos"] = (token) => {
-                return Math.Cos((double)token.TokenChildren[0].Value);
+                return Math.Cos(num(token.TokenChildren[0].Value));
             };
 
             builtinFunctions["tan"] = (token) => {
-                return Math.Tan((double)token.TokenChildren[0].Value);
+                return Math.Tan(num(token.TokenChildren[0].Value));
             };
 
             builtinFunctions["concat"] = (token) => {
@@ -45,39 +64,39 @@ namespace osq2osb.Parser {
             };
 
             builtinFunctions["+"] = (token) => {
-                return token.TokenChildren.Aggregate((double)0, (r, t) => r + (double)t.Value);
+                return token.TokenChildren.Aggregate((double)0, (r, t) => r + num(t.Value));
             };
 
             builtinFunctions["-"] = (token) => {
                 var children = token.TokenChildren;
 
                 if(children.Count == 1) {
-                    return -(double)children[0].Value;
+                    return -num(children[0].Value);
                 }
 
-                return (double)children[0].Value - (double)children[1].Value;
+                return num(children[0].Value) - num(children[1].Value);
             };
 
             builtinFunctions["*"] = (token) => {
-                return token.TokenChildren.Aggregate((double)1, (r, t) => r * (double)t.Value);
+                return token.TokenChildren.Aggregate((double)1, (r, t) => r * num(t.Value));
             };
 
             builtinFunctions["/"] = (token) => {
                 var children = token.TokenChildren;
 
-                return (double)children[0].Value / (double)children[1].Value;
+                return num(children[0].Value) / num(children[1].Value);
             };
 
             builtinFunctions["%"] = (token) => {
                 var children = token.TokenChildren;
 
-                return (double)children[0].Value % (double)children[1].Value;
+                return num(children[0].Value) % num(children[1].Value);
             };
 
             builtinFunctions["^"] = (token) => {
                 var children = token.TokenChildren;
 
-                return Math.Pow((double)children[0].Value, (double)children[1].Value);
+                return Math.Pow(num(children[0].Value), num(children[1].Value));
             };
         }
 
@@ -90,89 +109,128 @@ namespace osq2osb.Parser {
             Location oldLocation = currentLocation;
 
             currentLocation = new Location();
-            currentLocation.LineNumber = 0;
 
-            string line;
+            while(true) {
+                var node = ReadNode(input);
 
-            while((line = input.ReadLine()) != null) {
-                var node = ParseLine(line, input);
+                if(node == null) {
+                    break;
+                }
+
                 node.Execute(output);
             }
 
             currentLocation = oldLocation;
         }
 
-        public NodeBase ParseLine(string line, TextReader input) {
-            if(line == null) {
-                throw new ArgumentNullException("line");
+        internal NodeBase ReadNode(TextReader input) {
+            if(input == null) {
+                throw new ArgumentNullException("input");
             }
 
-            ++currentLocation.LineNumber;
+            int c = input.Peek();
 
-            NodeBase node;
+            if(c < 0) {
+                return null;
+            }
 
-            if(line.Length != 0 && line[0] == '#') {
-                node = DirectiveNode.Create(line, input, this, currentLocation.Clone());
+            if(c == '$') {
+                return ReadExpressionNode(input);
+            } else if(c == '#' && currentLocation.Column == 1) {
+                return ReadDirectiveNode(input);
             } else {
-                node = new RawTextNode(line + Environment.NewLine, this, currentLocation.Clone());
+                return ReadTextNode(input);
             }
-
-            return node;
         }
 
-        public string ReplaceExpressions(string input) {
-            StringBuilder output = new StringBuilder();
-
-            int i = 0;
-
-            while(i < input.Length) {
-                int expressionStart = input.IndexOf("${", i);
-
-                if(expressionStart < 0) {
-                    output.Append(input.Substring(i));
-                    break;
-                }
-
-                /* Output stuff before expression. */
-                output.Append(input.Substring(i, expressionStart - i));
-
-                /* Output evaluated expression. */
-                int expressionEnd = input.IndexOf("}", expressionStart, StringComparison.Ordinal);
-
-                if(expressionEnd < 0) {
-                    throw new InvalidDataException("${ has no matching }");
-                }
-
-                string expression = input.Substring(expressionStart + "${".Length, expressionEnd - expressionStart - "${".Length);
-
-                output.Append(EvaluateExpression(expression));
-
-                i = expressionEnd + "}".Length;
-            }
-
-            return output.ToString();
+        public TokenNode ExpressionToTokenNode(string expression) {
+            return ExpressionRewriter.Rewrite(Tokenizer.Tokenize(expression), this);
         }
 
-        public string EvaluateExpression(string expression) {
-            TokenNode token = ExpressionRewriter.Rewrite(Tokenizer.Tokenize(expression), this);
-            token.Print();
-            return token.Value.ToString();
+        TokenNode ReadExpressionNode(TextReader input) {
+            var location = currentLocation.Clone();
+
+            return ExpressionToTokenNode(ReadExpressionString(input));
+        }
+
+        string ReadExpressionString(TextReader input) {
+            if(input.Read() != '$') {
+                throw new InvalidDataException("Expressions must begin with $");
+            }
+
+            if(input.Read() != '{') {
+                throw new InvalidDataException("Expressions must begin with ${");
+            }
+
+            StringBuilder expression = new StringBuilder();
+
+            int c = input.Read();
+
+            while(c >= 0 && c != '}') {
+                expression.Append((char)c);
+
+                currentLocation.AdvanceCharacter((char)c);
+
+                c = input.Read();
+            }
+
+            // Ending } already read.
+
+            return expression.ToString();
+        }
+
+        DirectiveNode ReadDirectiveNode(TextReader input) {
+            var location = currentLocation.Clone();
+
+            string line = input.ReadLine();
+            currentLocation.AdvanceLine();
+
+            return DirectiveNode.Create(line, input, this, location);
+        }
+
+        RawTextNode ReadTextNode(TextReader input) {
+            var location = currentLocation.Clone();
+
+            StringBuilder text = new StringBuilder();
+
+            int c = input.Peek();
+
+            while(c >= 0 && !(c == '#' && currentLocation.Column == 1) && c != '$') {
+                text.Append((char)c);
+
+                currentLocation.AdvanceCharacter((char)c);
+
+                input.Read();   // Discard; already peeked.
+                c = input.Peek();
+            }
+
+            return new RawTextNode(text.ToString(), this, location); ;
         }
 
         public void SetVariable(string name, object value) {
             variables[name] = value;
+
+            if(Debug) {
+                Console.WriteLine("Writing " + name + " = " + value.ToString());
+            }
         }
 
         public object GetVariable(string name) {
+            object value = null;
+
             if(variables.ContainsKey(name)) {
-                return variables[name];
+                value = variables[name];
+            } else if(builtinFunctions.ContainsKey(name)) {
+                value = builtinFunctions[name];
+            } else {
+                throw new IndexOutOfRangeException("Unknown variable: " + name);
             }
 
-            if(builtinFunctions.ContainsKey(name)) {
-                return builtinFunctions[name];
+            if(Debug) {
+                Console.WriteLine("Reading " + name + " (= " + value.ToString() + ")");
             }
 
-            throw new IndexOutOfRangeException("Unknown variable: " + name);
+            return value;
         }
     }
 }

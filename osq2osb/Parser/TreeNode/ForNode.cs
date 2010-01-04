@@ -52,7 +52,8 @@ namespace osq2osb.Parser.TreeNode {
 
             while(true) {
                 // Syntax: min max [step]
-                string str = Parser.ReplaceExpressions(Values);
+                //string str = Parser.ReplaceExpressions(Values);
+                string str = Values;
                 var parts = str.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if(parts.Length < 2 || parts.Length > 3) {

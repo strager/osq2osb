@@ -11,7 +11,7 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            output.Write(Parser.ReplaceExpressions(this.Content));
+            output.Write(this.Content);
         }
     }
 }

@@ -9,13 +9,13 @@ namespace osq2osb.Parser.TreeNode {
     class IfNode : DirectiveNode {
         public override string Parameters {
             set {
-                Condition = value;
+                Condition = Parser.ExpressionToTokenNode(value);
 
                 base.Parameters = value;
             }
         }
 
-        public string Condition {
+        public TokenNode Condition {
             get;
             private set;
         }
@@ -35,13 +35,14 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected bool TestCondition() {
-            string ret = Parser.ReplaceExpressions(Condition);
-            double num;
-
-            if(double.TryParse(ret, out num)) {
-                return num != 0;
+            object val = Condition.Value;
+            
+            if(val is double) {
+                return (double)val != 0;
+            } else if(val is string) {
+                return !string.IsNullOrEmpty((string)val);
             } else {
-                return !string.IsNullOrEmpty(ret);
+                throw new InvalidDataException("Condition returns unknown data type");
             }
         }
 

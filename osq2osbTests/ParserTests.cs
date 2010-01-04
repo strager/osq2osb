@@ -13,7 +13,7 @@ namespace osq2osb.Tests {
     class ParserTests {
         private void CheckTree(object expected, Parser.TreeNode.TokenNode tree) {
             object[] array = expected as object[];
-            
+
             if(array != null) {
                 CheckTree(array[0], tree);
 
@@ -69,6 +69,24 @@ namespace osq2osb.Tests {
                     "d"
                 },
                 parser.ExpressionToTokenNode("a(b, c, d)"));
+
+            CheckTree(new object[] {
+                "int",
+                new object[] {
+                    "+",
+                    new object[] {
+                        "*",
+                        new object[] {
+                            "-",
+                            "from",
+                            320
+                        },
+                        "mscale"
+                    },
+                    320
+                },
+                },
+                parser.ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
         }
     }
 }

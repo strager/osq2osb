@@ -17,7 +17,20 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 Variable = match.Groups["variable"].Value;
-                Content = match.Groups["value"].Value;
+
+                this.ChildrenNodes.Clear();
+
+                string data = match.Groups["value"].Value;
+
+                using(StringReader reader = new StringReader(data)) {
+                    NodeBase node = Parser.ReadNode(reader);
+
+                    while(node != null) {
+                        this.ChildrenNodes.Add(node);
+
+                        node = Parser.ReadNode(reader);
+                    }
+                }
 
                 base.Parameters = value;
             }
@@ -33,7 +46,7 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected override bool EndsWith(NodeBase node) {
-            if(!string.IsNullOrEmpty(Content.Trim()) && node == this) {
+            if(this.ChildrenNodes.Count != 0 && node == this) {
                 return true;
             }
 
