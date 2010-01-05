@@ -103,12 +103,28 @@ namespace osq2osb.Parser {
         private Location currentLocation;
 
         public Parser() {
+            Dependancies = new HashSet<string>();
+        }
+
+        public ICollection<string> Dependancies {
+            get;
+            set;
         }
 
         public void ParseAndExecute(TextReader input, TextWriter output) {
+            ParseAndExecute(input, output, new Location());
+        }
+
+        public void ParseAndExecute(TextReader input, TextWriter output, Location location) {
+            if(location != null && location.Filename != null) {
+                if(!Dependancies.Contains(location.Filename)) {
+                    Dependancies.Add(location.Filename);
+                }
+            }
+
             Location oldLocation = currentLocation;
 
-            currentLocation = new Location();
+            currentLocation = location;
 
             while(true) {
                 var node = ReadNode(input);

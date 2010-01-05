@@ -29,9 +29,15 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public override void Execute(TextWriter output) {
-            using(var inputFile = File.Open(Filename, FileMode.Open, FileAccess.Read)) {
+            string filePath = Filename;
+
+            if(this.Location != null && this.Location.Filename != null) {
+                filePath = Path.GetDirectoryName(this.Location.Filename) + filePath;
+            }
+
+            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
                 using(var reader = new StreamReader(inputFile)) {
-                    Parser.ParseAndExecute(reader, output);
+                    Parser.ParseAndExecute(reader, output, new Location(filePath));
                 }
             }
         }
