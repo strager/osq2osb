@@ -17,7 +17,18 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 Variable = match.Groups["variable"].Value;
-                Values = match.Groups["values"].Value;
+
+                string data = match.Groups["values"].Value;
+
+                using(StringReader reader = new StringReader(data)) {
+                    NodeBase node = Parser.ReadNode(reader);
+
+                    while(node != null) {
+                        this.Values.Add(node);
+
+                        node = Parser.ReadNode(reader);
+                    }
+                }
 
                 base.Parameters = value;
             }
@@ -28,13 +39,14 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        public string Values {
+        public ICollection<NodeBase> Values {
             get;
             private set;
         }
 
         public ForNode(Parser parser, Location location) :
             base(parser, location) {
+            Values = new List<NodeBase>();
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -52,8 +64,16 @@ namespace osq2osb.Parser.TreeNode {
 
             while(true) {
                 // Syntax: min max [step]
-                //string str = Parser.ReplaceExpressions(Values);
-                string str = Values;
+                string str;
+
+                using(var writer = new StringWriter()) {
+                    foreach(var node in Values) {
+                        node.Execute(writer);
+                    }
+
+                    str = writer.ToString();
+                }
+
                 var parts = str.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if(parts.Length < 2 || parts.Length > 3) {
