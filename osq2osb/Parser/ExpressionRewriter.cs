@@ -119,23 +119,5 @@ namespace osq2osb.Parser {
                 return new TokenNode(token, parser, null);
             }
         }
-
-        static IEnumerable<TokenNode> FlattenTokenTree(TokenNode root, Func<TokenNode, bool> shouldFlatten) {
-            var tokens = new List<TokenNode>();
-
-            if(root == null) {
-                return tokens;
-            }
-
-            if(shouldFlatten(root)) {
-                foreach(var child in root.TokenChildren) {
-                    tokens.AddRange(FlattenTokenTree(child, shouldFlatten));
-                }
-            } else {
-                tokens.Add(root);
-            }
-
-            return tokens;
-        }
     }
 }
