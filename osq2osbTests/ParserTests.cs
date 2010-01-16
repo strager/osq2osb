@@ -64,9 +64,12 @@ namespace osq2osb.Tests {
 
             CheckTree(new object[] {
                     "a",
-                    "b",
-                    "c",
-                    "d"
+                    new object[] {
+                        ",",
+                        "b",
+                        "c",
+                        "d"
+                    }
                 },
                 parser.ExpressionToTokenNode("a(b, c, d)"));
 

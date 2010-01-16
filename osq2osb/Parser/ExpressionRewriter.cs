@@ -47,10 +47,18 @@ namespace osq2osb.Parser {
 
                 var opTree = new TokenNode(opToken, parser, null);
 
-                opTree.ChildrenNodes.Add(tree);
-                opTree.ChildrenNodes.Add(right);
+                if(opToken.Value.ToString()[0] == ',' && tree.Token.Type == Tokenizer.TokenType.Symbol && tree.Token.Value.ToString()[0] == ',') {
+                    foreach(var newChild in tree.ChildrenNodes) {
+                        opTree.ChildrenNodes.Add(newChild);
+                    }
 
-                tree = opTree;
+                    opTree.ChildrenNodes.Add(right);
+                    tree = opTree;
+                } else {
+                    opTree.ChildrenNodes.Add(tree);
+                    opTree.ChildrenNodes.Add(right);
+                    tree = opTree;
+                }
             }
 
             return tree;
@@ -83,13 +91,12 @@ namespace osq2osb.Parser {
                 if(tokens.Count != 0 && tokens.Peek().Value.ToString()[0] == '(') {
                     tokens.Dequeue();
 
-                    var sub = ReadLevel(0);
+                    var args = ReadLevel(0);
 
-                    // Lay tree into list.
-                    foreach(var child in FlattenTokenTree(sub, (n) => n.Token.Type == Tokenizer.TokenType.Symbol && (string)n.Token.Value == ",")) {
-                        node.ChildrenNodes.Add(child);
+                    if(args != null) {
+                        node.ChildrenNodes.Add(args);
                     }
-
+                    
                     // Eat the ).
                     if(tokens.Count == 0 || tokens.Peek().Value.ToString()[0] != ')') {
                         throw new Exception("Unmatched parens");    // FIXME Better exception class.
