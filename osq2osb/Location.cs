@@ -22,12 +22,12 @@ namespace osq2osb.Parser {
 
         private int lastChar;
 
-        public Location() {
-            LineNumber = 1;
-            Column = 1;
+        public Location() : 
+            this(null, 1, 1) {
         }
 
-        public Location(string filename) {
+        public Location(string filename) :
+            this(filename, 1, 1) {
             Filename = filename;
         }
 
