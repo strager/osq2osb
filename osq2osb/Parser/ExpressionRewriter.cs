@@ -28,7 +28,7 @@ namespace osq2osb.Parser {
         }
 
         private TokenNode Rewrite() {
-            return ReadLevel(1);
+            return ReadLevel(0);
         }
 
         private TokenNode ReadLevel(int level) {
