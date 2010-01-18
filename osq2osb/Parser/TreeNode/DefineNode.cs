@@ -39,7 +39,7 @@ namespace osq2osb.Parser.TreeNode {
                 if(reader.Peek() == '(') {
                     token = Tokenizer.ReadToken(reader, location);
 
-                    if(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
+                    while(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
                         token = Tokenizer.ReadToken(reader, location);
 
                         if(token.Type == Tokenizer.TokenType.Identifier) {
