@@ -29,6 +29,8 @@ namespace osq2osb.Parser.TreeNode {
 
                 this.Variable = token.Value.ToString();
 
+                reader.SkipWhitespace();
+
                 foreach(var node in Parser.Parse(reader, location)) {
                     this.ChildrenNodes.Add(node);
                 }
