@@ -13,5 +13,9 @@ namespace osq2osb.Parser.TreeNode {
         public override void Execute(TextWriter output, ExecutionContext context) {
             output.Write(this.Content);
         }
+
+        public override string ToString() {
+            return this.Content;
+        }
     }
 }

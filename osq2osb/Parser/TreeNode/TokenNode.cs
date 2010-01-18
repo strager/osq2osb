@@ -49,16 +49,21 @@ namespace osq2osb.Parser.TreeNode {
             throw new InvalidOperationException("Unknown token type");
         }
 
-        // XXX DEBUG
-        private static int printDepth = 0;
+        public override string ToString() {
+            StringBuilder str = new StringBuilder();
+            var c = this.TokenChildren;
 
-        public void Print() {
-            Console.WriteLine(new string(' ', printDepth) + Token.Value.ToString());
-            ++printDepth;
-            foreach(var child in TokenChildren) {
-                child.Print();
+            str.Append(this.Token.Value.ToString());
+
+            if(c.Count != 0) {
+                str.Append("(");
+
+                str.Append(string.Join(", ", c.Select(node => node.ToString()).ToArray()));
+
+                str.Append(")");
             }
-            --printDepth;
+
+            return str.ToString();
         }
     }
 }

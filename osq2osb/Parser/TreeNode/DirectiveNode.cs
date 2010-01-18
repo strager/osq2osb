@@ -106,5 +106,9 @@ namespace osq2osb.Parser.TreeNode {
 
             throw new ParserException("Unknown directive: " + line, location);
         }
+
+        public override string ToString() {
+            return "#" + DirectiveName;
+        }
     }
 }
