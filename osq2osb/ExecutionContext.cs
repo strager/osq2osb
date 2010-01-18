@@ -99,6 +99,18 @@ namespace osq2osb {
             SetFunction(",", (token, context) => {
                 return token.TokenChildren.Select(child => child.Evaluate(context)).ToArray();
             });
+
+            SetFunction(":", (token, context) => {
+                var children = token.TokenChildren;
+
+                double val = (num(children[0].Evaluate(context)) * 60 + num(children[1].Evaluate(context))) * 1000;
+
+                if(children.Count == 3) {
+                    val += num(children[2].Evaluate(context));
+                }
+
+                return val;
+            });
         }
 
         public void SetVariable(string name, object value) {

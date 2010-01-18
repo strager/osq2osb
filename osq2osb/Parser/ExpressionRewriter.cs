@@ -51,6 +51,13 @@ namespace osq2osb.Parser {
 
                     opTree.ChildrenNodes.Add(right);
                     tree = opTree;
+                } else if(opToken.Value.ToString()[0] == ':' && tree.Token.Type == Tokenizer.TokenType.Symbol && tree.Token.Value.ToString()[0] == ':' && tree.TokenChildren.Count == 2) {
+                    foreach(var newChild in tree.ChildrenNodes) {
+                        opTree.ChildrenNodes.Add(newChild);
+                    }
+
+                    opTree.ChildrenNodes.Add(right);
+                    tree = opTree;
                 } else {
                     opTree.ChildrenNodes.Add(tree);
                     opTree.ChildrenNodes.Add(right);

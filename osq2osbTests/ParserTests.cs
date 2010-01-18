@@ -35,6 +35,10 @@ namespace osq2osb.Tests {
             var tree = Parser.Parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
 
             Assert.AreEqual(40, tree.Evaluate(context));
+
+            tree = Parser.Parser.ExpressionToTokenNode("01:23:456 + 01:23");
+
+            Assert.AreEqual((((1 * 60) + 23) * 1000 + 456) + ((1 * 60) + 23) * 1000, tree.Evaluate(context));
         }
 
         [Test]
