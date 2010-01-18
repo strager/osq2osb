@@ -29,7 +29,7 @@ namespace osq2osb.Parser.TreeNode {
             }
 
             if(this.Location != null && this.Location.Filename != null) {
-                filePath = Path.GetDirectoryName(this.Location.Filename) + filePath;
+                filePath = Path.GetDirectoryName(this.Location.Filename) + Path.DirectorySeparatorChar + filePath;
             }
 
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
