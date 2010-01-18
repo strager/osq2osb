@@ -84,7 +84,7 @@ namespace osq2osb.Parser.TreeNode {
 
                 foreach(var child in parameters) {
                     if(paramNumber >= FunctionParameters.Count) {
-                        throw new ExecutionException("Invokation uses too many parameters", new Location());
+                        break;
                     }
 
                     object value = child.Evaluate(context);
