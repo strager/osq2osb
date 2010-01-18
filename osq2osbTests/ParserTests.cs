@@ -31,22 +31,20 @@ namespace osq2osb.Tests {
 
         [Test]
         public void MathEvaluation() {
-            var parser = new Parser.Parser();
-            var tree = parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
+            var context = new ExecutionContext();
+            var tree = Parser.Parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
 
-            Assert.AreEqual(40, tree.Value);
+            Assert.AreEqual(40, tree.Evaluate(context));
         }
 
         [Test]
         public void MathTree() {
-            var parser = new Parser.Parser();
-
             CheckTree(new object[] {
                     "+",
                     2,
                     3
                 },
-                parser.ExpressionToTokenNode("2 + 3"));
+                Parser.Parser.ExpressionToTokenNode("2 + 3"));
 
             CheckTree(new object[] {
                     "/",
@@ -60,7 +58,7 @@ namespace osq2osb.Tests {
                     },
                     4
                 },
-                parser.ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
+                Parser.Parser.ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
 
             CheckTree(new object[] {
                     "a",
@@ -71,7 +69,7 @@ namespace osq2osb.Tests {
                         "d"
                     }
                 },
-                parser.ExpressionToTokenNode("a(b, c, d)"));
+                Parser.Parser.ExpressionToTokenNode("a(b, c, d)"));
 
             CheckTree(new object[] {
                 "int",
@@ -89,7 +87,7 @@ namespace osq2osb.Tests {
                     320
                 },
                 },
-                parser.ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
+                Parser.Parser.ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
         }
     }
 }

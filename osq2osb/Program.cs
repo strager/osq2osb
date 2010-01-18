@@ -9,15 +9,15 @@ namespace osq2osb {
         static void Main(string[] args) {
             if(args.Length == 0) {
                 Console.WriteLine("Parsing from console...");
+                
+                var executionContext = new ExecutionContext();
 
-                var parser = new Parser.Parser();
-
-                while(true) {
-                    try {
-                        parser.ParseAndExecute(Console.In, Console.Out);
-                    } catch(Exception e) {
-                        Console.WriteLine("Error: " + e.ToString());
+                try {
+                    foreach(var node in Parser.Parser.Parse(Console.In)) {
+                        node.Execute(Console.Out, executionContext);
                     }
+                } catch(Exception e) {
+                    Console.WriteLine("Error: " + e.ToString());
                 }
             } else {
                 List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
@@ -44,12 +44,14 @@ namespace osq2osb {
 
             using(var inputFile = File.Open(filename, FileMode.Open, FileAccess.Read))
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
-                var parser = new Parser.Parser();
+                var executionContext = new ExecutionContext();
 
                 using(var reader = new StreamReader(inputFile))
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
-                        parser.ParseAndExecute(reader, writer, new Parser.Location(filename));
+                        foreach(var node in Parser.Parser.Parse(reader, new Parser.Location(filename))) {
+                            node.Execute(writer, executionContext);
+                        }
                     } catch(Exception e) {
                         Console.WriteLine("\nError: " + e.ToString());
 

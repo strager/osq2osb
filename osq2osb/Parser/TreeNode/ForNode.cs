@@ -7,46 +7,48 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class ForNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                var re = new Regex(@"^(?<variable>\w+)\b\s*(?<values>.*)$", RegexOptions.ExplicitCapture);
-                var match = re.Match(value);
-
-                if(!match.Success) {
-                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
-                }
-
-                Variable = match.Groups["variable"].Value;
-
-                string data = match.Groups["values"].Value;
-
-                using(StringReader reader = new StringReader(data)) {
-                    NodeBase node = Parser.ReadNode(reader);
-
-                    while(node != null) {
-                        this.Values.Add(node);
-
-                        node = Parser.ReadNode(reader);
-                    }
-                }
-
-                base.Parameters = value;
-            }
-        }
-
         public string Variable {
             get;
             private set;
         }
 
-        public ICollection<NodeBase> Values {
+        public TokenNode Start {
             get;
             private set;
         }
 
-        public ForNode(Parser parser, Location location) :
-            base(parser, location) {
-            Values = new List<NodeBase>();
+        public TokenNode End {
+            get;
+            private set;
+        }
+
+        public TokenNode Step {
+            get;
+            private set;
+        }
+
+        public ForNode(DirectiveInfo info) :
+            base(info) {
+            var node = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
+
+            if(node.Token.Type != Tokenizer.TokenType.Symbol || node.Token.Value.ToString()[0] != ',') {
+                throw new ParserException("Expected comma-separated list", this.Location);
+            }
+
+            var children = node.TokenChildren;
+
+            if(children.Count < 3 || children.Count > 4) {
+                throw new ParserException("#for directive requires 3 to 4 parameters", this.Location);
+            }
+
+            if(children[0].Token.Type != Tokenizer.TokenType.Identifier) {
+                throw new ParserException("Identifier expected", children[0].Location);
+            }
+
+            Variable = children[0].Token.ToString();
+            Start = children[1];
+            End = children[2];
+            Step = children.Count > 3 ? children[3] : null;
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -59,43 +61,18 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output) {
-            double counter = double.NaN;
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            double counter = Convert.ToDouble(Start.Evaluate(context));
 
             while(true) {
-                // Syntax: min max [step]
-                string str;
+                context.SetVariable(Variable, counter);
 
-                using(var writer = new StringWriter()) {
-                    foreach(var node in Values) {
-                        node.Execute(writer);
-                    }
+                ExecuteChildren(output, context);
 
-                    str = writer.ToString();
-                }
+                counter = System.Convert.ToDouble(context.GetVariable(Variable));
+                counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context));
 
-                var parts = str.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                if(parts.Length < 2 || parts.Length > 3) {
-                    throw new ParserException("Bad #for form: " + str, Parser, Location);
-                }
-
-                double min = double.Parse(parts[0]);
-                double max = double.Parse(parts[1]);
-                double step = parts.Length >= 3 ? double.Parse(parts[2]) : 1;
-
-                if(double.IsNaN(counter)) {
-                    counter = min;
-                }
-
-                Parser.SetVariable(Variable, counter);
-
-                ExecuteChildren(output);
-
-                counter = System.Convert.ToDouble(Parser.GetVariable(Variable));
-                counter += step;
-
-                if(counter >= max) {
+                if(counter >= Convert.ToDouble(End.Evaluate(context))) {
                     break;
                 }
             }

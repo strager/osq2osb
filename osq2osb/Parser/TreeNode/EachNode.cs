@@ -7,34 +7,35 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class EachNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                var re = new Regex(@"^(?<variable>\w+)\b\s*(?<values>.*)$", RegexOptions.ExplicitCapture);
-                var match = re.Match(value);
-
-                if(!match.Success) {
-                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
-                }
-
-                Variable = match.Groups["variable"].Value;
-                Values = match.Groups["values"].Value;
-
-                base.Parameters = value;
-            }
-        }
-
         public string Variable {
             get;
             private set;
         }
 
-        public string Values {
+        public TokenNode Values {
             get;
             private set;
         }
 
-        public EachNode(Parser parser, Location location) :
-            base(parser, location) {
+        public EachNode(DirectiveInfo info) :
+            base(info) {
+            var location = info.ParametersLocation.Clone();
+
+            using(var reader = new StringReader(info.Parameters)) {
+                Tokenizer.Token token = Tokenizer.ReadToken(reader, location);
+
+                if(token == null) {
+                    throw new ParserException("Need a variable name for #let", location);
+                }
+
+                if(token.Type != Tokenizer.TokenType.Identifier) {
+                    throw new ParserException("Need a variable name for #let", token.Location);
+                }
+
+                this.Variable = token.Value.ToString();
+
+                this.Values = ExpressionRewriter.Rewrite(Tokenizer.Tokenize(reader, location));
+            }
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -47,14 +48,19 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output) {
-            //var values = Parser.ReplaceExpressions(Values).Split(new char[] { ',' });
-            var values = Values.Split(new char[] { ',' });
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            object expr = Values.Evaluate(context);
+
+            object[] values = expr as object[];
+
+            if(values == null) {
+                values = new object[] { expr };
+            }
 
             foreach(var value in values) {
-                Parser.SetVariable(Variable, value);
+                context.SetVariable(Variable, value);
 
-                ExecuteChildren(output);
+                ExecuteChildren(output, context);
             }
         }
     }

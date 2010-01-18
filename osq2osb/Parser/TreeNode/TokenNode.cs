@@ -12,28 +12,22 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        public object Value {
-            get {
-                return ExecuteToken();
-            }
-        }
-
         public IList<TokenNode> TokenChildren {
             get {
                 return ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
             }
         }
 
-        public TokenNode(Tokenizer.Token token, Parser parser, Location location) :
-            base(null, parser, location) {
+        public TokenNode(Tokenizer.Token token, Location location) :
+            base(null, location) {
             this.Token = token;
         }
 
-        public override void Execute(TextWriter output) {
-            output.Write(ExecuteToken());
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            output.Write(Evaluate(context));
         }
 
-        protected object ExecuteToken() {
+        public object Evaluate(ExecutionContext context) {
             switch(this.Token.Type) {
                 case Tokenizer.TokenType.Number:
                 case Tokenizer.TokenType.String:
@@ -41,14 +35,14 @@ namespace osq2osb.Parser.TreeNode {
 
                 case Tokenizer.TokenType.Identifier:
                 case Tokenizer.TokenType.Symbol:
-                    object item = Parser.GetVariable(Token.Value.ToString());
+                    object item = context.GetVariable(Token.Value.ToString());
 
-                    var asFunc = item as Func<TokenNode, object>;
+                    var asFunc = item as Func<TokenNode, ExecutionContext, object>;
 
                     if(asFunc != null) {
-                        return asFunc.Invoke(this);
+                        return asFunc.Invoke(this, context);
                     }
-                    
+
                     return item;
             }
 

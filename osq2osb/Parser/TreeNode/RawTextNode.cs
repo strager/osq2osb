@@ -6,11 +6,11 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class RawTextNode : NodeBase {
-        public RawTextNode(string content, Parser parser, Location location) :
-            base(content, parser, location) {
+        public RawTextNode(string content, Location location) :
+            base(content, location) {
         }
 
-        public override void Execute(TextWriter output) {
+        public override void Execute(TextWriter output, ExecutionContext context) {
             output.Write(this.Content);
         }
     }

@@ -7,21 +7,14 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class RepNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                Value = Parser.ExpressionToTokenNode(value);
-
-                base.Parameters = value;
-            }
-        }
-
         public TokenNode Value {
             get;
             private set;
         }
 
-        public RepNode(Parser parser, Location location) :
-            base(parser, location) {
+        public RepNode(DirectiveInfo info) :
+            base(info) {
+            Value = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -34,12 +27,12 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output) {
-            object value = Value.Value;
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            object value = Value.Evaluate(context);
             double count = (double)value;
 
             for(int i = 0; i < count; ++i) {
-                ExecuteChildren(output);
+                ExecuteChildren(output, context);
             }
         }
     }

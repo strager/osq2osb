@@ -7,42 +7,32 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class LetNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                var re = new Regex(@"^(?<variable>\w+)\b\s*(?<value>.*)\s*$", RegexOptions.ExplicitCapture);
-                var match = re.Match(value);
-
-                if(!match.Success) {
-                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
-                }
-
-                Variable = match.Groups["variable"].Value;
-
-                this.ChildrenNodes.Clear();
-
-                string data = match.Groups["value"].Value;
-
-                using(StringReader reader = new StringReader(data)) {
-                    NodeBase node = Parser.ReadNode(reader);
-
-                    while(node != null) {
-                        this.ChildrenNodes.Add(node);
-
-                        node = Parser.ReadNode(reader);
-                    }
-                }
-
-                base.Parameters = value;
-            }
-        }
-
         public string Variable {
             get;
             private set;
         }
 
-        public LetNode(Parser parser, Location location) :
-            base(parser, location) {
+        public LetNode(DirectiveInfo info) :
+            base(info) {
+            var location = info.ParametersLocation.Clone();
+
+            using(var reader = new StringReader(info.Parameters)) {
+                Tokenizer.Token token = Tokenizer.ReadToken(reader, location);
+
+                if(token == null) {
+                    throw new ParserException("Need a variable name for #let", location);
+                }
+
+                if(token.Type != Tokenizer.TokenType.Identifier) {
+                    throw new ParserException("Need a variable name for #let", token.Location);
+                }
+
+                this.Variable = token.Value.ToString();
+
+                foreach(var node in Parser.Parse(reader, location)) {
+                    this.ChildrenNodes.Add(node);
+                }
+            }
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -59,11 +49,11 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output) {
+        public override void Execute(TextWriter output, ExecutionContext context) {
             using(var varWriter = new StringWriter()) {
-                ExecuteChildren(varWriter);
+                ExecuteChildren(varWriter, context);
 
-                Parser.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
+                context.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
             }
         }
     }

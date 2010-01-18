@@ -22,23 +22,48 @@ namespace osq2osb.Parser.TreeNode {
             directiveTypes["end([^\\s]+)"] = typeof(EndDirectiveNode);
         }
 
-        public virtual string Parameters {
-            get;
-            set;
+        public class DirectiveInfo {
+            public string Parameters {
+                get;
+                set;
+            }
+
+            public string DirectiveName {
+                get;
+                set;
+            }
+
+            public Location Location {
+                get;
+                set;
+            }
+
+            public Location ParametersLocation {
+                get;
+                set;
+            }
+
+            public DirectiveInfo(Location location, string directiveName, Location parametersLocation, string parameters) {
+                Location = location;
+                DirectiveName = directiveName;
+                ParametersLocation = parametersLocation;
+                Parameters = parameters;
+            }
         }
 
         public string DirectiveName {
             get;
-            set;
+            private set;
         }
 
-        protected DirectiveNode(Parser parser, Location location) :
-            base(parser, location) {
+        protected DirectiveNode(DirectiveInfo info) :
+            base(info.Location) {
+            this.DirectiveName = info.DirectiveName;
         }
 
         protected abstract bool EndsWith(NodeBase node);
 
-        public static DirectiveNode Create(string line, TextReader input, Parser parser, Location location) {
+        public static DirectiveNode Create(string line, TextReader input, Location location) {
             foreach(var pair in directiveTypes) {
                 string type = pair.Key;
                 Type nodeType = pair.Value;
@@ -52,20 +77,25 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 string name = match.Groups["name"].Value;
-                string parameters = match.Groups["params"].Value;
+                
+                string parametersText = match.Groups["params"].Value;
+                var parametersLocation = location.Clone();
+                parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
+                DirectiveInfo info = new DirectiveInfo(location, name, parametersLocation, parametersText);
 
-                var ctor = nodeType.GetConstructor(new Type[] { typeof(Parser), typeof(Location) });
-                var newNode = ctor.Invoke(new object[] { parser, location }) as DirectiveNode;
-                newNode.Parameters = parameters;
-                newNode.DirectiveName = name;
+                var ctor = nodeType.GetConstructor(new Type[] { typeof(DirectiveInfo) });
+                System.Diagnostics.Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+
+                var newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
+                System.Diagnostics.Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
 
                 NodeBase curNode = newNode;
 
                 while(!newNode.EndsWith(curNode)) {
-                    curNode = parser.ReadNode(input);
+                    curNode = Parser.ParseNode(input);
                     
                     if(curNode == null) {
-                        throw new ParserException("Unmatched #" + name + " directive", parser, location);
+                        throw new ParserException("Unmatched #" + name + " directive", location);
                     }
 
                     newNode.ChildrenNodes.Add(curNode);
@@ -74,7 +104,7 @@ namespace osq2osb.Parser.TreeNode {
                 return newNode;
             }
 
-            throw new ParserException("Unknown directive: " + line, parser, location);
+            throw new ParserException("Unknown directive: " + line, location);
         }
     }
 }

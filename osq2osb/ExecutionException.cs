@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using osq2osb.Parser;
 
-namespace osq2osb.Parser {
-    public class ParserException : ApplicationException {
+namespace osq2osb {
+    public class ExecutionException : ApplicationException {
         public virtual Location Location {
             get {
                 return location;
@@ -13,28 +14,28 @@ namespace osq2osb.Parser {
 
         private Location location;
 
-        public ParserException() {
+        public ExecutionException() {
         }
 
-        public ParserException(string message) :
+        public ExecutionException(string message) :
             base(message) {
         }
 
-        public ParserException(string message, Exception inner) :
+        public ExecutionException(string message, Exception inner) :
             base(message, inner) {
         }
 
-        public ParserException(string message, Location location) :
+        public ExecutionException(string message, Location location) :
             this(message) {
             this.location = location;
         }
 
-        public ParserException(string message, Location location, Exception inner) :
+        public ExecutionException(string message, Location location, Exception inner) :
             this(message, inner) {
             this.location = location;
         }
 
-        protected ParserException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
+        protected ExecutionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) :
             base(info, context) {
             throw new NotImplementedException();
         }

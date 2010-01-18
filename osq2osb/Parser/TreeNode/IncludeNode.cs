@@ -7,29 +7,26 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class IncludeNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                Filename = value;
-                
-                base.Parameters = value;
-            }
-        }
-
-        public string Filename {
+        public TokenNode Filename {
             get;
             private set;
         }
 
-        public IncludeNode(Parser parser, Location location) :
-            base(parser, location) {
+        public IncludeNode(DirectiveInfo info) :
+            base(info) {
+            Filename = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
         }
 
         protected override bool EndsWith(NodeBase node) {
             return node == this;
         }
 
-        public override void Execute(TextWriter output) {
-            string filePath = Filename;
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            string filePath = Filename.Evaluate(context) as string;
+
+            if(filePath == null) {
+                throw new ExecutionException("Need string for filename", this.Location);
+            }
 
             if(this.Location != null && this.Location.Filename != null) {
                 filePath = Path.GetDirectoryName(this.Location.Filename) + filePath;
@@ -37,7 +34,9 @@ namespace osq2osb.Parser.TreeNode {
 
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
                 using(var reader = new StreamReader(inputFile)) {
-                    Parser.ParseAndExecute(reader, output, new Location(filePath));
+                    foreach(var node in Parser.Parse(reader, new Location(filePath))) {
+                        node.Execute(output, context);
+                    }
                 }
             }
         }

@@ -7,37 +7,7 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class DefineNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                var re = new Regex(@"^(?<name>\w+)(\((?<params>[^)]*)\)|(?<params>))\s*(?<value>.*)\s*$", RegexOptions.ExplicitCapture);
-                var match = re.Match(value);
-
-                if(!match.Success) {
-                    throw new ParserException("Bad form for #" + DirectiveName + " directive", Parser, Location);
-                }
-
-                Name = match.Groups["name"].Value;
-                FunctionParameters = match.Groups["params"].Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select((string s) => { return s.Trim(); }).ToList();
-                
-                this.ChildrenNodes.Clear();
-
-                string data = match.Groups["value"].Value;
-
-                using(StringReader reader = new StringReader(data)) {
-                    NodeBase node = Parser.ReadNode(reader);
-
-                    while(node != null) {
-                        this.ChildrenNodes.Add(node);
-
-                        node = Parser.ReadNode(reader);
-                    }
-                }
-
-                base.Parameters = value;
-            }
-        }
-
-        public string Name {
+        public string Variable {
             get;
             private set;
         }
@@ -47,8 +17,45 @@ namespace osq2osb.Parser.TreeNode {
             private set;
         }
 
-        public DefineNode(Parser parser, Location location) :
-            base(parser, location) {
+        public DefineNode(DirectiveInfo info) :
+            base(info) {
+            FunctionParameters = new List<string>();
+
+            var location = info.ParametersLocation.Clone();
+
+            using(var reader = new StringReader(info.Parameters)) {
+                Tokenizer.Token token = Tokenizer.ReadToken(reader, location);
+
+                if(token == null) {
+                    throw new ParserException("Need a variable name for #define", location);
+                }
+
+                if(token.Type != Tokenizer.TokenType.Identifier) {
+                    throw new ParserException("Need a variable name for #define", token.Location);
+                }
+
+                this.Variable = token.Value.ToString();
+
+                if(reader.Peek() == '(') {
+                    token = Tokenizer.ReadToken(reader, location);
+
+                    if(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
+                        token = Tokenizer.ReadToken(reader, location);
+
+                        if(token.Type == Tokenizer.TokenType.Identifier) {
+                            FunctionParameters.Add(token.Value.ToString());
+                        }
+                    }
+
+                    if(token == null) {
+                        throw new ParserException("#define without closing parentheses", location);
+                    }
+                }
+
+                foreach(var node in Parser.Parse(reader, location)) {
+                    this.ChildrenNodes.Add(node);
+                }
+            }
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -65,24 +72,30 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output) {
-            Parser.SetVariable(Name, new Func<TokenNode, object>((TokenNode token) => {
+        public override void Execute(TextWriter output, ExecutionContext context) {
+            context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((TokenNode token, ExecutionContext subContext) => {
+                var parameters = token.TokenChildren;
+
+                if(parameters.Count == 1 && parameters[0].Token.Type == Tokenizer.TokenType.Symbol && parameters[0].Token.Value.ToString()[0] == ',') {
+                    parameters = parameters[0].TokenChildren;
+                }
+
                 int paramNumber = 0;
 
-                foreach(var child in token.TokenChildren) {
+                foreach(var child in parameters) {
                     if(paramNumber >= FunctionParameters.Count) {
-                        throw new ParserException("Invokation uses too many parameters", Parser, new Location());
+                        throw new ExecutionException("Invokation uses too many parameters", new Location());
                     }
 
-                    object value = child.Value;
+                    object value = child.Evaluate(context);
 
-                    Parser.SetVariable(FunctionParameters[paramNumber], value);
+                    subContext.SetVariable(FunctionParameters[paramNumber], value);
 
                     ++paramNumber;
                 }
 
                 using(var funcOutput = new StringWriter()) {
-                    ExecuteChildren(funcOutput);
+                    ExecuteChildren(funcOutput, context);
 
                     return funcOutput.ToString().TrimEnd(Environment.NewLine.ToCharArray());
                 }

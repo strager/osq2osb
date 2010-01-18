@@ -18,7 +18,7 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Parser, Location);
+                    var contentNode = new RawTextNode(Content, Location);
                     yield return contentNode;
                 }
             }
@@ -34,27 +34,21 @@ namespace osq2osb.Parser.TreeNode {
             set;
         }
 
-        public Parser Parser {
-            get;
-            private set;
-        }
-
-        public NodeBase(Parser parser, Location location) :
-            this(null, parser, location) {
+        public NodeBase(Location location) :
+            this(null, location) {
         }
         
-        public NodeBase(string content, Parser parser, Location location) {
+        public NodeBase(string content, Location location) {
             ChildrenNodes = new List<NodeBase>();
             Content = content;
-            Parser = parser;
             Location = location;
         }
 
-        public abstract void Execute(TextWriter output);
+        public abstract void Execute(TextWriter output, ExecutionContext context);
 
-        public void ExecuteChildren(TextWriter output) {
+        public void ExecuteChildren(TextWriter output, ExecutionContext context) {
             foreach(var child in ExecutableChildren) {
-                child.Execute(output);
+                child.Execute(output, context);
             }
         }
     }

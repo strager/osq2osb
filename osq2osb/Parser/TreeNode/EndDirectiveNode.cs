@@ -14,15 +14,16 @@ namespace osq2osb.Parser.TreeNode {
                 return re.Replace(this.DirectiveName, "");
             }
         }
-        public EndDirectiveNode(Parser parser, Location location) :
-            base(parser, location) {
+
+        public EndDirectiveNode(DirectiveInfo info) :
+            base(info) {
         }
 
         protected override bool EndsWith(NodeBase node) {
             return node == this;
         }
 
-        public override void Execute(TextWriter output) {
+        public override void Execute(TextWriter output, ExecutionContext context) {
             /* Do nothing. */
         }
     }

@@ -24,9 +24,19 @@ namespace osq2osb.Parser {
                 set;
             }
 
-            public Token(TokenType type, object value) {
+            public Location Location {
+                get;
+                set;
+            }
+
+            public Token(TokenType type, object value) :
+                this(type, value, null) {
+            }
+
+            public Token(TokenType type, object value, Location location) {
                 this.Type = type;
                 this.Value = value;
+                this.Location = location;
             }
 
             public override string ToString() {
@@ -118,21 +128,29 @@ namespace osq2osb.Parser {
         }
 
         public static IEnumerable<Token> Tokenize(TextReader input) {
+            return Tokenize(input, new Location());
+        }
+
+        public static IEnumerable<Token> Tokenize(string input) {
+            return Tokenize(input, new Location());
+        }
+
+        public static IEnumerable<Token> Tokenize(TextReader input, Location location) {
             Token curToken;
 
-            while((curToken = ReadToken(input)) != null) {
+            while((curToken = ReadToken(input, location)) != null) {
                 yield return curToken;
             }
         }
 
-        public static IEnumerable<Token> Tokenize(string input) {
+        public static IEnumerable<Token> Tokenize(string input, Location location) {
             using(var inputReader = new StringReader(input)) {
-                return Tokenize(inputReader).ToList();
+                return Tokenize(inputReader, location).ToList();
             }
         }
 
-        public static Token ReadToken(TextReader input) {
-            input.SkipWhitespace();
+        public static Token ReadToken(TextReader input, Location location) {
+            input.SkipWhitespace(location);
 
             if(input.Peek() < 0) {
                 return null;
@@ -140,15 +158,22 @@ namespace osq2osb.Parser {
 
             char c = (char)input.Peek();
 
+            var startLocation = location.Clone();
+            Token token;
+
             if(c == '"') {
-                return Token.ReadString(input);
+                token = Token.ReadString(input);
             } else if(".0123456789".Contains(c)) {
-                return Token.ReadNumber(input);
+                token = Token.ReadNumber(input);
             } else if("_".Contains(c) || char.IsLetter(c)) {
-                return Token.ReadIdentifier(input);
+                token = Token.ReadIdentifier(input);
             } else {
-                return Token.ReadSymbol(input);
+                token = Token.ReadSymbol(input);
             }
+
+            token.Location = startLocation;
+
+            return token;
         }
     }
 }

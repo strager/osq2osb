@@ -7,21 +7,14 @@ using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
     class IfNode : DirectiveNode {
-        public override string Parameters {
-            set {
-                Condition = Parser.ExpressionToTokenNode(value);
-
-                base.Parameters = value;
-            }
-        }
-
         public TokenNode Condition {
             get;
             private set;
         }
 
-        public IfNode(Parser parser, Location location) :
-            base(parser, location) {
+        public IfNode(DirectiveInfo info) :
+            base(info) {
+            Condition = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -34,8 +27,8 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        protected bool TestCondition() {
-            object val = Condition.Value;
+        protected bool TestCondition(ExecutionContext context) {
+            object val = Condition.Evaluate(context);
             
             if(val is double) {
                 return (double)val != 0;
@@ -46,17 +39,17 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public override void Execute(TextWriter output) {
+        public override void Execute(TextWriter output, ExecutionContext context) {
             IEnumerable<NodeBase> nodes = ExecutableChildren;
 
-            bool condition = TestCondition();
+            bool condition = TestCondition(context);
 
             while(true) {
                 if(condition == true) {
                     nodes = nodes.TakeWhile((child) => !(child is ElseNode || child is ElseIfNode));
 
                     foreach(var node in nodes) {
-                        node.Execute(output);
+                        node.Execute(output, context);
                     }
 
                     break;
@@ -76,7 +69,7 @@ namespace osq2osb.Parser.TreeNode {
                         continue;
                     }
 
-                    condition = ((ElseIfNode)nextNode).TestCondition();
+                    condition = ((ElseIfNode)nextNode).TestCondition(context);
                 }
             }
         }

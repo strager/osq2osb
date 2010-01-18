@@ -14,20 +14,17 @@ namespace osq2osb.Parser {
         }
 
         Queue<Tokenizer.Token> tokens;
-        Parser parser;
 
-        private ExpressionRewriter(IEnumerable<Tokenizer.Token> tokens, Parser parser) {
+        private ExpressionRewriter(IEnumerable<Tokenizer.Token> tokens) {
             if(tokens == null) {
                 throw new ArgumentNullException("tokens");
             }
 
             this.tokens = new Queue<Tokenizer.Token>(tokens);
-
-            this.parser = parser;
         }
 
-        public static TokenNode Rewrite(IEnumerable<Tokenizer.Token> tokens, Parser parser) {
-            return (new ExpressionRewriter(tokens, parser)).Rewrite();
+        public static TokenNode Rewrite(IEnumerable<Tokenizer.Token> tokens) {
+            return (new ExpressionRewriter(tokens)).Rewrite();
         }
 
         private TokenNode Rewrite() {
@@ -45,7 +42,7 @@ namespace osq2osb.Parser {
                 var opToken = tokens.Dequeue();
                 var right = ReadLevel(GetOperatorTier(opToken.Value.ToString()[0], binaryOperatorTiers) + 1);
 
-                var opTree = new TokenNode(opToken, parser, null);
+                var opTree = new TokenNode(opToken, null);
 
                 if(opToken.Value.ToString()[0] == ',' && tree.Token.Type == Tokenizer.TokenType.Symbol && tree.Token.Value.ToString()[0] == ',') {
                     foreach(var newChild in tree.ChildrenNodes) {
@@ -86,7 +83,7 @@ namespace osq2osb.Parser {
             } else if(tokens.Peek().Type == Tokenizer.TokenType.Identifier) {
                 var token = tokens.Dequeue();
 
-                var node = new TokenNode(token, parser, null);
+                var node = new TokenNode(token, null);
 
                 if(tokens.Count != 0 && tokens.Peek().Value.ToString()[0] == '(') {
                     tokens.Dequeue();
@@ -108,7 +105,7 @@ namespace osq2osb.Parser {
                 return node;
             } else if(GetOperatorTier(tokens.Peek().Value.ToString()[0], unaryOperatorTiers) >= 0) {
                 var token = tokens.Dequeue();
-                var node = new TokenNode(token, parser, null);
+                var node = new TokenNode(token, null);
 
                 node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString()[0], unaryOperatorTiers)));
 
@@ -116,7 +113,7 @@ namespace osq2osb.Parser {
             } else {
                 var token = tokens.Dequeue();
 
-                return new TokenNode(token, parser, null);
+                return new TokenNode(token, null);
             }
         }
     }

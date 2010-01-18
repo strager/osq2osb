@@ -37,6 +37,12 @@ namespace osq2osb.Parser {
             Column = column;
         }
 
+        public void AdvanceString(string s) {
+            foreach(char c in s) {
+                AdvanceCharacter(c);
+            }
+        }
+
         public void AdvanceCharacter(char c) {
             if(c == '\n' || c == '\r') {
                 if((lastChar == '\n' || lastChar == '\r') && c != lastChar) {
