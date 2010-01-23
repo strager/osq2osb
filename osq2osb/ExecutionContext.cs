@@ -27,7 +27,14 @@ namespace osq2osb {
             SetVariable(name, func);
         }
 
+        public ICollection<string> Dependancies {
+            get;
+            private set;
+        }
+
         public ExecutionContext() {
+            Dependancies = new List<string>();
+
             Func<object, double> num = (object o) => (System.Convert.ToDouble(o));
 
             SetFunction("int", (token, context) => {

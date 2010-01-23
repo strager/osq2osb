@@ -6,6 +6,8 @@ using System.IO;
 
 namespace osq2osb {
     class Program {
+        static IDictionary<FileCollectionWatcher, string> watchers;
+
         static void Main(string[] args) {
             if(args.Length == 0) {
                 Console.WriteLine("Parsing from console...");
@@ -20,27 +22,26 @@ namespace osq2osb {
                     Console.WriteLine("Error: " + e.ToString());
                 }
             } else {
-                List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
+                watchers = new Dictionary<FileCollectionWatcher, string>();
 
                 foreach(var filename in args) {
-                    ParseFile(filename);
+                    var watcher = new FileCollectionWatcher();
+                    watcher.Changed += FileChanged;
+                    watchers[watcher] = filename;
+
+                    ParseFile(watcher, filename);
 
                     Console.WriteLine("Watching " + filename + " for changes...");
-
-                    var watcher = new FileSystemWatcher(Path.GetDirectoryName(filename), Path.GetFileName(filename));
-                    watcher.Changed += new FileSystemEventHandler(FileChanged);
-
-                    watcher.EnableRaisingEvents = true;
-
-                    watchers.Add(watcher);
                 }
 
                 System.Threading.Thread.Sleep(-1);
             }
         }
 
-        private static void ParseFile(string filename) {
+        private static void ParseFile(FileCollectionWatcher watcher, string filename) {
             Console.Write("Parsing " + filename + "...");
+            
+            watcher.Clear();
 
             using(var inputFile = File.Open(filename, FileMode.Open, FileAccess.Read))
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
@@ -58,13 +59,21 @@ namespace osq2osb {
                         return;
                     }
                 }
+
+                watcher.Add(filename);
+
+                foreach(string file in executionContext.Dependancies) {
+                    watcher.Add(file);
+                }
             }
 
             Console.WriteLine("  Done!");
         }
 
-        private static void FileChanged(object source, FileSystemEventArgs e) {
-            ParseFile(e.FullPath);
+        private static void FileChanged(object sender, FileSystemEventArgs e) {
+            var watcher = (FileCollectionWatcher)sender;
+
+            ParseFile(watcher, watchers[watcher]);
         }
     }
 }

@@ -39,6 +39,10 @@ namespace osq2osb.Parser.TreeNode {
                     }
                 }
             }
+
+            if(!context.Dependancies.Contains(filePath)) {
+                context.Dependancies.Add(filePath);
+            }
         }
     }
 }
