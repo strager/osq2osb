@@ -6,11 +6,26 @@ using osq2osb.Parser.TreeNode;
 
 namespace osq2osb.Parser {
     public class ExpressionRewriter {
-        private static string[] unaryOperatorTiers = new string[] { "", "-" };
-        private static string[] binaryOperatorTiers = new string[] { ",", "+-", "*/%", "^", ":" };
+        private static string[][] unaryOperatorTiers = {
+            new string[] { },
+            new string[] { },
+            new string[] { },
+            new string[] { "-", "!" },
+        };
 
-        private static int GetOperatorTier(char op, string[] tiers) {
-            return Array.FindIndex(tiers, (operators) => operators.IndexOf(op) >= 0);
+        private static string[][] binaryOperatorTiers = {
+            new string[] { "," },
+            new string[] { "==", "!=" },
+            new string[] { ">", "<", ">=", "<=" },
+            new string[] { },
+            new string[] { "+", "-" },
+            new string[] { "*", "/", "%" },
+            new string[] { "^" },
+            new string[] { ":" },
+        };
+
+        private static int GetOperatorTier(string op, string[][] tiers) {
+            return Array.FindIndex(tiers, (operators) => operators.Contains(op));
         }
 
         Queue<Tokenizer.Token> tokens;
@@ -38,9 +53,9 @@ namespace osq2osb.Parser {
                 return null;
             }
 
-            while(tokens.Count != 0 && tokens.Peek().Type == Tokenizer.TokenType.Symbol && GetOperatorTier(tokens.Peek().Value.ToString()[0], binaryOperatorTiers) >= level) {
+            while(tokens.Count != 0 && tokens.Peek().Type == Tokenizer.TokenType.Symbol && GetOperatorTier(tokens.Peek().Value.ToString(), binaryOperatorTiers) >= level) {
                 var opToken = tokens.Dequeue();
-                var right = ReadLevel(GetOperatorTier(opToken.Value.ToString()[0], binaryOperatorTiers) + 1);
+                var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), binaryOperatorTiers) + 1);
 
                 var opTree = new TokenNode(opToken, null);
 
@@ -110,11 +125,11 @@ namespace osq2osb.Parser {
                 }
 
                 return node;
-            } else if(GetOperatorTier(tokens.Peek().Value.ToString()[0], unaryOperatorTiers) >= 0) {
+            } else if(GetOperatorTier(tokens.Peek().Value.ToString(), unaryOperatorTiers) >= 0) {
                 var token = tokens.Dequeue();
                 var node = new TokenNode(token, null);
 
-                node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString()[0], unaryOperatorTiers)));
+                node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), unaryOperatorTiers)));
 
                 return node;
             } else {
