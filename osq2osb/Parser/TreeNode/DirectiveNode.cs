@@ -68,7 +68,7 @@ namespace osq2osb.Parser.TreeNode {
                 string type = pair.Key;
                 Type nodeType = pair.Value;
 
-                Regex re = new Regex("^#(?<name>" + type + ")\\s*(?<params>.*)$", RegexOptions.ExplicitCapture);
+                Regex re = new Regex("^#(?<name>" + type + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
 
                 var match = re.Match(line);
 
