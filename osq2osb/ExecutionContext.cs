@@ -118,6 +118,55 @@ namespace osq2osb {
 
                 return val;
             });
+
+            SetFunction(">", (token, context) => {
+                var children = token.TokenChildren;
+
+                return num(children[0].Evaluate(context)) > num(children[1].Evaluate(context));
+            });
+
+            SetFunction("<", (token, context) => {
+                var children = token.TokenChildren;
+
+                return num(children[0].Evaluate(context)) < num(children[1].Evaluate(context));
+            });
+
+            SetFunction(">=", (token, context) => {
+                var children = token.TokenChildren;
+
+                return num(children[0].Evaluate(context)) >= num(children[1].Evaluate(context));
+            });
+
+            SetFunction("<=", (token, context) => {
+                var children = token.TokenChildren;
+
+                return num(children[0].Evaluate(context)) <= num(children[1].Evaluate(context));
+            });
+
+            Func<object, object, bool> areEqual = (a, b) => {
+                Console.WriteLine("Left: " + a.ToString());
+                Console.WriteLine("Right: " + b.ToString());
+
+                if(a is string || b is string) {
+                    return a.ToString() == b.ToString();
+                } else if(a is double || b is double) {
+                    return num(a) == num(b);
+                }
+
+                throw new ExecutionException("Don't know how to handle equality of objects");
+            };
+
+            SetFunction("==", (token, context) => {
+                var children = token.TokenChildren;
+
+                return areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
+            });
+
+            SetFunction("!=", (token, context) => {
+                var children = token.TokenChildren;
+
+                return !areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
+            });
         }
 
         public void SetVariable(string name, object value) {

@@ -29,6 +29,28 @@ namespace osq2osb.Tests {
             }
         }
 
+        private void CheckParserOutput(string expected, string input) {
+            var context = new ExecutionContext();
+
+            using(var writer = new StringWriter())
+            using(var reader = new StringReader(input)) {
+                foreach(var node in Parser.Parser.Parse(reader)) {
+                    node.Execute(writer, context);
+                }
+
+                Assert.AreEqual(expected, writer.ToString());
+            }
+        }
+
+        [Test]
+        public void If() {
+            CheckParserOutput("good\n", "#if 2 > 1\ngood\n#else\nbad\n#endif");
+            CheckParserOutput("good\n", "#if 2 < 1\nbad\n#else\ngood\n#endif");
+            CheckParserOutput("good\n", "#if 0\nbad\n#elseif 1 == 0\nbad\n#else\ngood\n#endif");
+            CheckParserOutput("good\n", "#if \"a\" != \"b\"\ngood\n#else\nbad\n#endif");
+            CheckParserOutput("good\n", "#if \"a\" == \"b\"\nbad\n#else\ngood\n#endif");
+        }
+
         [Test]
         public void MathEvaluation() {
             var context = new ExecutionContext();

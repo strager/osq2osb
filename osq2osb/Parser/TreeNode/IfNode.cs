@@ -15,6 +15,8 @@ namespace osq2osb.Parser.TreeNode {
         public IfNode(DirectiveInfo info) :
             base(info) {
             Condition = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
+
+            Console.WriteLine("Hi " + this.Condition.ToString() + " from " + info.Parameters);
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -28,14 +30,20 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected bool TestCondition(ExecutionContext context) {
+            Console.WriteLine("Testing condition " + Condition.ToString());
+
             object val = Condition.Evaluate(context);
-            
+
+            Console.WriteLine(" = " + val.ToString() + " (" + val.GetType().ToString() + ")");
+
             if(val is double) {
                 return (double)val != 0;
             } else if(val is string) {
                 return !string.IsNullOrEmpty((string)val);
+            } else if(val is Boolean) {
+                return (Boolean)val;
             } else {
-                throw new InvalidDataException("Condition returns unknown data type");
+                throw new ExecutionException("Condition returns unknown data type", this.Location);
             }
         }
 
@@ -45,6 +53,8 @@ namespace osq2osb.Parser.TreeNode {
             bool condition = TestCondition(context);
 
             while(true) {
+                Console.WriteLine(condition);
+
                 if(condition == true) {
                     nodes = nodes.TakeWhile((child) => !(child is ElseNode || child is ElseIfNode));
 
@@ -63,6 +73,8 @@ namespace osq2osb.Parser.TreeNode {
                     var nextNode = nodes.First();
 
                     nodes = nodes.Skip(1);
+
+                    Console.WriteLine("nextNode = " + nextNode.ToString());
 
                     if(nextNode is ElseNode) {
                         condition = true;
