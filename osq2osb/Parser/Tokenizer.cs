@@ -43,8 +43,83 @@ namespace osq2osb.Parser {
                 return Value.ToString();
             }
 
+            public static bool IsStringStart(char c) {
+                return c == '"';
+            }
+
+            public static bool IsNumberChar(char c) {
+                return ".0123456789".Contains(c);
+            }
+
+            public static bool IsIdentifierChar(char c) {
+                return "_".Contains(c) || char.IsLetter(c);
+            }
+
+            public static bool IsSymbolChar(char c) {
+                return "><=!+-*/%^(),:".Contains(c);
+            }
+
+            private static bool IsSymbolStart(string s) {
+                return new string[] {
+                    "",
+                    "+", "-", "*", "/", "^", "%",
+                    ",", "(", ")",
+                    ">", "<", ">=", "<=",
+                    "=", "==", "!", "!=",
+                    ":",
+                }.Contains(s);
+            }
+
+            public static Token ReadToken(TextReader input) {
+                input.SkipWhitespace();
+
+                int i = input.Peek();
+
+                if(i < 0) {
+                    return null;
+                }
+
+                char c = (char)i;
+
+                if(IsStringStart(c)) {
+                    return ReadString(input);
+                } else if(IsNumberChar(c)) {
+                    return ReadNumber(input);
+                } else if(IsIdentifierChar(c)) {
+                    return ReadIdentifier(input);
+                } else if(IsSymbolChar(c)) {
+                    return ReadSymbol(input);
+                } else {
+                    throw new ParserException("Unknown token starting with " + c);
+                }
+            }
+
             public static Token ReadSymbol(TextReader input) {
-                return new Token(TokenType.Symbol, ((char)input.Read()).ToString());
+                var token = new StringBuilder();
+
+                while(true) {
+                    int i = input.Peek();
+
+                    if(i < 0) {
+                        break;
+                    }
+
+                    char c = (char)i;
+
+                    if(!IsSymbolChar(c)) {
+                        break;
+                    }
+
+                    if(!IsSymbolStart(token.ToString() + c)) {
+                        break;
+                    }
+
+                    token.Append(c);
+
+                    input.Read();
+                }
+
+                return new Token(TokenType.Symbol, token.ToString());
             }
 
             public static Token ReadNumber(TextReader input) {
@@ -150,27 +225,13 @@ namespace osq2osb.Parser {
         }
 
         public static Token ReadToken(TextReader input, Location location) {
-            input.SkipWhitespace(location);
+            Token token = Token.ReadToken(input);
 
-            if(input.Peek() < 0) {
+            if(token == null) {
                 return null;
             }
 
-            char c = (char)input.Peek();
-
             var startLocation = location.Clone();
-            Token token;
-
-            if(c == '"') {
-                token = Token.ReadString(input);
-            } else if(".0123456789".Contains(c)) {
-                token = Token.ReadNumber(input);
-            } else if("_".Contains(c) || char.IsLetter(c)) {
-                token = Token.ReadIdentifier(input);
-            } else {
-                token = Token.ReadSymbol(input);
-            }
-
             token.Location = startLocation;
 
             return token;
