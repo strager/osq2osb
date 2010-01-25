@@ -40,12 +40,20 @@ namespace osq2osb.Parser {
                 return null;
             }
 
-            if(c == '$') {
-                return ReadExpressionNode(input, location);
-            } else if(c == '#' && location.Column == 1) {
-                return ReadDirectiveNode(input, location);
-            } else {
-                return ReadTextNode(input, location);
+            var loc = location.Clone();
+
+            try {
+                if(c == '$') {
+                    return ReadExpressionNode(input, location);
+                } else if(c == '#' && location.Column == 1) {
+                    return ReadDirectiveNode(input, location);
+                } else {
+                    return ReadTextNode(input, location);
+                }
+            } catch(ParserException e) {
+                throw e;
+            } catch(Exception e) {
+                throw new ParserException("Problem parsing node", loc, e);
             }
         }
 
