@@ -70,27 +70,41 @@ namespace osq2osb.Parser {
                 }.Contains(s);
             }
 
-            public static Token ReadToken(TextReader input) {
-                input.SkipWhitespace();
+            public static Token ReadToken(TextReader input, Location location) {
+                Location loc;
 
-                int i = input.Peek();
+                try {
+                    input.SkipWhitespace(location);
 
-                if(i < 0) {
-                    return null;
-                }
+                    int i = input.Peek();
 
-                char c = (char)i;
+                    if(i < 0) {
+                        return null;
+                    }
 
-                if(IsStringStart(c)) {
-                    return ReadString(input);
-                } else if(IsNumberChar(c)) {
-                    return ReadNumber(input);
-                } else if(IsIdentifierChar(c)) {
-                    return ReadIdentifier(input);
-                } else if(IsSymbolChar(c)) {
-                    return ReadSymbol(input);
-                } else {
-                    throw new ParserException("Unknown token starting with " + c);
+                    char c = (char)i;
+
+                    loc = location.Clone();
+
+                    Token token;
+
+                    if(IsStringStart(c)) {
+                        token = ReadString(input);
+                    } else if(IsNumberChar(c)) {
+                        token = ReadNumber(input);
+                    } else if(IsIdentifierChar(c)) {
+                        token = ReadIdentifier(input);
+                    } else if(IsSymbolChar(c)) {
+                        token = ReadSymbol(input);
+                    } else {
+                        throw new ParserException("Unknown token starting with " + c, loc);
+                    }
+
+                    token.Location = loc;
+
+                    return token;
+                } catch(Exception e) {
+                    throw new ParserException("Problem reading token", location, e);
                 }
             }
 
@@ -225,16 +239,7 @@ namespace osq2osb.Parser {
         }
 
         public static Token ReadToken(TextReader input, Location location) {
-            Token token = Token.ReadToken(input);
-
-            if(token == null) {
-                return null;
-            }
-
-            var startLocation = location.Clone();
-            token.Location = startLocation;
-
-            return token;
+            return Token.ReadToken(input, location);
         }
     }
 }
