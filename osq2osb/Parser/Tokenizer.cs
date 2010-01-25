@@ -103,6 +103,8 @@ namespace osq2osb.Parser {
                     token.Location = loc;
 
                     return token;
+                } catch(ParserException e) {
+                    throw e;
                 } catch(Exception e) {
                     throw new ParserException("Problem reading token", location, e);
                 }
