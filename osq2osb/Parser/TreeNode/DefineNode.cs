@@ -21,42 +21,41 @@ namespace osq2osb.Parser.TreeNode {
             base(info) {
             FunctionParameters = new List<string>();
 
-            var location = info.ParametersLocation.Clone();
+            var reader = info.ParametersReader;
+            var startLocation = reader.Location.Clone();
 
-            using(var reader = new StringReader(info.Parameters)) {
-                Tokenizer.Token token = Tokenizer.ReadToken(reader, location);
+            Tokenizer.Token token = Tokenizer.ReadToken(reader);
+
+            if(token == null) {
+                throw new ParserException("Need a variable name for #define", startLocation);
+            }
+
+            if(token.Type != Tokenizer.TokenType.Identifier) {
+                throw new ParserException("Need a variable name for #define", token.Location);
+            }
+
+            this.Variable = token.Value.ToString();
+
+            if(reader.Peek() == '(') {
+                token = Tokenizer.ReadToken(reader);
+
+                while(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
+                    token = Tokenizer.ReadToken(reader);
+
+                    if(token.Type == Tokenizer.TokenType.Identifier) {
+                        FunctionParameters.Add(token.Value.ToString());
+                    }
+                }
 
                 if(token == null) {
-                    throw new ParserException("Need a variable name for #define", location);
+                    throw new ParserException("#define without closing parentheses", reader.Location);
                 }
+            }
 
-                if(token.Type != Tokenizer.TokenType.Identifier) {
-                    throw new ParserException("Need a variable name for #define", token.Location);
-                }
+            reader.SkipWhitespace();
 
-                this.Variable = token.Value.ToString();
-
-                if(reader.Peek() == '(') {
-                    token = Tokenizer.ReadToken(reader, location);
-
-                    while(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
-                        token = Tokenizer.ReadToken(reader, location);
-
-                        if(token.Type == Tokenizer.TokenType.Identifier) {
-                            FunctionParameters.Add(token.Value.ToString());
-                        }
-                    }
-
-                    if(token == null) {
-                        throw new ParserException("#define without closing parentheses", location);
-                    }
-                }
-
-                reader.SkipWhitespace();
-
-                foreach(var node in Parser.Parse(reader, location)) {
-                    this.ChildrenNodes.Add(node);
-                }
+            foreach(var node in Parser.Parse(reader)) {
+                this.ChildrenNodes.Add(node);
             }
         }
 

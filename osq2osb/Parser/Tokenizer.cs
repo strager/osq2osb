@@ -70,11 +70,11 @@ namespace osq2osb.Parser {
                 }.Contains(s);
             }
 
-            public static Token ReadToken(TextReader input, Location location) {
-                Location loc;
+            public static Token ReadToken(LocatedTextReaderWrapper input) {
+                Location loc = null;
 
                 try {
-                    input.SkipWhitespace(location);
+                    input.SkipWhitespace();
 
                     int i = input.Peek();
 
@@ -84,7 +84,7 @@ namespace osq2osb.Parser {
 
                     char c = (char)i;
 
-                    loc = location.Clone();
+                    loc = input.Location.Clone();
 
                     Token token;
 
@@ -106,11 +106,11 @@ namespace osq2osb.Parser {
                 } catch(ParserException e) {
                     throw e;
                 } catch(Exception e) {
-                    throw new ParserException("Problem reading token", location, e);
+                    throw new ParserException("Problem reading token", loc ?? input.Location, e);
                 }
             }
 
-            public static Token ReadSymbol(TextReader input) {
+            private static Token ReadSymbol(TextReader input) {
                 var token = new StringBuilder();
 
                 while(true) {
@@ -138,7 +138,7 @@ namespace osq2osb.Parser {
                 return new Token(TokenType.Symbol, token.ToString());
             }
 
-            public static Token ReadNumber(TextReader input) {
+            private static Token ReadNumber(TextReader input) {
                 var token = new StringBuilder();
 
                 while(".0123456789".Contains((char)input.Peek())) {
@@ -148,7 +148,7 @@ namespace osq2osb.Parser {
                 return new Token(TokenType.Number, Convert.ToDouble(token.ToString()));
             }
 
-            public static Token ReadIdentifier(TextReader input) {
+            private static Token ReadIdentifier(TextReader input) {
                 var token = new StringBuilder();
 
                 while(input.Peek() >= 0) {
@@ -164,7 +164,7 @@ namespace osq2osb.Parser {
                 return new Token(TokenType.Identifier, token.ToString());
             }
 
-            public static Token ReadString(TextReader input) {
+            private static Token ReadString(TextReader input) {
                 var str = new StringBuilder();
 
                 if((char)input.Read() != '"') {
@@ -218,30 +218,27 @@ namespace osq2osb.Parser {
             }
         }
 
-        public static IEnumerable<Token> Tokenize(TextReader input) {
-            return Tokenize(input, new Location());
-        }
-
         public static IEnumerable<Token> Tokenize(string input) {
             return Tokenize(input, new Location());
         }
 
-        public static IEnumerable<Token> Tokenize(TextReader input, Location location) {
+        public static IEnumerable<Token> Tokenize(string input, Location location) {
+            using(var rawReader = new StringReader(input))
+            using(var reader = new LocatedTextReaderWrapper(rawReader, location)) {
+                return Tokenize(reader).ToList();   // ToList needed because of weird yeild return bug and sync issues.
+            }
+        }
+
+        public static IEnumerable<Token> Tokenize(LocatedTextReaderWrapper input) {
             Token curToken;
 
-            while((curToken = ReadToken(input, location)) != null) {
+            while((curToken = ReadToken(input)) != null) {
                 yield return curToken;
             }
         }
 
-        public static IEnumerable<Token> Tokenize(string input, Location location) {
-            using(var inputReader = new StringReader(input)) {
-                return Tokenize(inputReader, location).ToList();
-            }
-        }
-
-        public static Token ReadToken(TextReader input, Location location) {
-            return Token.ReadToken(input, location);
+        public static Token ReadToken(LocatedTextReaderWrapper input) {
+            return Token.ReadToken(input);
         }
     }
 }

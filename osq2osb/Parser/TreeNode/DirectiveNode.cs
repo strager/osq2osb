@@ -23,11 +23,6 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         public class DirectiveInfo {
-            public string Parameters {
-                get;
-                set;
-            }
-
             public string DirectiveName {
                 get;
                 set;
@@ -38,16 +33,15 @@ namespace osq2osb.Parser.TreeNode {
                 set;
             }
 
-            public Location ParametersLocation {
+            public LocatedTextReaderWrapper ParametersReader {
                 get;
                 set;
             }
 
-            public DirectiveInfo(Location location, string directiveName, Location parametersLocation, string parameters) {
+            public DirectiveInfo(Location location, string directiveName, LocatedTextReaderWrapper parametersReader) {
                 Location = location;
                 DirectiveName = directiveName;
-                ParametersLocation = parametersLocation;
-                Parameters = parameters;
+                ParametersReader = parametersReader;
             }
         }
 
@@ -63,7 +57,10 @@ namespace osq2osb.Parser.TreeNode {
 
         protected abstract bool EndsWith(NodeBase node);
 
-        public static DirectiveNode Create(string line, TextReader input, Location location) {
+        public static DirectiveNode Create(LocatedTextReaderWrapper input) {
+            var startLocation = input.Location.Clone();
+            string line = input.ReadLine();
+
             foreach(var pair in directiveTypes) {
                 string type = pair.Key;
                 Type nodeType = pair.Value;
@@ -77,17 +74,23 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 string name = match.Groups["name"].Value;
-                
+
+                DirectiveNode newNode;
+
                 string parametersText = match.Groups["params"].Value;
-                var parametersLocation = location.Clone();
+                var parametersLocation = startLocation.Clone();
                 parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
-                DirectiveInfo info = new DirectiveInfo(location, name, parametersLocation, parametersText);
 
-                var ctor = nodeType.GetConstructor(new Type[] { typeof(DirectiveInfo) });
-                System.Diagnostics.Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+                using(var rawParametersReader = new StringReader(parametersText))
+                using(var parametersReader = new LocatedTextReaderWrapper(rawParametersReader, parametersLocation)) {
+                    DirectiveInfo info = new DirectiveInfo(startLocation, name, parametersReader);
 
-                var newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
-                System.Diagnostics.Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
+                    var ctor = nodeType.GetConstructor(new Type[] { typeof(DirectiveInfo) });
+                    System.Diagnostics.Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+
+                    newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
+                    System.Diagnostics.Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
+                }
 
                 NodeBase curNode = newNode;
 
@@ -95,7 +98,7 @@ namespace osq2osb.Parser.TreeNode {
                     curNode = Parser.ParseNode(input);
                     
                     if(curNode == null) {
-                        throw new ParserException("Unmatched #" + name + " directive", location);
+                        throw new ParserException("Unmatched #" + name + " directive", startLocation);
                     }
 
                     newNode.ChildrenNodes.Add(curNode);
@@ -104,7 +107,7 @@ namespace osq2osb.Parser.TreeNode {
                 return newNode;
             }
 
-            throw new ParserException("Unknown directive: " + line, location);
+            throw new ParserException("Unknown directive: " + line, startLocation);
         }
 
         public override string ToString() {

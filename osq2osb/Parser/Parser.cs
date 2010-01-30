@@ -9,13 +9,9 @@ namespace osq2osb.Parser {
     using TreeNode;
 
     public static class Parser {
-        public static IEnumerable<NodeBase> Parse(TextReader input) {
-            return Parse(input, new Location());
-        }
-
-        public static IEnumerable<NodeBase> Parse(TextReader input, Location location) {
+        public static IEnumerable<NodeBase> Parse(LocatedTextReaderWrapper input) {
             while(true) {
-                var node = ParseNode(input, location);
+                var node = ParseNode(input);
 
                 if(node == null) {
                     break;
@@ -25,11 +21,7 @@ namespace osq2osb.Parser {
             }
         }
 
-        public static NodeBase ParseNode(TextReader input) {
-            return ParseNode(input, new Location());
-        }
-
-        public static NodeBase ParseNode(TextReader input, Location location) {
+        public static NodeBase ParseNode(LocatedTextReaderWrapper input) {
             if(input == null) {
                 throw new ArgumentNullException("input");
             }
@@ -40,15 +32,15 @@ namespace osq2osb.Parser {
                 return null;
             }
 
-            var loc = location.Clone();
+            var loc = input.Location.Clone();
 
             try {
                 if(c == '$') {
-                    return ReadExpressionNode(input, location);
-                } else if(c == '#' && location.Column == 1) {
-                    return ReadDirectiveNode(input, location);
+                    return ReadExpressionNode(input);
+                } else if(c == '#' && loc.Column == 1) {
+                    return ReadDirectiveNode(input);
                 } else {
-                    return ReadTextNode(input, location);
+                    return ReadTextNode(input);
                 }
             } catch(ParserException e) {
                 throw e;
@@ -65,13 +57,17 @@ namespace osq2osb.Parser {
             return ExpressionRewriter.Rewrite(Tokenizer.Tokenize(expression, location));
         }
 
-        private static TokenNode ReadExpressionNode(TextReader input, Location location) {
-            var startLocation = location.Clone();
-
-            return ExpressionToTokenNode(ReadExpressionString(input, location), startLocation);
+        public static TokenNode ExpressionToTokenNode(LocatedTextReaderWrapper input) {
+            return ExpressionRewriter.Rewrite(Tokenizer.Tokenize(input));
         }
 
-        private static string ReadExpressionString(TextReader input, Location location) {
+        private static TokenNode ReadExpressionNode(LocatedTextReaderWrapper input) {
+            var startLocation = input.Location.Clone();
+
+            return ExpressionToTokenNode(ReadExpressionString(input), startLocation);
+        }
+
+        private static string ReadExpressionString(LocatedTextReaderWrapper input) {
             if(input.Read() != '$') {
                 throw new InvalidDataException("Expressions must begin with $");
             }
@@ -87,8 +83,6 @@ namespace osq2osb.Parser {
             while(c >= 0 && c != '}') {
                 expression.Append((char)c);
 
-                location.AdvanceCharacter((char)c);
-
                 c = input.Read();
             }
 
@@ -97,26 +91,19 @@ namespace osq2osb.Parser {
             return expression.ToString();
         }
 
-        private static DirectiveNode ReadDirectiveNode(TextReader input, Location location) {
-            var startLocation = location.Clone();
-
-            string line = input.ReadLine();
-            location.AdvanceLine();
-
-            return DirectiveNode.Create(line, input, startLocation);
+        private static DirectiveNode ReadDirectiveNode(LocatedTextReaderWrapper input) {
+            return DirectiveNode.Create(input);
         }
 
-        private static RawTextNode ReadTextNode(TextReader input, Location location) {
-            var startLocation = location.Clone();
+        private static RawTextNode ReadTextNode(LocatedTextReaderWrapper input) {
+            var startLocation = input.Location.Clone();
 
             StringBuilder text = new StringBuilder();
 
             int c = input.Peek();
 
-            while(c >= 0 && !(c == '#' && location.Column == 1) && c != '$') {
+            while(c >= 0 && !(c == '#' && input.Location.Column == 1) && c != '$') {
                 text.Append((char)c);
-
-                location.AdvanceCharacter((char)c);
 
                 input.Read();   // Discard; already peeked.
                 c = input.Peek();

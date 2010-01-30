@@ -29,7 +29,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public ForNode(DirectiveInfo info) :
             base(info) {
-            var node = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
+            var node = Parser.ExpressionToTokenNode(info.ParametersReader);
 
             if(node.Token.Type != Tokenizer.TokenType.Symbol || node.Token.Value.ToString()[0] != ',') {
                 throw new ParserException("Expected comma-separated list", this.Location);

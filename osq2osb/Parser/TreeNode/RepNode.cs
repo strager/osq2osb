@@ -14,7 +14,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public RepNode(DirectiveInfo info) :
             base(info) {
-            Value = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
+            Value = Parser.ExpressionToTokenNode(info.ParametersReader);
         }
 
         protected override bool EndsWith(NodeBase node) {

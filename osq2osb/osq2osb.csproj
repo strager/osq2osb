@@ -48,6 +48,7 @@
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="ExecutionException.cs" />
     <Compile Include="FileCollectionWatcher.cs" />
+    <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Parser\ParserException.cs" />
     <Compile Include="Parser\ExpressionRewriter.cs" />

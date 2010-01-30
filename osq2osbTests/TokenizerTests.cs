@@ -41,10 +41,11 @@ namespace osq2osb.Tests {
         public void Strings() {
             string input = "\"\\\"hello world\\\"";
 
-            using(var inputReader = new StringReader(input)) {
-                var token = Tokenizer.Token.ReadString(inputReader);
+            using(var rawReader = new StringReader(input))
+            using(var reader = new LocatedTextReaderWrapper(rawReader)) {
+                var token = Tokenizer.Token.ReadToken(reader);
 
-                Assert.AreEqual(-1, inputReader.Peek());    // EOF
+                Assert.AreEqual(-1, reader.Peek());    // EOF
 
                 Assert.AreEqual(token.Type, Tokenizer.TokenType.String);
                 Assert.AreEqual(token.Value, "\"hello world\"");

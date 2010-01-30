@@ -14,7 +14,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public IncludeNode(DirectiveInfo info) :
             base(info) {
-            Filename = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
+            Filename = Parser.ExpressionToTokenNode(info.ParametersReader);
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -32,11 +32,11 @@ namespace osq2osb.Parser.TreeNode {
                 filePath = Path.GetDirectoryName(this.Location.Filename) + Path.DirectorySeparatorChar + filePath;
             }
 
-            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
-                using(var reader = new StreamReader(inputFile)) {
-                    foreach(var node in Parser.Parse(reader, new Location(filePath))) {
-                        node.Execute(output, context);
-                    }
+            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            using(var rawReader = new StreamReader(inputFile))
+            using(var reader = new LocatedTextReaderWrapper(rawReader, new Location(filePath))) {
+                foreach(var node in Parser.Parse(reader)) {
+                    node.Execute(output, context);
                 }
             }
 

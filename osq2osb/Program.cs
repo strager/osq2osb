@@ -15,8 +15,10 @@ namespace osq2osb {
                 var executionContext = new ExecutionContext();
 
                 try {
-                    foreach(var node in Parser.Parser.Parse(Console.In)) {
-                        node.Execute(Console.Out, executionContext);
+                    using(var reader = new LocatedTextReaderWrapper(Console.In)) {
+                        foreach(var node in Parser.Parser.Parse(reader)) {
+                            node.Execute(Console.Out, executionContext);
+                        }
                     }
                 } catch(Exception e) {
                     Console.WriteLine("Error: " + e.ToString());
@@ -47,10 +49,11 @@ namespace osq2osb {
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
                 var executionContext = new ExecutionContext();
 
-                using(var reader = new StreamReader(inputFile))
+                using(var rawReader = new StreamReader(inputFile))
+                using(var reader = new LocatedTextReaderWrapper(rawReader, new Parser.Location(filename)))
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
-                        foreach(var node in Parser.Parser.Parse(reader, new Parser.Location(filename))) {
+                        foreach(var node in Parser.Parser.Parse(reader)) {
                             node.Execute(writer, executionContext);
                         }
                     } catch(Exception e) {

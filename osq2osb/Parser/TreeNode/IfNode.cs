@@ -14,9 +14,7 @@ namespace osq2osb.Parser.TreeNode {
 
         public IfNode(DirectiveInfo info) :
             base(info) {
-            Condition = Parser.ExpressionToTokenNode(info.Parameters, info.ParametersLocation);
-
-            Console.WriteLine("Hi " + this.Condition.ToString() + " from " + info.Parameters);
+            Condition = Parser.ExpressionToTokenNode(info.ParametersReader);
         }
 
         protected override bool EndsWith(NodeBase node) {
