@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace osq2osb.Parser {
-    public class ParserException : ApplicationException {
+    public class ParserException : Exception {
         public virtual Location Location {
             get {
                 return location;

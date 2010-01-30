@@ -5,7 +5,7 @@ using System.Text;
 using osq2osb.Parser;
 
 namespace osq2osb {
-    public class ExecutionException : ApplicationException {
+    public class ExecutionException : Exception {
         public virtual Location Location {
             get {
                 return location;
