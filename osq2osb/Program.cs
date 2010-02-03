@@ -43,8 +43,6 @@ namespace osq2osb {
         private static void ParseFile(FileCollectionWatcher watcher, string filename) {
             Console.Write("Parsing " + filename + "...");
             
-            watcher.Clear();
-
             using(var inputFile = File.Open(filename, FileMode.Open, FileAccess.Read))
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
                 var executionContext = new ExecutionContext();
@@ -56,17 +54,21 @@ namespace osq2osb {
                         foreach(var node in Parser.Parser.Parse(reader)) {
                             node.Execute(writer, executionContext);
                         }
+
+                        watcher.Clear();
                     } catch(Exception e) {
                         Console.WriteLine("\nError: " + e.ToString());
 
                         return;
+                    } finally {
+                        if(!watcher.Contains(filename)) {
+                            watcher.Add(filename);
+                        }
+
+                        foreach(string file in executionContext.Dependancies.Where((file) => !watcher.Contains(file))) {
+                            watcher.Add(file);
+                        }
                     }
-                }
-
-                watcher.Add(filename);
-
-                foreach(string file in executionContext.Dependancies) {
-                    watcher.Add(file);
                 }
             }
 

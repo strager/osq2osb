@@ -17,6 +17,10 @@ namespace osq2osb {
         public FileCollectionWatcher() {
         }
 
+        public bool Contains(string file) {
+            return Files.Any((filename) => file.Equals(filename, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         public void Add(string file) {
             var watcher = new FileSystemWatcher(Path.GetDirectoryName(file), Path.GetFileName(file));
 
