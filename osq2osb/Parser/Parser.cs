@@ -54,11 +54,14 @@ namespace osq2osb.Parser {
         }
 
         public static TokenNode ExpressionToTokenNode(string expression, Location location) {
-            return ExpressionRewriter.Rewrite(Tokenizer.Tokenize(expression, location));
+            using(var rawReader = new StringReader(expression))
+            using(var reader = new LocatedTextReaderWrapper(rawReader, location)) {
+                return ExpressionToTokenNode(reader);
+            }
         }
 
         public static TokenNode ExpressionToTokenNode(LocatedTextReaderWrapper input) {
-            return ExpressionRewriter.Rewrite(Tokenizer.Tokenize(input));
+            return ExpressionRewriter.Rewrite(Token.ReadTokens(input));
         }
 
         private static TokenNode ReadExpressionNode(LocatedTextReaderWrapper input) {

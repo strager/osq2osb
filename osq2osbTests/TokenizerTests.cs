@@ -11,8 +11,15 @@ using NUnit.Framework;
 namespace osq2osb.Tests {
     [TestFixture]
     class TokenizerTests {
+        private static IEnumerable<Token> ReadTokensFromString(string input) {
+            using(var rawReader = new StringReader(input))
+            using(var reader = new LocatedTextReaderWrapper(rawReader)) {
+                return Token.ReadTokens(reader).ToList();
+            }
+        }
+
         private void CheckTokenization(string input, object[] expected) {
-            var tokens = Tokenizer.Tokenize(input).ToList();
+            var tokens = ReadTokensFromString(input).ToList();
 
             Assert.AreEqual(expected.Length, tokens.Count());
 
@@ -43,11 +50,11 @@ namespace osq2osb.Tests {
 
             using(var rawReader = new StringReader(input))
             using(var reader = new LocatedTextReaderWrapper(rawReader)) {
-                var token = Tokenizer.Token.ReadToken(reader);
+                var token = Token.ReadToken(reader);
 
                 Assert.AreEqual(-1, reader.Peek());    // EOF
 
-                Assert.AreEqual(token.Type, Tokenizer.TokenType.String);
+                Assert.AreEqual(token.Type, TokenType.String);
                 Assert.AreEqual(token.Value, "\"hello world\"");
             }
         }

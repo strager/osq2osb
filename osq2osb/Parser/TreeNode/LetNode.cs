@@ -14,13 +14,13 @@ namespace osq2osb.Parser.TreeNode {
 
         public LetNode(DirectiveInfo info) :
             base(info) {
-            Tokenizer.Token token = Tokenizer.ReadToken(info.ParametersReader);
+            Token token = Token.ReadToken(info.ParametersReader);
 
             if(token == null) {
                 throw new ParserException("Need a variable name for #let", info.ParametersReader.Location);
             }
 
-            if(token.Type != Tokenizer.TokenType.Identifier) {
+            if(token.Type != TokenType.Identifier) {
                 throw new ParserException("Need a variable name for #let", token.Location);
             }
 

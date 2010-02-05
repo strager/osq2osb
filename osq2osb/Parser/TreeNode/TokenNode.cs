@@ -7,7 +7,7 @@ using osq2osb.Parser;
 
 namespace osq2osb.Parser.TreeNode {
     public class TokenNode : NodeBase {
-        public Tokenizer.Token Token {
+        public Token Token {
             get;
             private set;
         }
@@ -18,7 +18,7 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public TokenNode(Tokenizer.Token token, Location location) :
+        public TokenNode(Token token, Location location) :
             base(null, location) {
             this.Token = token;
         }
@@ -29,12 +29,12 @@ namespace osq2osb.Parser.TreeNode {
 
         public object Evaluate(ExecutionContext context) {
             switch(this.Token.Type) {
-                case Tokenizer.TokenType.Number:
-                case Tokenizer.TokenType.String:
+                case TokenType.Number:
+                case TokenType.String:
                     return this.Token.Value;
 
-                case Tokenizer.TokenType.Identifier:
-                case Tokenizer.TokenType.Symbol:
+                case TokenType.Identifier:
+                case TokenType.Symbol:
                     object item = context.GetVariable(Token.Value.ToString());
 
                     var asFunc = item as Func<TokenNode, ExecutionContext, object>;

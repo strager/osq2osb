@@ -24,25 +24,25 @@ namespace osq2osb.Parser.TreeNode {
             var reader = info.ParametersReader;
             var startLocation = reader.Location.Clone();
 
-            Tokenizer.Token token = Tokenizer.ReadToken(reader);
+            Token token = Token.ReadToken(reader);
 
             if(token == null) {
                 throw new ParserException("Need a variable name for #define", startLocation);
             }
 
-            if(token.Type != Tokenizer.TokenType.Identifier) {
+            if(token.Type != TokenType.Identifier) {
                 throw new ParserException("Need a variable name for #define", token.Location);
             }
 
             this.Variable = token.Value.ToString();
 
             if(reader.Peek() == '(') {
-                token = Tokenizer.ReadToken(reader);
+                token = Token.ReadToken(reader);
 
-                while(token != null && !(token.Type == Tokenizer.TokenType.Symbol && token.Value.ToString()[0] == ')')) {
-                    token = Tokenizer.ReadToken(reader);
+                while(token != null && token.IsSymbol(")")) {
+                    token = Token.ReadToken(reader);
 
-                    if(token.Type == Tokenizer.TokenType.Identifier) {
+                    if(token.Type == TokenType.Identifier) {
                         FunctionParameters.Add(token.Value.ToString());
                     }
                 }
@@ -77,7 +77,7 @@ namespace osq2osb.Parser.TreeNode {
             context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((TokenNode token, ExecutionContext subContext) => {
                 var parameters = token.TokenChildren;
 
-                if(parameters.Count == 1 && parameters[0].Token.Type == Tokenizer.TokenType.Symbol && parameters[0].Token.Value.ToString()[0] == ',') {
+                if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
                     parameters = parameters[0].TokenChildren;
                 }
 

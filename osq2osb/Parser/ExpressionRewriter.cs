@@ -28,17 +28,17 @@ namespace osq2osb.Parser {
             return Array.FindIndex(tiers, (operators) => operators.Contains(op));
         }
 
-        Queue<Tokenizer.Token> tokens;
+        Queue<Token> tokens;
 
-        private ExpressionRewriter(IEnumerable<Tokenizer.Token> tokens) {
+        private ExpressionRewriter(IEnumerable<Token> tokens) {
             if(tokens == null) {
                 throw new ArgumentNullException("tokens");
             }
 
-            this.tokens = new Queue<Tokenizer.Token>(tokens);
+            this.tokens = new Queue<Token>(tokens);
         }
 
-        public static TokenNode Rewrite(IEnumerable<Tokenizer.Token> tokens) {
+        public static TokenNode Rewrite(IEnumerable<Token> tokens) {
             return (new ExpressionRewriter(tokens)).Rewrite();
         }
 
@@ -53,20 +53,20 @@ namespace osq2osb.Parser {
                 return null;
             }
 
-            while(tokens.Count != 0 && tokens.Peek().Type == Tokenizer.TokenType.Symbol && GetOperatorTier(tokens.Peek().Value.ToString(), binaryOperatorTiers) >= level) {
+            while(tokens.Count != 0 && tokens.Peek().Type == TokenType.Symbol && GetOperatorTier(tokens.Peek().Value.ToString(), binaryOperatorTiers) >= level) {
                 var opToken = tokens.Dequeue();
                 var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), binaryOperatorTiers) + 1);
 
                 var opTree = new TokenNode(opToken, null);
 
-                if(opToken.Value.ToString()[0] == ',' && tree.Token.Type == Tokenizer.TokenType.Symbol && tree.Token.Value.ToString()[0] == ',') {
+                if(opToken.IsSymbol(",") && tree.Token.IsSymbol(",")) {
                     foreach(var newChild in tree.ChildrenNodes) {
                         opTree.ChildrenNodes.Add(newChild);
                     }
 
                     opTree.ChildrenNodes.Add(right);
                     tree = opTree;
-                } else if(opToken.Value.ToString()[0] == ':' && tree.Token.Type == Tokenizer.TokenType.Symbol && tree.Token.Value.ToString()[0] == ':' && tree.TokenChildren.Count == 2) {
+                } else if(opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.TokenChildren.Count == 2) {
                     foreach(var newChild in tree.ChildrenNodes) {
                         opTree.ChildrenNodes.Add(newChild);
                     }
@@ -88,26 +88,26 @@ namespace osq2osb.Parser {
                 return null;
             }
 
-            if(tokens.Peek().Value.ToString()[0] == '(') {
+            if(tokens.Peek().IsSymbol("(")) {
                 tokens.Dequeue();
 
                 var subTree = ReadLevel(1);
 
-                if(tokens.Peek().Value.ToString()[0] != ')') {
+                if(!tokens.Peek().IsSymbol(")")) {
                     throw new Exception("Unmatched parens");    // FIXME Better exception class.
                 }
 
                 tokens.Dequeue();
 
                 return subTree;
-            } else if(tokens.Peek().Value.ToString()[0] == ')') {
+            } else if(tokens.Peek().IsSymbol(")")) {
                 return null;
-            } else if(tokens.Peek().Type == Tokenizer.TokenType.Identifier) {
+            } else if(tokens.Peek().Type == TokenType.Identifier) {
                 var token = tokens.Dequeue();
 
                 var node = new TokenNode(token, null);
 
-                if(tokens.Count != 0 && tokens.Peek().Value.ToString()[0] == '(') {
+                if(tokens.Count != 0 && tokens.Peek().IsSymbol("(")) {
                     tokens.Dequeue();
 
                     var args = ReadLevel(0);
@@ -117,7 +117,7 @@ namespace osq2osb.Parser {
                     }
                     
                     // Eat the ).
-                    if(tokens.Count == 0 || tokens.Peek().Value.ToString()[0] != ')') {
+                    if(tokens.Count == 0 || !tokens.Peek().IsSymbol(")")) {
                         throw new Exception("Unmatched parens");    // FIXME Better exception class.
                     }
 

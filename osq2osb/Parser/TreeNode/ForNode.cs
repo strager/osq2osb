@@ -31,7 +31,7 @@ namespace osq2osb.Parser.TreeNode {
             base(info) {
             var node = Parser.ExpressionToTokenNode(info.ParametersReader);
 
-            if(node.Token.Type != Tokenizer.TokenType.Symbol || node.Token.Value.ToString()[0] != ',') {
+            if(!node.Token.IsSymbol(",")) {
                 throw new ParserException("Expected comma-separated list", this.Location);
             }
 
@@ -41,7 +41,7 @@ namespace osq2osb.Parser.TreeNode {
                 throw new ParserException("#for directive requires 3 to 4 parameters", this.Location);
             }
 
-            if(children[0].Token.Type != Tokenizer.TokenType.Identifier) {
+            if(children[0].Token.Type != TokenType.Identifier) {
                 throw new ParserException("Identifier expected", children[0].Location);
             }
 

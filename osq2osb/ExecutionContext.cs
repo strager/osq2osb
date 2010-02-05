@@ -64,7 +64,7 @@ namespace osq2osb {
             });
 
             SetFunction("concat", (token, context) => {
-                return new Tokenizer.Token(Tokenizer.TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray()));
+                return new Token(TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray()));
             });
 
             SetFunction("+", (token, context) => {

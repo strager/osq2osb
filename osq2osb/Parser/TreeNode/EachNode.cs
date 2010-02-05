@@ -19,19 +19,19 @@ namespace osq2osb.Parser.TreeNode {
 
         public EachNode(DirectiveInfo info) :
             base(info) {
-            Tokenizer.Token token = Tokenizer.ReadToken(info.ParametersReader);
+            Token token = Token.ReadToken(info.ParametersReader);
 
             if(token == null) {
                 throw new ParserException("Need a variable name for #let", info.ParametersReader.Location);
             }
 
-            if(token.Type != Tokenizer.TokenType.Identifier) {
+            if(token.Type != TokenType.Identifier) {
                 throw new ParserException("Need a variable name for #let", token.Location);
             }
 
             this.Variable = token.Value.ToString();
 
-            this.Values = ExpressionRewriter.Rewrite(Tokenizer.Tokenize(info.ParametersReader));
+            this.Values = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
         }
 
         protected override bool EndsWith(NodeBase node) {

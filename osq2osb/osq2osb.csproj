@@ -53,7 +53,7 @@
     <Compile Include="Parser\ParserException.cs" />
     <Compile Include="Parser\ExpressionRewriter.cs" />
     <Compile Include="Parser\Parser.cs" />
-    <Compile Include="Parser\Tokenizer.cs" />
+    <Compile Include="Parser\Token.cs" />
     <Compile Include="Parser\TreeNode\DefineNode.cs" />
     <Compile Include="Parser\TreeNode\DirectiveNode.cs" />
     <Compile Include="Parser\TreeNode\EachNode.cs" />
