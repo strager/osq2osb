@@ -11,18 +11,6 @@ namespace osq2osb {
 
         private IDictionary<string, object> variables = new Dictionary<string, object>();
 
-        public bool Debug {
-            get {
-                return debug;
-            }
-
-            set {
-                debug = value;
-            }
-        }
-
-        private bool debug = false;
-
         private void SetFunction(string name, Func<TokenNode, ExecutionContext, object> func) {
             SetVariable(name, func);
         }
@@ -144,9 +132,6 @@ namespace osq2osb {
             });
 
             Func<object, object, bool> areEqual = (a, b) => {
-                Console.WriteLine("Left: " + a.ToString());
-                Console.WriteLine("Right: " + b.ToString());
-
                 if(a is string || b is string) {
                     return a.ToString() == b.ToString();
                 } else if(a is double || b is double) {
@@ -171,10 +156,6 @@ namespace osq2osb {
 
         public void SetVariable(string name, object value) {
             variables[name] = value;
-
-            if(Debug) {
-                Console.WriteLine("Writing " + name + " = " + value.ToString());
-            }
         }
 
         public object GetVariable(string name) {
@@ -186,10 +167,6 @@ namespace osq2osb {
                 value = variables[name];
             } else {
                 throw new IndexOutOfRangeException("Unknown variable: " + name);
-            }
-
-            if(Debug) {
-                Console.WriteLine("Reading " + name + " (= " + value.ToString() + ")");
             }
 
             return value;
