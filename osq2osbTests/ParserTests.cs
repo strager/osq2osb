@@ -35,7 +35,7 @@ namespace osq2osb.Tests {
             using(var writer = new StringWriter())
             using(var rawReader = new StringReader(input))
             using(var reader = new LocatedTextReaderWrapper(rawReader)) {
-                foreach(var node in Parser.Parser.Parse(reader)) {
+                foreach(var node in Parser.Parser.ReadNodes(reader)) {
                     node.Execute(writer, context);
                 }
 

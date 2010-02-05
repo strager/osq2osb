@@ -28,7 +28,7 @@ namespace osq2osb.Parser.TreeNode {
 
             info.ParametersReader.SkipWhitespace();
 
-            foreach(var node in Parser.Parse(info.ParametersReader)) {
+            foreach(var node in Parser.ReadNodes(info.ParametersReader)) {
                 this.ChildrenNodes.Add(node);
             }
         }

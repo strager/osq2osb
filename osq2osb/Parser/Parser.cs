@@ -9,9 +9,9 @@ namespace osq2osb.Parser {
     using TreeNode;
 
     public static class Parser {
-        public static IEnumerable<NodeBase> Parse(LocatedTextReaderWrapper input) {
+        public static IEnumerable<NodeBase> ReadNodes(LocatedTextReaderWrapper input) {
             while(true) {
-                var node = ParseNode(input);
+                var node = ReadNode(input);
 
                 if(node == null) {
                     break;
@@ -21,7 +21,7 @@ namespace osq2osb.Parser {
             }
         }
 
-        public static NodeBase ParseNode(LocatedTextReaderWrapper input) {
+        public static NodeBase ReadNode(LocatedTextReaderWrapper input) {
             if(input == null) {
                 throw new ArgumentNullException("input");
             }
@@ -35,9 +35,9 @@ namespace osq2osb.Parser {
             var loc = input.Location.Clone();
 
             try {
-                if(c == '$') {
+                if(IsExpressionStart((char)c)) {
                     return ReadExpressionNode(input);
-                } else if(c == '#' && loc.Column == 1) {
+                } else if(IsDirectiveStart((char)c, loc)) {
                     return ReadDirectiveNode(input);
                 } else {
                     return ReadTextNode(input);
@@ -71,14 +71,25 @@ namespace osq2osb.Parser {
         }
 
         private static string ReadExpressionString(LocatedTextReaderWrapper input) {
-            if(input.Read() != '$') {
+            if(!IsExpressionStart((char)input.Read())) {
                 throw new InvalidDataException("Expressions must begin with $");
             }
 
-            if(input.Read() != '{') {
-                throw new InvalidDataException("Expressions must begin with ${");
-            }
+            int c = input.Read();
 
+            switch(c) {
+                case '{':
+                    return ReadToExpressionEnd(input);
+
+                case '$':
+                    return "$";
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private static string ReadToExpressionEnd(LocatedTextReaderWrapper input) {
             StringBuilder expression = new StringBuilder();
 
             int c = input.Read();
@@ -105,7 +116,7 @@ namespace osq2osb.Parser {
 
             int c = input.Peek();
 
-            while(c >= 0 && !(c == '#' && input.Location.Column == 1) && c != '$') {
+            while(c >= 0 && !IsDirectiveStart((char)c, input.Location) && !IsExpressionStart((char)c)) {
                 text.Append((char)c);
 
                 input.Read();   // Discard; already peeked.
@@ -113,6 +124,14 @@ namespace osq2osb.Parser {
             }
 
             return new RawTextNode(text.ToString(), startLocation);
+        }
+
+        private static bool IsExpressionStart(char c) {
+            return c == '$';
+        }
+
+        private static bool IsDirectiveStart(char c, Location loc) {
+            return c == '#' && loc.Column == 1;
         }
    }
 }

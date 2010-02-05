@@ -95,7 +95,7 @@ namespace osq2osb.Parser.TreeNode {
                 NodeBase curNode = newNode;
 
                 while(!newNode.EndsWith(curNode)) {
-                    curNode = Parser.ParseNode(input);
+                    curNode = Parser.ReadNode(input);
                     
                     if(curNode == null) {
                         throw new ParserException("Unmatched #" + name + " directive", startLocation);

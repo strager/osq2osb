@@ -54,7 +54,7 @@ namespace osq2osb.Parser.TreeNode {
 
             reader.SkipWhitespace();
 
-            foreach(var node in Parser.Parse(reader)) {
+            foreach(var node in Parser.ReadNodes(reader)) {
                 this.ChildrenNodes.Add(node);
             }
         }
