@@ -42,19 +42,19 @@ namespace osq2osb.Parser {
             return Value.ToString();
         }
 
-        public static bool IsStringStart(char c) {
+        private static bool IsStringStart(char c) {
             return c == '"';
         }
 
-        public static bool IsNumberChar(char c) {
+        private static bool IsNumberChar(char c) {
             return ".0123456789".Contains(c);
         }
 
-        public static bool IsIdentifierChar(char c) {
+        private static bool IsIdentifierChar(char c) {
             return "_".Contains(c) || char.IsLetter(c);
         }
 
-        public static bool IsSymbolChar(char c) {
+        private static bool IsSymbolChar(char c) {
             return "><=!+-*/%^(),:".Contains(c);
         }
 
