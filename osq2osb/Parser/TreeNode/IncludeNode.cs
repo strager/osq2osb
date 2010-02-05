@@ -33,8 +33,7 @@ namespace osq2osb.Parser.TreeNode {
             }
 
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
-            using(var rawReader = new StreamReader(inputFile))
-            using(var reader = new LocatedTextReaderWrapper(rawReader, new Location(filePath))) {
+            using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath))) {
                 foreach(var node in Parser.ReadNodes(reader)) {
                     node.Execute(output, context);
                 }

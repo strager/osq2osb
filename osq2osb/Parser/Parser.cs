@@ -54,8 +54,7 @@ namespace osq2osb.Parser {
         }
 
         public static TokenNode ExpressionToTokenNode(string expression, Location location) {
-            using(var rawReader = new StringReader(expression))
-            using(var reader = new LocatedTextReaderWrapper(rawReader, location)) {
+            using(var reader = new LocatedTextReaderWrapper(expression, location)) {
                 return ExpressionToTokenNode(reader);
             }
         }

@@ -81,8 +81,7 @@ namespace osq2osb.Parser.TreeNode {
                 var parametersLocation = startLocation.Clone();
                 parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
 
-                using(var rawParametersReader = new StringReader(parametersText))
-                using(var parametersReader = new LocatedTextReaderWrapper(rawParametersReader, parametersLocation)) {
+                using(var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation)) {
                     DirectiveInfo info = new DirectiveInfo(startLocation, name, parametersReader);
 
                     var ctor = nodeType.GetConstructor(new Type[] { typeof(DirectiveInfo) });

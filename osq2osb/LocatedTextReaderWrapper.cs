@@ -6,9 +6,10 @@ using System.IO;
 using osq2osb.Parser;
 
 namespace osq2osb {
-    public class LocatedTextReaderWrapper : TextReader {
+    public class LocatedTextReaderWrapper : TextReader, IDisposable {
         private TextReader source;
         private Location location;
+        private bool mustDisposeSource = false;
 
         public Location Location {
             get {
@@ -39,6 +40,24 @@ namespace osq2osb {
 
             this.location = location;
             this.source = source;
+        }
+
+        public LocatedTextReaderWrapper(string source) :
+            this(source, new Location()) {
+        }
+
+        public LocatedTextReaderWrapper(string source, Location location) :
+            this(new StringReader(source), location) {
+            this.mustDisposeSource = true;
+        }
+
+        public LocatedTextReaderWrapper(Stream source) :
+            this(source, new Location()) {
+        }
+
+        public LocatedTextReaderWrapper(Stream source, Location location) :
+            this(new StreamReader(source), location) {
+            this.mustDisposeSource = true;
         }
 
         public override int Read() {
@@ -98,6 +117,23 @@ namespace osq2osb {
 
         public override int Peek() {
             return source.Peek();
+        }
+
+        private bool disposed = false;
+
+        protected override void Dispose(bool disposing) {
+            if(!disposed) {
+                if(disposing) {
+                    if(mustDisposeSource && source != null) {
+                        source.Dispose();
+                    }
+                }
+
+                source = null;
+                disposed = true;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

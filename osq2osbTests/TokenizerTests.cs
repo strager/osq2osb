@@ -12,8 +12,7 @@ namespace osq2osb.Tests {
     [TestFixture]
     class TokenizerTests {
         private static IEnumerable<Token> ReadTokensFromString(string input) {
-            using(var rawReader = new StringReader(input))
-            using(var reader = new LocatedTextReaderWrapper(rawReader)) {
+            using(var reader = new LocatedTextReaderWrapper(input)) {
                 return Token.ReadTokens(reader).ToList();
             }
         }
@@ -48,8 +47,7 @@ namespace osq2osb.Tests {
         public void Strings() {
             string input = "\"\\\"hello world\\\"";
 
-            using(var rawReader = new StringReader(input))
-            using(var reader = new LocatedTextReaderWrapper(rawReader)) {
+            using(var reader = new LocatedTextReaderWrapper(input)) {
                 var token = Token.ReadToken(reader);
 
                 Assert.AreEqual(-1, reader.Peek());    // EOF

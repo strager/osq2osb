@@ -47,8 +47,7 @@ namespace osq2osb {
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
                 var executionContext = new ExecutionContext();
 
-                using(var rawReader = new StreamReader(inputFile))
-                using(var reader = new LocatedTextReaderWrapper(rawReader, new Parser.Location(filename)))
+                using(var reader = new LocatedTextReaderWrapper(inputFile, new Parser.Location(filename)))
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
                         foreach(var node in Parser.Parser.ReadNodes(reader)) {
