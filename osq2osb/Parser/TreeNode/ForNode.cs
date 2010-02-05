@@ -61,13 +61,15 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
+            var output = new StringBuilder();
+
             double counter = Convert.ToDouble(Start.Evaluate(context));
 
             while(true) {
                 context.SetVariable(Variable, counter);
 
-                ExecuteChildren(output, context);
+                output.Append(ExecuteChildren(context));
 
                 counter = System.Convert.ToDouble(context.GetVariable(Variable));
                 counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context));
@@ -76,6 +78,8 @@ namespace osq2osb.Parser.TreeNode {
                     break;
                 }
             }
+
+            return output.ToString();
         }
     }
 }

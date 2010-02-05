@@ -21,7 +21,9 @@ namespace osq2osb.Parser.TreeNode {
             return node == this;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
+            var output = new StringBuilder();
+
             string filePath = Filename.Evaluate(context) as string;
 
             if(filePath == null) {
@@ -35,13 +37,15 @@ namespace osq2osb.Parser.TreeNode {
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
             using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath))) {
                 foreach(var node in Parser.ReadNodes(reader)) {
-                    node.Execute(output, context);
+                    output.Append(node.Execute(context));
                 }
             }
 
             if(!context.Dependancies.Contains(filePath)) {
                 context.Dependancies.Add(filePath);
             }
+
+            return output.ToString();
         }
     }
 }

@@ -44,7 +44,9 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
+            var output = new StringBuilder();
+
             object expr = Values.Evaluate(context);
 
             object[] values = expr as object[];
@@ -56,8 +58,10 @@ namespace osq2osb.Parser.TreeNode {
             foreach(var value in values) {
                 context.SetVariable(Variable, value);
 
-                ExecuteChildren(output, context);
+                output.Append(ExecuteChildren(context));
             }
+
+            return output.ToString();
         }
     }
 }

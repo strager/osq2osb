@@ -73,7 +73,7 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
             context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((TokenNode token, ExecutionContext subContext) => {
                 var parameters = token.TokenChildren;
 
@@ -95,12 +95,12 @@ namespace osq2osb.Parser.TreeNode {
                     ++paramNumber;
                 }
 
-                using(var funcOutput = new StringWriter()) {
-                    ExecuteChildren(funcOutput, context);
+                string output = ExecuteChildren(context);
 
-                    return funcOutput.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-                }
+                return output.TrimEnd(Environment.NewLine.ToCharArray());
             }));
+
+            return "";
         }
     }
 }

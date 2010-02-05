@@ -45,7 +45,9 @@ namespace osq2osb.Parser.TreeNode {
             }
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
+            var output = new StringBuilder();
+
             IEnumerable<NodeBase> nodes = ExecutableChildren;
 
             bool condition = TestCondition(context);
@@ -57,7 +59,7 @@ namespace osq2osb.Parser.TreeNode {
                     nodes = nodes.TakeWhile((child) => !(child is ElseNode || child is ElseIfNode));
 
                     foreach(var node in nodes) {
-                        node.Execute(output, context);
+                        output.Append(node.Execute(context));
                     }
 
                     break;
@@ -82,6 +84,8 @@ namespace osq2osb.Parser.TreeNode {
                     condition = ((ElseIfNode)nextNode).TestCondition(context);
                 }
             }
+
+            return output.ToString();
         }
     }
 }

@@ -47,12 +47,12 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
-            using(var varWriter = new StringWriter()) {
-                ExecuteChildren(varWriter, context);
+        public override string Execute(ExecutionContext context) {
+            string varValue = ExecuteChildren(context);
 
-                context.SetVariable(Variable, varWriter.ToString().Trim(Environment.NewLine.ToCharArray()));
-            }
+            context.SetVariable(Variable, varValue.Trim(Environment.NewLine.ToCharArray()));
+
+            return "";
         }
     }
 }

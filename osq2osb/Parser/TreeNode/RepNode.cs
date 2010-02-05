@@ -27,13 +27,17 @@ namespace osq2osb.Parser.TreeNode {
             return false;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
+            var output = new StringBuilder();
+
             object value = Value.Evaluate(context);
             double count = (double)value;
 
             for(int i = 0; i < count; ++i) {
-                ExecuteChildren(output, context);
+                output.Append(ExecuteChildren(context));
             }
+
+            return output.ToString();
         }
     }
 }

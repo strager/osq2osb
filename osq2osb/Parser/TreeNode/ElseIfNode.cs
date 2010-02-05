@@ -15,7 +15,7 @@ namespace osq2osb.Parser.TreeNode {
             return node == this;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
+        public override string Execute(ExecutionContext context) {
             throw new InvalidOperationException("Cannot execute an elseif node");
         }
     }

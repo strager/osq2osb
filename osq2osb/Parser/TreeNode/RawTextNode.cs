@@ -10,8 +10,8 @@ namespace osq2osb.Parser.TreeNode {
             base(content, location) {
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
-            output.Write(this.Content);
+        public override string Execute(ExecutionContext context) {
+            return this.Content;
         }
 
         public override string ToString() {

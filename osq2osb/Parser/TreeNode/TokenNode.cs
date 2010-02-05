@@ -23,8 +23,8 @@ namespace osq2osb.Parser.TreeNode {
             this.Token = token;
         }
 
-        public override void Execute(TextWriter output, ExecutionContext context) {
-            output.Write(Evaluate(context));
+        public override string Execute(ExecutionContext context) {
+            return Evaluate(context).ToString();
         }
 
         public object Evaluate(ExecutionContext context) {

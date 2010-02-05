@@ -32,13 +32,14 @@ namespace osq2osb.Tests {
         private void CheckParserOutput(string expected, string input) {
             var context = new ExecutionContext();
 
-            using(var writer = new StringWriter())
+            var output = new StringBuilder();
+
             using(var reader = new LocatedTextReaderWrapper(input)) {
                 foreach(var node in Parser.Parser.ReadNodes(reader)) {
-                    node.Execute(writer, context);
+                    output.Append(node.Execute(context));
                 }
 
-                Assert.AreEqual(expected, writer.ToString());
+                Assert.AreEqual(expected, output.ToString());
             }
         }
 

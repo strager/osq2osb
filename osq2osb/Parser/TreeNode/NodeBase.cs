@@ -44,12 +44,16 @@ namespace osq2osb.Parser.TreeNode {
             Location = location;
         }
 
-        public abstract void Execute(TextWriter output, ExecutionContext context);
+        public abstract string Execute(ExecutionContext context);
 
-        public void ExecuteChildren(TextWriter output, ExecutionContext context) {
+        public string ExecuteChildren(ExecutionContext context) {
+            var output = new StringBuilder();
+
             foreach(var child in ExecutableChildren) {
-                child.Execute(output, context);
+                output.Append(child.Execute(context));
             }
+
+            return output.ToString();
         }
     }
 }

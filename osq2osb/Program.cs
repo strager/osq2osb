@@ -17,7 +17,9 @@ namespace osq2osb {
                 try {
                     using(var reader = new LocatedTextReaderWrapper(Console.In)) {
                         foreach(var node in Parser.Parser.ReadNodes(reader)) {
-                            node.Execute(Console.Out, executionContext);
+                            string output = node.Execute(executionContext);
+
+                            Console.Write(output);
                         }
                     }
                 } catch(Exception e) {
@@ -51,7 +53,9 @@ namespace osq2osb {
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
                         foreach(var node in Parser.Parser.ReadNodes(reader)) {
-                            node.Execute(writer, executionContext);
+                            string output = node.Execute(executionContext);
+
+                            writer.Write(output);
                         }
 
                         watcher.Clear();
