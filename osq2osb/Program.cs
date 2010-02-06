@@ -14,16 +14,19 @@ namespace osq2osb {
                 
                 var executionContext = new ExecutionContext();
 
-                try {
-                    using(var reader = new LocatedTextReaderWrapper(Console.In)) {
-                        foreach(var node in Parser.Parser.ReadNodes(reader)) {
-                            string output = node.Execute(executionContext);
+                while(true) {
+                    try {
+                        using(var console = Console.OpenStandardInput())
+                        using(var reader = new LocatedTextReaderWrapper(console)) {
+                            foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                                string output = node.Execute(executionContext);
 
-                            Console.Write(output);
+                                Console.Write(output);
+                            }
                         }
+                    } catch(Exception e) {
+                        Console.WriteLine("Error: " + e.ToString());
                     }
-                } catch(Exception e) {
-                    Console.WriteLine("Error: " + e.ToString());
                 }
             } else {
                 watchers = new Dictionary<FileCollectionWatcher, string>();
