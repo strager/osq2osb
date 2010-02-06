@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 
 namespace osq2osb.Parser.TreeNode {
-    class DefineNode : DirectiveNode {
+    public class DefineNode : DirectiveNode {
         public string Variable {
             get;
             private set;

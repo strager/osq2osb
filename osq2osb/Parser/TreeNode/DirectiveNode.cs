@@ -6,7 +6,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace osq2osb.Parser.TreeNode {
-    abstract class DirectiveNode : NodeBase {
+    abstract public class DirectiveNode : NodeBase {
         private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>();
 
         static DirectiveNode() {
