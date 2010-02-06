@@ -41,7 +41,11 @@ namespace osq2osb {
         }
 
         public override string ToString() {
-            return GetType().Name + ": " + Message + " in " + Location.ToString() + Environment.NewLine + StackTrace;
+            if(Location == null) {
+                return GetType().Name + ": " + Message + Environment.NewLine + StackTrace;
+            } else {
+                return GetType().Name + ": " + Message + " at " + Location.ToString() + Environment.NewLine + StackTrace;
+            }
         }
     }
 }
