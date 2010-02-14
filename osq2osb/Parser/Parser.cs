@@ -74,17 +74,20 @@ namespace osq2osb.Parser {
                 throw new InvalidDataException("Expressions must begin with $");
             }
 
-            int c = input.Read();
+            int c = input.Peek();
 
             switch(c) {
                 case '{':
+                    input.Read();   // Discard.
                     return ReadToExpressionEnd(input);
 
                 case '$':
+                    input.Read();   // Discard.
                     return "$";
 
                 default:
-                    throw new NotImplementedException();
+                    Token varName = Token.ReadToken(input);
+                    return varName.Value.ToString();
             }
         }
 
