@@ -49,62 +49,47 @@ namespace osq2osb.Parser {
             }
         }
 
-        public static TokenNode ExpressionToTokenNode(string expression) {
-            return ExpressionToTokenNode(expression, new Location());
+        public static TokenNode ExpressionToTokenNode(LocatedTextReaderWrapper reader) {
+            return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
         }
 
-        public static TokenNode ExpressionToTokenNode(string expression, Location location) {
-            using(var reader = new LocatedTextReaderWrapper(expression, location)) {
-                return ExpressionToTokenNode(reader);
-            }
-        }
-
-        public static TokenNode ExpressionToTokenNode(LocatedTextReaderWrapper input) {
-            return ExpressionRewriter.Rewrite(Token.ReadTokens(input));
-        }
-
-        private static TokenNode ReadExpressionNode(LocatedTextReaderWrapper input) {
-            var startLocation = input.Location.Clone();
-
-            return ExpressionToTokenNode(ReadExpressionString(input), startLocation);
-        }
-
-        private static string ReadExpressionString(LocatedTextReaderWrapper input) {
+        private static NodeBase ReadExpressionNode(LocatedTextReaderWrapper input) {
             if(!IsExpressionStart((char)input.Read())) {
                 throw new InvalidDataException("Expressions must begin with $");
             }
+
+            var startLocation = input.Location.Clone();
 
             int c = input.Peek();
 
             switch(c) {
                 case '{':
                     input.Read();   // Discard.
-                    return ReadToExpressionEnd(input);
+
+                    var tokens = ReadToExpressionEnd(input);
+
+                    return ExpressionRewriter.Rewrite(tokens);
 
                 case '$':
                     input.Read();   // Discard.
-                    return "$";
+                    return new RawTextNode("$", startLocation);
 
                 default:
                     Token varName = Token.ReadToken(input);
-                    return varName.Value.ToString();
+                    return new TokenNode(varName, startLocation);
             }
         }
 
-        private static string ReadToExpressionEnd(LocatedTextReaderWrapper input) {
-            StringBuilder expression = new StringBuilder();
+        private static IEnumerable<Token> ReadToExpressionEnd(LocatedTextReaderWrapper input) {
+            Token token;
 
-            int c = input.Read();
+            while((token = Token.ReadToken(input)) != null) {
+                if(token.IsSymbol("}")) {
+                    break;
+                }
 
-            while(c >= 0 && c != '}') {
-                expression.Append((char)c);
-
-                c = input.Read();
+                yield return token;
             }
-
-            // Ending } already read.
-
-            return expression.ToString();
         }
 
         private static DirectiveNode ReadDirectiveNode(LocatedTextReaderWrapper input) {

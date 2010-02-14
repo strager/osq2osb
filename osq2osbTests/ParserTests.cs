@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace osq2osb.Tests {
     [TestFixture]
     class ParserTests {
-        private void CheckTree(object expected, Parser.TreeNode.TokenNode tree) {
+        private static void CheckTree(object expected, Parser.TreeNode.TokenNode tree) {
             object[] array = expected as object[];
 
             if(array != null) {
@@ -29,7 +29,7 @@ namespace osq2osb.Tests {
             }
         }
 
-        private void CheckParserOutput(string expected, string input) {
+        private static void CheckParserOutput(string expected, string input) {
             var context = new ExecutionContext();
 
             var output = new StringBuilder();
@@ -40,6 +40,12 @@ namespace osq2osb.Tests {
                 }
 
                 Assert.AreEqual(expected, output.ToString());
+            }
+        }
+
+        private static Parser.TreeNode.TokenNode ExpressionToTokenNode(string expression) {
+            using(var reader = new LocatedTextReaderWrapper(expression, new Parser.Location())) {
+                return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
             }
         }
 
@@ -55,11 +61,11 @@ namespace osq2osb.Tests {
         [Test]
         public void MathEvaluation() {
             var context = new ExecutionContext();
-            var tree = Parser.Parser.ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
+            var tree = ExpressionToTokenNode("(2) + (17*2-30) * (5)+2 - -(8/2)*4");
 
             Assert.AreEqual(40, tree.Evaluate(context));
 
-            tree = Parser.Parser.ExpressionToTokenNode("01:23:456 + 01:23");
+            tree = ExpressionToTokenNode("01:23:456 + 01:23");
 
             Assert.AreEqual((((1 * 60) + 23) * 1000 + 456) + ((1 * 60) + 23) * 1000, tree.Evaluate(context));
         }
@@ -71,7 +77,7 @@ namespace osq2osb.Tests {
                     2,
                     3
                 },
-                Parser.Parser.ExpressionToTokenNode("2 + 3"));
+                ExpressionToTokenNode("2 + 3"));
 
             CheckTree(new object[] {
                     "/",
@@ -85,7 +91,7 @@ namespace osq2osb.Tests {
                     },
                     4
                 },
-                Parser.Parser.ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
+                ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
 
             CheckTree(new object[] {
                     "a",
@@ -96,7 +102,7 @@ namespace osq2osb.Tests {
                         "d"
                     }
                 },
-                Parser.Parser.ExpressionToTokenNode("a(b, c, d)"));
+                ExpressionToTokenNode("a(b, c, d)"));
 
             CheckTree(new object[] {
                 "int",
@@ -114,7 +120,7 @@ namespace osq2osb.Tests {
                     320
                 },
                 },
-                Parser.Parser.ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
+                ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
         }
 
         [Test]
