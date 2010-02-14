@@ -55,7 +55,7 @@ namespace osq2osb.Parser {
         }
 
         private static bool IsSymbolChar(char c) {
-            return "><=!+-*/%^(),:".Contains(c);
+            return "><=!+-*/%^(),:{}".Contains(c);
         }
 
         private static bool IsSymbolStart(string s) {
@@ -65,7 +65,7 @@ namespace osq2osb.Parser {
                 ",", "(", ")",
                 ">", "<", ">=", "<=",
                 "=", "==", "!", "!=",
-                ":",
+                ":", "{", "}",
             }.Contains(s);
         }
 

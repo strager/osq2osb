@@ -124,6 +124,25 @@ namespace osq2osb.Tests {
         }
 
         [Test]
+        public void Evaluation() {
+            string input = "x${test - 42}.2";
+            string expected = "x42.2";
+
+            var context = new ExecutionContext();
+            context.SetVariable("test", 84);
+
+            var output = new StringBuilder();
+
+            using(var reader = new LocatedTextReaderWrapper(input)) {
+                foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                    output.Append(node.Execute(context));
+                }
+
+                Assert.AreEqual(expected, output.ToString());
+            }
+        }
+
+        [Test]
         public void VariableShorthand() {
             string input = "x$test.2";
             string expected = "x42.2";
