@@ -68,25 +68,17 @@ namespace osq2osb.Parser {
 
             var opTree = new TokenNode(opToken, null);
 
-            if(opToken.IsSymbol(",") && tree.Token.IsSymbol(",")) {
+            if((opToken.IsSymbol(",") && tree.Token.IsSymbol(","))
+            || (opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.TokenChildren.Count == 2)) {
                 foreach(var newChild in tree.ChildrenNodes) {
                     opTree.ChildrenNodes.Add(newChild);
                 }
-
-                opTree.ChildrenNodes.Add(right);
-                tree = opTree;
-            } else if(opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.TokenChildren.Count == 2) {
-                foreach(var newChild in tree.ChildrenNodes) {
-                    opTree.ChildrenNodes.Add(newChild);
-                }
-
-                opTree.ChildrenNodes.Add(right);
-                tree = opTree;
             } else {
                 opTree.ChildrenNodes.Add(tree);
-                opTree.ChildrenNodes.Add(right);
-                tree = opTree;
             }
+
+            opTree.ChildrenNodes.Add(right);
+            tree = opTree;
 
             return tree;
         }
@@ -140,7 +132,7 @@ namespace osq2osb.Parser {
 
                 // Eat the ).
                 if(tokens.Count == 0 || !tokens.Peek().IsSymbol(")")) {
-                    throw new Exception("Unmatched parens");    // FIXME Better exception class.
+                    throw new InvalidOperationException("Unmatched left parentheses");
                 }
 
                 tokens.Dequeue();
@@ -159,7 +151,7 @@ namespace osq2osb.Parser {
             var subTree = ReadLevel(1);
 
             if(!tokens.Peek().IsSymbol(")")) {
-                throw new Exception("Unmatched parens");    // FIXME Better exception class.
+                throw new InvalidOperationException("Unmatched left parentheses");
             }
 
             tokens.Dequeue();
