@@ -28,11 +28,7 @@ namespace osq2osb.Parser.TreeNode {
         }
 
         protected bool TestCondition(ExecutionContext context) {
-            Console.WriteLine("Testing condition " + Condition.ToString());
-
             object val = Condition.Evaluate(context);
-
-            Console.WriteLine(" = " + val.ToString() + " (" + val.GetType().ToString() + ")");
 
             if(val is double) {
                 return (double)val != 0;
@@ -53,8 +49,6 @@ namespace osq2osb.Parser.TreeNode {
             bool condition = TestCondition(context);
 
             while(true) {
-                Console.WriteLine(condition);
-
                 if(condition == true) {
                     nodes = nodes.TakeWhile((child) => !(child is ElseNode || child is ElseIfNode));
 
@@ -73,8 +67,6 @@ namespace osq2osb.Parser.TreeNode {
                     var nextNode = nodes.First();
 
                     nodes = nodes.Skip(1);
-
-                    Console.WriteLine("nextNode = " + nextNode.ToString());
 
                     if(nextNode is ElseNode) {
                         condition = true;
