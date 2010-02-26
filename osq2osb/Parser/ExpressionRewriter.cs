@@ -66,6 +66,10 @@ namespace osq2osb.Parser {
             var opToken = tokens.Dequeue();
             var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), binaryOperatorTiers) + 1);
 
+            if(right == null) {
+                throw new InvalidOperationException("Expected something after operator " + opToken.Value);
+            }
+
             var opTree = new TokenNode(opToken, null);
 
             if((opToken.IsSymbol(",") && tree.Token.IsSymbol(","))

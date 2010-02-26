@@ -91,8 +91,19 @@ namespace osq2osb.Tests {
                 ExpressionToTokenNode("2 + (2");
             });
 
+            Assert.Throws<InvalidOperationException>(delegate {
+                ExpressionToTokenNode("what(unmatched + 4");
+            });
+
             Assert.DoesNotThrow(delegate {
                 ExpressionToTokenNode("2) + 2)");
+            });
+        }
+
+        [Test]
+        public void Exceptions() {
+            Assert.Throws<InvalidOperationException>(delegate {
+                ExpressionToTokenNode("2 +");
             });
         }
     }
