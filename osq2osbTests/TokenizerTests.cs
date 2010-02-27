@@ -45,7 +45,7 @@ namespace osq2osb.Tests {
 
         [Test]
         public void Strings() {
-            string input = "\"\\\"hello world\\\"";
+            string input = "\"\\\"hello \\\\\\t\\r\\nworld\\\"";
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
                 var token = Token.ReadToken(reader);
@@ -53,7 +53,7 @@ namespace osq2osb.Tests {
                 Assert.AreEqual(-1, reader.Peek());    // EOF
 
                 Assert.AreEqual(token.Type, TokenType.String);
-                Assert.AreEqual(token.Value, "\"hello world\"");
+                Assert.AreEqual(token.Value, "\"hello \\\t\r\nworld\"");
             }
         }
     }
