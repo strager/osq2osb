@@ -44,6 +44,14 @@ namespace osq2osb.Tests {
         }
 
         [Test]
+        public void MultiCharOperators() {
+            CheckTokenization(
+                "<<=>=> = ==! = != ===",
+                new object[] { "<", "<=", ">=", ">", "=", "==", "!", "=", "!=", "==", "=" }
+            );
+        }
+
+        [Test]
         public void Strings() {
             string input = "\"\\\"hello \\\\\\t\\r\\nworld\\\"";
 
