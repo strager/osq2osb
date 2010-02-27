@@ -23,12 +23,16 @@ namespace osq2osb.Parser {
         private int lastChar;
 
         public Location() : 
-            this(null, 1, 1) {
+            this(1, 1) {
         }
 
         public Location(string filename) :
             this(filename, 1, 1) {
             Filename = filename;
+        }
+
+        public Location(int lineNumber, int column) :
+            this(null, lineNumber, column) {
         }
 
         public Location(string filename, int lineNumber, int column) {
@@ -66,11 +70,15 @@ namespace osq2osb.Parser {
         }
 
         public override string ToString() {
-            if(string.IsNullOrEmpty(Filename)) {
-                return "line " + LineNumber.ToString();
-            } else {
-                return Filename + ":line " + LineNumber.ToString();
+            string output = "";
+
+            if(!string.IsNullOrEmpty(Filename)) {
+                output += Filename + ": ";
             }
+
+            output += "line " + LineNumber.ToString() + ", column " + Column.ToString();
+
+            return output;
         }
 
         public Location Clone() {
