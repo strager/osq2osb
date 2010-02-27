@@ -118,11 +118,6 @@ namespace osq2osb.Parser {
 
         private TokenNode ReadIdentifier() {
             var token = tokens.Dequeue();
-
-            if(token.Type != TokenType.Identifier) {
-                throw new InvalidOperationException("Can't read identifier");
-            }
-
             var node = new TokenNode(token, null);
 
             if(tokens.Count != 0 && tokens.Peek().IsSymbol("(")) {
@@ -146,15 +141,11 @@ namespace osq2osb.Parser {
         }
 
         private TokenNode ReadParentheticalExpression() {
-            if(!tokens.Peek().IsSymbol("(")) {
-                throw new InvalidOperationException("Can't read parenthetical expression without '('");
-            }
-
             tokens.Dequeue();
 
             var subTree = ReadLevel(1);
 
-            if(!tokens.Peek().IsSymbol(")")) {
+            if(tokens.Count == 0 || !tokens.Peek().IsSymbol(")")) {
                 throw new InvalidOperationException("Unmatched left parentheses");
             }
 
