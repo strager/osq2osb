@@ -178,12 +178,16 @@ namespace osq2osb.Parser {
         private static Token ReadString(TextReader input) {
             var str = new StringBuilder();
 
-            if((char)input.Read() != '"') {
-                throw new InvalidDataException("String must begin with \"");
-            }
+            input.Read();  // Consume ".
 
-            while(input.Peek() >= 0) {
-                char c = (char)input.Read();
+            while(true) {
+                int rawChar = input.Read();
+
+                if(rawChar < 0) {
+                    throw new InvalidDataException("Unexpected end-of-stream");
+                }
+
+                char c = (char)rawChar;
 
                 if(c == '"') {
                     break;
