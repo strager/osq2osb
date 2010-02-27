@@ -53,7 +53,7 @@ namespace osq2osb.Tests {
 
         [Test]
         public void Strings() {
-            string input = "\"\\\"hello \\\\\\t\\r\\nworld\\\"";
+            string input = "\"\\\"hello \\\\\\t\\r\\nworld\\\"\"";
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
                 var token = Token.ReadToken(reader);
@@ -63,6 +63,19 @@ namespace osq2osb.Tests {
                 Assert.AreEqual(token.Type, TokenType.String);
                 Assert.AreEqual(token.Value, "\"hello \\\t\r\nworld\"");
             }
+        }
+
+        [Test]
+        public void BadStrings() {
+            Func<string, TestDelegate> stringTester = (input) => () => {
+                using(var reader = new LocatedTextReaderWrapper(input)) {
+                    Token.ReadToken(reader);
+                }
+            };
+
+            Assert.Throws<InvalidDataException>(stringTester("\""));
+            Assert.Throws<InvalidDataException>(stringTester("\"\\"));
+            Assert.Throws<InvalidDataException>(stringTester("\"\\?\""));
         }
     }
 }
