@@ -27,7 +27,7 @@ namespace osq2osb.Parser.TreeNode {
             string filePath = Filename.Evaluate(context) as string;
 
             if(filePath == null) {
-                throw new ExecutionException("Need string for filename", this.Location);
+                throw new InvalidDataException("Need string for filename").AtLocation(this.Location);
             }
 
             if(this.Location != null && this.Location.Filename != null) {

@@ -97,7 +97,7 @@ namespace osq2osb.Parser.TreeNode {
                     curNode = Parser.ReadNode(input);
                     
                     if(curNode == null) {
-                        throw new ParserException("Unmatched #" + name + " directive", startLocation);
+                        throw new InvalidDataException("Unmatched #" + name + " directive").AtLocation(startLocation);
                     }
 
                     newNode.ChildrenNodes.Add(curNode);
@@ -106,7 +106,7 @@ namespace osq2osb.Parser.TreeNode {
                 return newNode;
             }
 
-            throw new ParserException("Unknown directive: " + line, startLocation);
+            throw new InvalidDataException("Unknown directive: " + line).AtLocation(startLocation);
         }
 
         public override string ToString() {

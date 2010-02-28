@@ -42,10 +42,8 @@ namespace osq2osb.Parser {
                 } else {
                     return ReadTextNode(input);
                 }
-            } catch(ParserException e) {
-                throw e;
             } catch(Exception e) {
-                throw new ParserException("Problem parsing node", loc, e);
+                throw e.AtLocation(loc);
             }
         }
 

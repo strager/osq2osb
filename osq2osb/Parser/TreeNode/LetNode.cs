@@ -17,11 +17,11 @@ namespace osq2osb.Parser.TreeNode {
             Token token = Token.ReadToken(info.ParametersReader);
 
             if(token == null) {
-                throw new ParserException("Need a variable name for #let", info.ParametersReader.Location);
+                throw new InvalidDataException("Need a variable name for #let").AtLocation(info.ParametersReader.Location);
             }
 
             if(token.Type != TokenType.Identifier) {
-                throw new ParserException("Need a variable name for #let", token.Location);
+                throw new InvalidDataException("Need a variable name for #let").AtLocation(token.Location);
             }
 
             this.Variable = token.Value.ToString();

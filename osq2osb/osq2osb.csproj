@@ -46,11 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExecutionContext.cs" />
-    <Compile Include="ExecutionException.cs" />
     <Compile Include="FileCollectionWatcher.cs" />
     <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />
-    <Compile Include="Parser\ParserException.cs" />
     <Compile Include="Parser\ExpressionRewriter.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Parser\Token.cs" />

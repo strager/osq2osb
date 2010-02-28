@@ -108,16 +108,14 @@ namespace osq2osb.Parser {
                 } else if(IsSymbolChar(c)) {
                     token = ReadSymbol(input);
                 } else {
-                    throw new ParserException("Unknown token starting with " + c, loc);
+                    throw new InvalidDataException("Unknown token starting with " + c).AtLocation(loc);
                 }
 
                 token.Location = loc;
 
                 return token;
-            } catch(ParserException e) {
-                throw e;
             } catch(Exception e) {
-                throw new ParserException("Problem reading token", loc ?? input.Location, e);
+                throw e.AtLocation(loc);
             }
         }
 

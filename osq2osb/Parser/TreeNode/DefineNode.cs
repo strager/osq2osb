@@ -27,11 +27,11 @@ namespace osq2osb.Parser.TreeNode {
             Token token = Token.ReadToken(reader);
 
             if(token == null) {
-                throw new ParserException("Need a variable name for #define", startLocation);
+                throw new InvalidDataException("Need a variable name for #define").AtLocation(startLocation);
             }
 
             if(token.Type != TokenType.Identifier) {
-                throw new ParserException("Need a variable name for #define", token.Location);
+                throw new InvalidDataException("Need a variable name for #define").AtLocation(token.Location);
             }
 
             this.Variable = token.Value.ToString();
@@ -48,7 +48,7 @@ namespace osq2osb.Parser.TreeNode {
                 }
 
                 if(token == null) {
-                    throw new ParserException("#define without closing parentheses", reader.Location);
+                    throw new InvalidDataException("#define without closing parentheses").AtLocation(reader.Location);
                 }
             }
 

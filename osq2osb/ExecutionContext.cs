@@ -138,7 +138,7 @@ namespace osq2osb {
                     return num(a) == num(b);
                 }
 
-                throw new ExecutionException("Don't know how to handle equality of objects");
+                throw new InvalidOperationException("Don't know how to handle equality of objects");
             };
 
             SetFunction("==", (token, context) => {

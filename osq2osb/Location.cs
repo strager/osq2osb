@@ -4,6 +4,53 @@ using System.Linq;
 using System.Text;
 
 namespace osq2osb.Parser {
+    public static class LocationExceptionHelpers {
+        // FIXME I really don't understand why exception.Data won't accept my objects.
+        // Sure, I need to make them serializable, but when I create a class implementing
+        // System.Runtime.Serialization.ISerializable, it still throws an ArgumentException
+        // (Argument passed in is not serializable.).  If you can help, please do.  Cleaner
+        // code follows, commented.  Hacked code follows that.  Thanks.
+
+        /*
+        private static object locationIdentifier = "location";
+
+        public static TException AtLocation<TException>(this TException exception, Location location) where TException : Exception {
+            if(location != null) {
+                exception.Data[locationIdentifier] = location.Clone();
+            }
+
+            return exception;
+        }
+
+        public static Location GetLocation<TException>(this TException exception) where TException : Exception {
+            if(!exception.Data.Contains(locationIdentifier)) {
+                return null;
+            }
+
+            return exception.Data[locationIdentifier] as Location;
+        }
+        */
+
+        private static object locationIdentifier = "x";
+
+        public static TException AtLocation<TException>(this TException exception, Location location) where TException : Exception {
+            if(location != null && exception.Data != null) {
+                exception.Data[locationIdentifier] =  location.Clone();
+            }
+
+            return exception;
+        }
+
+        public static Location GetLocation<TException>(this TException exception) where TException : Exception {
+            if(exception.Data == null || !exception.Data.Contains(locationIdentifier)) {
+                return null;
+            }
+
+            return exception.Data[locationIdentifier] as Location;
+        }
+    }
+
+    [Serializable()]
     public class Location {
         public string Filename {
             get;
