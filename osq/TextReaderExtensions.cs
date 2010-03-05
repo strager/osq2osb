@@ -6,16 +6,9 @@ using System.IO;
 
 namespace osq {
     static class TextReaderExtensions {
-        public static void SkipWhitespace(this TextReader input) {
+        public static void SkipWhitespace(this LocatedTextReaderWrapper input) {
             while(input.Peek() >= 0 && char.IsWhiteSpace((char)input.Peek())) {
-                // Ignore character.
-                input.Read();
-            }
-        }
-
-        public static void SkipWhitespace(this TextReader input, Parser.Location location) {
-            while(input.Peek() >= 0 && char.IsWhiteSpace((char)input.Peek())) {
-                location.AdvanceCharacter((char)input.Read());
+                input.Location.AdvanceCharacter((char)input.Read());
             }
         }
     }
