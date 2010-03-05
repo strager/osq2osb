@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace osq {
+namespace osq2osb {
     class FileCollectionWatcher {
         private IDictionary<string, FileSystemWatcher> watchers = new Dictionary<string, FileSystemWatcher>();
 

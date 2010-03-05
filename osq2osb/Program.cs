@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using osq;
+using osq.Parser;
 
-namespace osq {
+namespace osq2osb {
     class Program {
         static IDictionary<FileCollectionWatcher, string> watchers;
 
         static void Main(string[] args) {
             if(args.Length == 0) {
                 Console.WriteLine("Parsing from console...");
-                
+
                 var executionContext = new ExecutionContext();
 
                 while(true) {
                     try {
                         using(var console = Console.OpenStandardInput())
                         using(var reader = new LocatedTextReaderWrapper(console)) {
-                            foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                            foreach(var node in Parser.ReadNodes(reader)) {
                                 string output = node.Execute(executionContext);
 
                                 Console.Write(output);
@@ -47,15 +49,15 @@ namespace osq {
 
         private static void ParseFile(FileCollectionWatcher watcher, string filename) {
             Console.Write("Parsing " + filename + "...");
-            
+
             using(var inputFile = File.Open(filename, FileMode.Open, FileAccess.Read))
             using(var outputFile = File.Open(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".osb", FileMode.Create, FileAccess.Write)) {
                 var executionContext = new ExecutionContext();
 
-                using(var reader = new LocatedTextReaderWrapper(inputFile, new Parser.Location(filename)))
+                using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filename)))
                 using(var writer = new StreamWriter(outputFile)) {
                     try {
-                        foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                        foreach(var node in Parser.ReadNodes(reader)) {
                             string output = node.Execute(executionContext);
 
                             writer.Write(output);
