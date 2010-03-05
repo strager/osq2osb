@@ -25,6 +25,12 @@ namespace osq {
             }
         }
 
+        public void SkipWhitespace() {
+            while(this.Peek() >= 0 && char.IsWhiteSpace((char)this.Peek())) {
+                this.Location.AdvanceCharacter((char)this.Read());
+            }
+        }
+
         public LocatedTextReaderWrapper(TextReader source) :
             this(source, new Location()) {
         }
