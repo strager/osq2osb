@@ -40,7 +40,7 @@ namespace osqReverser {
         private readonly StringBuilder textBuffer = new StringBuilder();
 
         public void ClearBuffer() {
-            textBuffer.Clear();
+            textBuffer.Remove(0, textBuffer.Length);    // Clear.
         }
 
         public override int Read() {

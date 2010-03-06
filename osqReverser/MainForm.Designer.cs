@@ -34,7 +34,6 @@
             this.osq2osb = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.osb2osq = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -43,6 +42,7 @@
             // osqScript
             // 
             this.osqScript.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.osqScript.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.osqScript.Location = new System.Drawing.Point(0, 0);
             this.osqScript.Multiline = true;
             this.osqScript.Name = "osqScript";
@@ -53,6 +53,7 @@
             // osbScript
             // 
             this.osbScript.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.osbScript.Font = new System.Drawing.Font("Consolas", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.osbScript.Location = new System.Drawing.Point(0, 0);
             this.osbScript.Multiline = true;
             this.osbScript.Name = "osbScript";
@@ -114,7 +115,6 @@
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
