@@ -60,7 +60,7 @@ namespace osq.Tests {
 
                 Assert.AreEqual(-1, reader.Peek());    // EOF
 
-                Assert.AreEqual(token.Type, TokenType.String);
+                Assert.AreEqual(token.TokenType, TokenType.String);
                 Assert.AreEqual(token.Value, "\"hello \\\t\r\nworld\"");
             }
         }

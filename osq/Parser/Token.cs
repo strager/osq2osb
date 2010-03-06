@@ -13,7 +13,7 @@ namespace osq.Parser {
     }
 
     public class Token {
-        public TokenType Type {
+        public TokenType TokenType {
             get;
             set;
         }
@@ -33,7 +33,7 @@ namespace osq.Parser {
         }
 
         public Token(TokenType type, object value, Location location) {
-            this.Type = type;
+            this.TokenType = type;
             this.Value = value;
             this.Location = location;
         }
@@ -70,7 +70,7 @@ namespace osq.Parser {
         }
 
         public bool IsSymbol(string expected) {
-            return this.Type == TokenType.Symbol && (string)this.Value == expected;
+            return this.TokenType == TokenType.Symbol && (string)this.Value == expected;
         }
 
         public static IEnumerable<Token> ReadTokens(LocatedTextReaderWrapper input) {

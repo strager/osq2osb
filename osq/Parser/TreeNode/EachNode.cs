@@ -25,7 +25,7 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need a variable name for #let").AtLocation(info.ParametersReader.Location);
             }
 
-            if(token.Type != TokenType.Identifier) {
+            if(token.TokenType != TokenType.Identifier) {
                 throw new InvalidDataException("Need a variable name for #let").AtLocation(token.Location);
             }
 

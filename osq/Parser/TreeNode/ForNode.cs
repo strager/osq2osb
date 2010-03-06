@@ -41,7 +41,7 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("#for directive requires 3 to 4 parameters").AtLocation(this.Location);
             }
 
-            if(children[0].Token.Type != TokenType.Identifier) {
+            if(children[0].Token.TokenType != TokenType.Identifier) {
                 throw new InvalidDataException("Identifier expected").AtLocation(children[0].Location);
             }
 

@@ -28,7 +28,7 @@ namespace osq.Parser.TreeNode {
         }
 
         public object Evaluate(ExecutionContext context) {
-            switch(this.Token.Type) {
+            switch(this.Token.TokenType) {
                 case TokenType.Number:
                 case TokenType.String:
                     return this.Token.Value;

@@ -30,7 +30,7 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need a variable name for #define").AtLocation(startLocation);
             }
 
-            if(token.Type != TokenType.Identifier) {
+            if(token.TokenType != TokenType.Identifier) {
                 throw new InvalidDataException("Need a variable name for #define").AtLocation(token.Location);
             }
 
@@ -42,7 +42,7 @@ namespace osq.Parser.TreeNode {
                 while(token != null && !token.IsSymbol(")")) {
                     token = Token.ReadToken(reader);
 
-                    if(token.Type == TokenType.Identifier) {
+                    if(token.TokenType == TokenType.Identifier) {
                         FunctionParameters.Add(token.Value.ToString());
                     }
                 }

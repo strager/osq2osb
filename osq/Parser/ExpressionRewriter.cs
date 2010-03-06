@@ -54,7 +54,7 @@ namespace osq.Parser {
             }
 
             while(tokens.Count != 0
-                && tokens.Peek().Type == TokenType.Symbol
+                && tokens.Peek().TokenType == TokenType.Symbol
                 && GetOperatorTier(tokens.Peek().Value.ToString(), binaryOperatorTiers) >= level) {
                 tree = ReadBinaryExpression(tree);
             }
@@ -96,7 +96,7 @@ namespace osq.Parser {
                 return ReadParentheticalExpression();
             } else if(tokens.Peek().IsSymbol(")")) {
                 return null;
-            } else if(tokens.Peek().Type == TokenType.Identifier) {
+            } else if(tokens.Peek().TokenType == TokenType.Identifier) {
                 return ReadIdentifier();
             } else if(GetOperatorTier(tokens.Peek().Value.ToString(), unaryOperatorTiers) >= 0) {
                 return ReadUnaryOperator();
