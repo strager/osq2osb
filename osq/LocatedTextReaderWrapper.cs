@@ -59,8 +59,12 @@ namespace osq {
         }
 
         public LocatedTextReaderWrapper(Stream source, Location location) :
+            this(source, location, true) {
+        }
+
+        public LocatedTextReaderWrapper(Stream source, Location location, bool wraperOwnsStream) :
             this(new StreamReader(source), location) {
-            this.mustDisposeSource = true;
+            this.mustDisposeSource = wraperOwnsStream;
         }
 
         public override int Read() {
