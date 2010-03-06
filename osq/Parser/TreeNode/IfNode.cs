@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.IO;
 
 namespace osq.Parser.TreeNode {
     class IfNode : DirectiveNode {

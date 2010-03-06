@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
-using osq.Parser;
 
 namespace osq.Parser.TreeNode {
     public class TokenNode : NodeBase {
