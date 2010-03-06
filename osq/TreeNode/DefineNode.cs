@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace osq.TreeNode {
     public class DefineNode : DirectiveNode {
@@ -71,25 +72,23 @@ namespace osq.TreeNode {
         }
 
         public override string Execute(ExecutionContext context) {
-            context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((TokenNode token, ExecutionContext subContext) => {
+            context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((token, subContext) => {
                 var parameters = token.TokenChildren;
 
                 if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
                     parameters = parameters[0].TokenChildren;
                 }
 
-                int paramNumber = 0;
+                var paramNameEnumerator = FunctionParameters.GetEnumerator();
 
                 foreach(var child in parameters) {
-                    if(paramNumber >= FunctionParameters.Count) {
+                    if(!paramNameEnumerator.MoveNext()) {
                         break;
                     }
 
                     object value = child.Evaluate(context);
 
-                    subContext.SetVariable(FunctionParameters[paramNumber], value);
-
-                    ++paramNumber;
+                    subContext.SetVariable(paramNameEnumerator.Current, value);
                 }
 
                 string output = ExecuteChildren(context);

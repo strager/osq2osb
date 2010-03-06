@@ -6,17 +6,17 @@ using System.Text.RegularExpressions;
 
 namespace osq.TreeNode {
     public abstract class DirectiveNode : NodeBase {
-        private static readonly IDictionary<string, Type> DirectiveTypes = new Dictionary<string, Type>() {
-            {"def(ine)?", typeof(DefineNode)},
-            {"let", typeof(LetNode)},
-            {"each", typeof(EachNode)},
-            {"rep", typeof(RepNode)},
-            {"for", typeof(ForNode)},
-            {"inc(lude)?", typeof(IncludeNode)},
-            {"if", typeof(IfNode)},
-            {"else", typeof(ElseNode)},
-            {"el(se)?if", typeof(ElseIfNode)},
-            {"end([^\\s]+)", typeof(EndDirectiveNode)},
+        private static readonly IDictionary<string, Type> DirectiveTypes = new Dictionary<string, Type> {
+            { "def(ine)?", typeof(DefineNode) },
+            { "let", typeof(LetNode) },
+            { "each", typeof(EachNode) },
+            { "rep", typeof(RepNode) },
+            { "for", typeof(ForNode) },
+            { "inc(lude)?", typeof(IncludeNode) },
+            { "if", typeof(IfNode) },
+            { "else", typeof(ElseNode) },
+            { "el(se)?if", typeof(ElseIfNode) },
+            { "end([^\\s]+)", typeof(EndDirectiveNode) },
         };
 
         public class DirectiveInfo {
@@ -81,10 +81,10 @@ namespace osq.TreeNode {
                 using(var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation)) {
                     DirectiveInfo info = new DirectiveInfo(startLocation, name, parametersReader);
 
-                    var ctor = nodeType.GetConstructor(new Type[] {typeof(DirectiveInfo)});
+                    var ctor = nodeType.GetConstructor(new[] { typeof(DirectiveInfo) });
                     Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
 
-                    newNode = ctor.Invoke(new object[] {info}) as DirectiveNode;
+                    newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
                     Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
                 }
 

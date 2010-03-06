@@ -45,11 +45,7 @@ namespace osq.TreeNode {
 
             object expr = Values.Evaluate(context);
 
-            object[] values = expr as object[];
-
-            if(values == null) {
-                values = new object[] {expr};
-            }
+            object[] values = expr as object[] ?? new object[] { expr };
 
             foreach(var value in values) {
                 context.SetVariable(Variable, value);

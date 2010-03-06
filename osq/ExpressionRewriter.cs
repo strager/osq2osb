@@ -27,7 +27,7 @@ namespace osq {
             return Array.FindIndex(tiers, (operators) => operators.Contains(op));
         }
 
-        private Queue<Token> tokens;
+        private readonly Queue<Token> tokens;
 
         private ExpressionRewriter(IEnumerable<Token> tokens) {
             if(tokens == null) {
