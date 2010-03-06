@@ -154,7 +154,7 @@ namespace osq {
                 token.Append((char)input.Read());
             }
 
-            return new Token(TokenType.Number, Convert.ToDouble(token.ToString()));
+            return new Token(TokenType.Number, Convert.ToDouble(token.ToString(), Parser.DefaultCulture));
         }
 
         private static Token ReadIdentifier(TextReader input) {

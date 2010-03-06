@@ -21,7 +21,7 @@ namespace osq {
         public ExecutionContext() {
             Dependencies = new List<string>();
 
-            Func<object, double> num = (object o) => (Convert.ToDouble(o));
+            Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.DefaultCulture));
 
             SetFunction("int", (token, context) => (int)num(token.TokenChildren[0].Evaluate(context)));
 

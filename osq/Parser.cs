@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using osq.TreeNode;
 
 namespace osq {
     public static class Parser {
+        internal static readonly CultureInfo DefaultCulture = new CultureInfo("en-US");
+
         public static IEnumerable<NodeBase> ReadNodes(LocatedTextReaderWrapper input) {
             while(true) {
                 var node = ReadNode(input);

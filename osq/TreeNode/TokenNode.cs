@@ -22,7 +22,13 @@ namespace osq.TreeNode {
         }
 
         public override string Execute(ExecutionContext context) {
-            return Evaluate(context).ToString();
+            var ret = Evaluate(context);
+            
+            if(ret is double) {
+                return ((double)ret).ToString(Parser.DefaultCulture);
+            }
+            
+            return ret.ToString();
         }
 
         public object Evaluate(ExecutionContext context) {
