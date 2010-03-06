@@ -94,7 +94,7 @@ namespace osq {
                 output += FileName + ": ";
             }
 
-            output += "line " + LineNumber.ToString() + ", column " + Column.ToString();
+            output += "line " + this.LineNumber + ", column " + this.Column;
 
             return output;
         }
