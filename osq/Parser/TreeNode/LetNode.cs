@@ -26,7 +26,7 @@ namespace osq.Parser.TreeNode {
 
             this.Variable = token.Value.ToString();
 
-            info.ParametersReader.SkipWhitespace();
+            info.ParametersReader.SkipWhiteSpace();
 
             foreach(var node in Parser.ReadNodes(info.ParametersReader)) {
                 this.ChildrenNodes.Add(node);

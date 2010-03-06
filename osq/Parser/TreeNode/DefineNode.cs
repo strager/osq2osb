@@ -52,7 +52,7 @@ namespace osq.Parser.TreeNode {
                 }
             }
 
-            reader.SkipWhitespace();
+            reader.SkipWhiteSpace();
 
             foreach(var node in Parser.ReadNodes(reader)) {
                 this.ChildrenNodes.Add(node);

@@ -85,7 +85,7 @@ namespace osq.Parser {
             Location loc = null;
 
             try {
-                input.SkipWhitespace();
+                input.SkipWhiteSpace();
 
                 int i = input.Peek();
 
