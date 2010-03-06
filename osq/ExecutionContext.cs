@@ -166,7 +166,7 @@ namespace osq {
             } else if(variables.ContainsKey(name)) {
                 value = variables[name];
             } else {
-                throw new IndexOutOfRangeException("Unknown variable: " + name);
+                throw new InvalidOperationException("Unknown variable: " + name);
             }
 
             return value;
