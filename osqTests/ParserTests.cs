@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using osq;
-using osq.Parser;
-
+﻿using System.Text;
 using NUnit.Framework;
 
 namespace osq.Tests {
@@ -17,7 +10,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                foreach(var node in Parser.ReadNodes(reader)) {
                     output.Append(node.Execute(context));
                 }
 
@@ -25,8 +18,8 @@ namespace osq.Tests {
             }
         }
 
-        private static Parser.TreeNode.TokenNode ExpressionToTokenNode(string expression) {
-            using(var reader = new LocatedTextReaderWrapper(expression, new Parser.Location())) {
+        private static TreeNode.TokenNode ExpressionToTokenNode(string expression) {
+            using(var reader = new LocatedTextReaderWrapper(expression, new Location())) {
                 return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
             }
         }
@@ -63,7 +56,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                foreach(var node in Parser.ReadNodes(reader)) {
                     output.Append(node.Execute(context));
                 }
 
@@ -82,7 +75,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.Parser.ReadNodes(reader)) {
+                foreach(var node in Parser.ReadNodes(reader)) {
                     output.Append(node.Execute(context));
                 }
 

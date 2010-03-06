@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace osq.Parser.TreeNode {
+namespace osq.TreeNode {
     public class DefineNode : DirectiveNode {
         public string Variable {
             get;
@@ -31,7 +31,7 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need a variable name for #define").AtLocation(token.Location);
             }
 
-            this.Variable = token.Value.ToString();
+            Variable = token.Value.ToString();
 
             if(reader.Peek() == '(') {
                 token = Token.ReadToken(reader);
@@ -52,18 +52,18 @@ namespace osq.Parser.TreeNode {
             reader.SkipWhiteSpace();
 
             foreach(var node in Parser.ReadNodes(reader)) {
-                this.ChildrenNodes.Add(node);
+                ChildrenNodes.Add(node);
             }
         }
 
         protected override bool EndsWith(NodeBase node) {
-            if(this.ChildrenNodes.Count != 0 && node == this) {
+            if(ChildrenNodes.Count != 0 && node == this) {
                 return true;
             }
 
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 

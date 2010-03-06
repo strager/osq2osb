@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace osq.Parser.TreeNode {
-    class IfNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class IfNode : DirectiveNode {
         public TokenNode Condition {
             get;
             private set;
@@ -18,7 +18,7 @@ namespace osq.Parser.TreeNode {
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 
@@ -35,7 +35,7 @@ namespace osq.Parser.TreeNode {
             } else if(val is Boolean) {
                 return (Boolean)val;
             } else {
-                throw new InvalidOperationException("Condition returns unknown data type").AtLocation(this.Location);
+                throw new InvalidOperationException("Condition returns unknown data type").AtLocation(Location);
             }
         }
 

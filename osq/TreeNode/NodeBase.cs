@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace osq.Parser.TreeNode {
+namespace osq.TreeNode {
     public abstract class NodeBase {
         public IList<NodeBase> ChildrenNodes {
             get;

@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace osq.Parser {
+namespace osq {
     public static class LocationExceptionHelpers {
         private static object locationIdentifier = "x";
 
         public static TException AtLocation<TException>(this TException exception, Location location) where TException : Exception {
             if(location != null && exception.Data != null) {
-                exception.Data[locationIdentifier] =  location.Clone();
+                exception.Data[locationIdentifier] = location.Clone();
             }
 
             return exception;
@@ -40,7 +40,7 @@ namespace osq.Parser {
 
         private int lastChar;
 
-        public Location() : 
+        public Location() :
             this(1, 1) {
         }
 
@@ -67,24 +67,24 @@ namespace osq.Parser {
 
         public void AdvanceCharacter(char c) {
             if(c == '\n' || c == '\r') {
-                if((lastChar == '\n' || lastChar == '\r') && c != lastChar) {
-                    lastChar = -1;
+                if((this.lastChar == '\n' || this.lastChar == '\r') && c != this.lastChar) {
+                    this.lastChar = -1;
 
                     return;
                 }
 
                 ++LineNumber;
                 Column = 1;
-                lastChar = c;
+                this.lastChar = c;
             }
 
-            lastChar = c;
+            this.lastChar = c;
         }
 
         public void AdvanceLine() {
             ++LineNumber;
             Column = 1;
-            lastChar = -1;
+            this.lastChar = -1;
         }
 
         public override string ToString() {

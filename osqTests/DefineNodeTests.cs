@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using osq;
-using osq.Parser;
-
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace osq.Tests {
@@ -14,15 +8,15 @@ namespace osq.Tests {
         public void TestParameterParsing() {
             string input = @"#define test(a, b, c) abc";
 
-            Parser.TreeNode.NodeBase node;
+            TreeNode.NodeBase node;
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                node = Parser.Parser.ReadNode(reader);
+                node = Parser.ReadNode(reader);
             }
 
-            Assert.IsInstanceOf(typeof(Parser.TreeNode.DefineNode), node);
+            Assert.IsInstanceOf(typeof(TreeNode.DefineNode), node);
 
-            Parser.TreeNode.DefineNode define = node as Parser.TreeNode.DefineNode;
+            TreeNode.DefineNode define = node as TreeNode.DefineNode;
 
             Assert.IsTrue(define.FunctionParameters.SequenceEqual(new string[] { "a", "b", "c" }));
         }

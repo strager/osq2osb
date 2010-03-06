@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace osq.Parser.TreeNode {
+namespace osq.TreeNode {
     public class TokenNode : NodeBase {
         public Token Token {
             get;
@@ -18,7 +18,7 @@ namespace osq.Parser.TreeNode {
 
         public TokenNode(Token token, Location location) :
             base(null, location) {
-            this.Token = token;
+            Token = token;
         }
 
         public override string Execute(ExecutionContext context) {
@@ -26,10 +26,10 @@ namespace osq.Parser.TreeNode {
         }
 
         public object Evaluate(ExecutionContext context) {
-            switch(this.Token.TokenType) {
+            switch(Token.TokenType) {
                 case TokenType.Number:
                 case TokenType.String:
-                    return this.Token.Value;
+                    return Token.Value;
 
                 case TokenType.Identifier:
                 case TokenType.Symbol:
@@ -49,9 +49,9 @@ namespace osq.Parser.TreeNode {
 
         public override string ToString() {
             StringBuilder str = new StringBuilder();
-            var c = this.TokenChildren;
+            var c = TokenChildren;
 
-            str.Append(this.Token.Value.ToString());
+            str.Append(Token.Value.ToString());
 
             if(c.Count != 0) {
                 str.Append("(");

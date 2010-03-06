@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Text;
 using System.IO;
+using System.Text;
 
-namespace osq.Parser.TreeNode {
-    class ForNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class ForNode : DirectiveNode {
         public string Variable {
             get;
             private set;
@@ -29,13 +29,13 @@ namespace osq.Parser.TreeNode {
             var node = Parser.ExpressionToTokenNode(info.ParametersReader);
 
             if(!node.Token.IsSymbol(",")) {
-                throw new InvalidDataException("Expected comma-separated list").AtLocation(this.Location);
+                throw new InvalidDataException("Expected comma-separated list").AtLocation(Location);
             }
 
             var children = node.TokenChildren;
 
             if(children.Count < 3 || children.Count > 4) {
-                throw new InvalidDataException("#for directive requires 3 to 4 parameters").AtLocation(this.Location);
+                throw new InvalidDataException("#for directive requires 3 to 4 parameters").AtLocation(Location);
             }
 
             if(children[0].Token.TokenType != TokenType.Identifier) {
@@ -51,7 +51,7 @@ namespace osq.Parser.TreeNode {
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 
@@ -68,7 +68,7 @@ namespace osq.Parser.TreeNode {
 
                 output.Append(ExecuteChildren(context));
 
-                counter = System.Convert.ToDouble(context.GetVariable(Variable));
+                counter = Convert.ToDouble(context.GetVariable(Variable));
                 counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context));
 
                 if(counter >= Convert.ToDouble(End.Evaluate(context))) {

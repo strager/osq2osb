@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using osq.Parser;
-using osq.Parser.TreeNode;
+using osq.TreeNode;
 
 namespace osq {
     public class ExecutionContext {
@@ -22,7 +21,7 @@ namespace osq {
         public ExecutionContext() {
             Dependencies = new List<string>();
 
-            Func<object, double> num = (object o) => (System.Convert.ToDouble(o));
+            Func<object, double> num = (object o) => (Convert.ToDouble(o));
 
             SetFunction("int", (token, context) => (int)num(token.TokenChildren[0].Evaluate(context)));
 
@@ -134,16 +133,16 @@ namespace osq {
         }
 
         public void SetVariable(string name, object value) {
-            variables[name] = value;
+            this.variables[name] = value;
         }
 
         public object GetVariable(string name) {
             object value = null;
 
-            if(variables.ContainsKey(name)) {
-                value = variables[name];
-            } else if(variables.ContainsKey(name)) {
-                value = variables[name];
+            if(this.variables.ContainsKey(name)) {
+                value = this.variables[name];
+            } else if(this.variables.ContainsKey(name)) {
+                value = this.variables[name];
             } else {
                 throw new InvalidOperationException("Unknown variable: " + name);
             }

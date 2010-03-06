@@ -1,8 +1,8 @@
-﻿using System.Text;
-using System.IO;
+﻿using System.IO;
+using System.Text;
 
-namespace osq.Parser.TreeNode {
-    class EachNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class EachNode : DirectiveNode {
         public string Variable {
             get;
             private set;
@@ -25,15 +25,15 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need a variable name for #let").AtLocation(token.Location);
             }
 
-            this.Variable = token.Value.ToString();
+            Variable = token.Value.ToString();
 
-            this.Values = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
+            Values = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
         }
 
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 
@@ -48,7 +48,7 @@ namespace osq.Parser.TreeNode {
             object[] values = expr as object[];
 
             if(values == null) {
-                values = new object[] { expr };
+                values = new object[] {expr};
             }
 
             foreach(var value in values) {

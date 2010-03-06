@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
-namespace osq.Parser {
+namespace osq {
     public enum TokenType {
         Symbol,
         Number,
@@ -33,9 +33,9 @@ namespace osq.Parser {
         }
 
         public Token(TokenType type, object value, Location location) {
-            this.TokenType = type;
-            this.Value = value;
-            this.Location = location;
+            TokenType = type;
+            Value = value;
+            Location = location;
         }
 
         public override string ToString() {
@@ -70,7 +70,7 @@ namespace osq.Parser {
         }
 
         public bool IsSymbol(string expected) {
-            return this.TokenType == TokenType.Symbol && (string)this.Value == expected;
+            return TokenType == TokenType.Symbol && (string)Value == expected;
         }
 
         public static IEnumerable<Token> ReadTokens(LocatedTextReaderWrapper input) {
@@ -176,7 +176,7 @@ namespace osq.Parser {
         private static Token ReadString(TextReader input) {
             var str = new StringBuilder();
 
-            input.Read();  // Consume ".
+            input.Read(); // Consume ".
 
             while(true) {
                 int rawChar = input.Read();

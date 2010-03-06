@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace osq.Parser.TreeNode {
-    class ElseIfNode : IfNode {
+namespace osq.TreeNode {
+    internal class ElseIfNode : IfNode {
         public ElseIfNode(DirectiveInfo info) :
             base(info) {
         }

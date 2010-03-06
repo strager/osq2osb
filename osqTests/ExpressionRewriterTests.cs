@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using osq.Parser;
 
 namespace osq.Tests {
     [TestFixture]
     public class ExpressionRewriterTests {
-        private static void CheckTree(object expected, Parser.TreeNode.TokenNode tree) {
+        private static void CheckTree(object expected, TreeNode.TokenNode tree) {
             object[] array = expected as object[];
 
             if(array != null) {
@@ -26,8 +22,8 @@ namespace osq.Tests {
             }
         }
 
-        private static Parser.TreeNode.TokenNode ExpressionToTokenNode(string expression) {
-            using(var reader = new LocatedTextReaderWrapper(expression, new Parser.Location())) {
+        private static TreeNode.TokenNode ExpressionToTokenNode(string expression) {
+            using(var reader = new LocatedTextReaderWrapper(expression, new Location())) {
                 return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
             }
         }

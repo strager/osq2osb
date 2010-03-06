@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
-namespace osq.Parser.TreeNode {
-    class RepNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class RepNode : DirectiveNode {
         public TokenNode Value {
             get;
             private set;
@@ -15,7 +15,7 @@ namespace osq.Parser.TreeNode {
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 

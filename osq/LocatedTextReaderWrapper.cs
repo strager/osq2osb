@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
-using osq.Parser;
+using System.Linq;
 
 namespace osq {
     public class LocatedTextReaderWrapper : TextReader, IDisposable {
@@ -11,7 +10,7 @@ namespace osq {
 
         public Location Location {
             get {
-                return location;
+                return this.location;
             }
 
             set {
@@ -19,13 +18,13 @@ namespace osq {
                     throw new ArgumentNullException("value");
                 }
 
-                location = value;
+                this.location = value;
             }
         }
 
         public void SkipWhiteSpace() {
-            while(this.Peek() >= 0 && char.IsWhiteSpace((char)this.Peek())) {
-                this.Location.AdvanceCharacter((char)this.Read());
+            while(Peek() >= 0 && char.IsWhiteSpace((char)Peek())) {
+                Location.AdvanceCharacter((char)Read());
             }
         }
 
@@ -65,51 +64,51 @@ namespace osq {
         }
 
         public override int Read() {
-            int ret = source.Read();
+            int ret = this.source.Read();
 
             if(ret >= 0) {
-                location.AdvanceCharacter((char)ret);
+                this.location.AdvanceCharacter((char)ret);
             }
 
             return ret;
         }
 
         public override int Read(char[] buffer, int index, int count) {
-            int ret = source.Read(buffer, index, count);
+            int ret = this.source.Read(buffer, index, count);
 
             if(ret >= 0) {
-                location.AdvanceString(string.Concat(buffer.Skip(index).Take(count)));
+                this.location.AdvanceString(string.Concat(buffer.Skip(index).Take(count)));
             }
 
             return ret;
         }
 
         public override int ReadBlock(char[] buffer, int index, int count) {
-            int ret = source.ReadBlock(buffer, index, count);
+            int ret = this.source.ReadBlock(buffer, index, count);
 
             if(ret >= 0) {
-                location.AdvanceString(string.Concat(buffer.Skip(index).Take(count)));
+                this.location.AdvanceString(string.Concat(buffer.Skip(index).Take(count)));
             }
 
             return ret;
         }
 
         public override string ReadLine() {
-            string ret = source.ReadLine();
+            string ret = this.source.ReadLine();
 
             if(ret != null) {
-                location.AdvanceString(ret);
-                location.AdvanceLine();
+                this.location.AdvanceString(ret);
+                this.location.AdvanceLine();
             }
 
             return ret;
         }
 
         public override string ReadToEnd() {
-            string ret = source.ReadToEnd();
+            string ret = this.source.ReadToEnd();
 
             if(ret != null) {
-                location.AdvanceString(ret);
+                this.location.AdvanceString(ret);
             }
 
             return ret;
@@ -120,21 +119,21 @@ namespace osq {
         }
 
         public override int Peek() {
-            return source.Peek();
+            return this.source.Peek();
         }
 
         private bool disposed = false;
 
         protected override void Dispose(bool disposing) {
-            if(!disposed) {
+            if(!this.disposed) {
                 if(disposing) {
-                    if(mustDisposeSource && source != null) {
-                        source.Dispose();
+                    if(this.mustDisposeSource && this.source != null) {
+                        this.source.Dispose();
                     }
                 }
 
-                source = null;
-                disposed = true;
+                this.source = null;
+                this.disposed = true;
             }
 
             base.Dispose(disposing);

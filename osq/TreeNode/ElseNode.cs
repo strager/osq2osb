@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace osq.Parser.TreeNode {
-    class ElseNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class ElseNode : DirectiveNode {
         public ElseNode(DirectiveInfo info) :
             base(info) {
         }

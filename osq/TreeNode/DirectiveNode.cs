@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace osq.Parser.TreeNode {
-    abstract public class DirectiveNode : NodeBase {
+namespace osq.TreeNode {
+    public abstract class DirectiveNode : NodeBase {
         private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>() {
-            { "def(ine)?", typeof(DefineNode) },
-            { "let", typeof(LetNode) },
-            { "each", typeof(EachNode) },
-            { "rep", typeof(RepNode) },
-            { "for", typeof(ForNode) },
-            { "inc(lude)?", typeof(IncludeNode) },
-            { "if", typeof(IfNode) },
-            { "else", typeof(ElseNode) },
-            { "el(se)?if", typeof(ElseIfNode) },
-            { "end([^\\s]+)", typeof(EndDirectiveNode) },
+            {"def(ine)?", typeof(DefineNode)},
+            {"let", typeof(LetNode)},
+            {"each", typeof(EachNode)},
+            {"rep", typeof(RepNode)},
+            {"for", typeof(ForNode)},
+            {"inc(lude)?", typeof(IncludeNode)},
+            {"if", typeof(IfNode)},
+            {"else", typeof(ElseNode)},
+            {"el(se)?if", typeof(ElseIfNode)},
+            {"end([^\\s]+)", typeof(EndDirectiveNode)},
         };
 
         public class DirectiveInfo {
@@ -48,7 +49,7 @@ namespace osq.Parser.TreeNode {
 
         protected DirectiveNode(DirectiveInfo info) :
             base(info.Location) {
-            this.DirectiveName = info.DirectiveName;
+            DirectiveName = info.DirectiveName;
         }
 
         protected abstract bool EndsWith(NodeBase node);
@@ -80,18 +81,18 @@ namespace osq.Parser.TreeNode {
                 using(var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation)) {
                     DirectiveInfo info = new DirectiveInfo(startLocation, name, parametersReader);
 
-                    var ctor = nodeType.GetConstructor(new Type[] { typeof(DirectiveInfo) });
-                    System.Diagnostics.Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+                    var ctor = nodeType.GetConstructor(new Type[] {typeof(DirectiveInfo)});
+                    Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
 
-                    newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
-                    System.Diagnostics.Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
+                    newNode = ctor.Invoke(new object[] {info}) as DirectiveNode;
+                    Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
                 }
 
                 NodeBase curNode = newNode;
 
                 while(!newNode.EndsWith(curNode)) {
                     curNode = Parser.ReadNode(input);
-                    
+
                     if(curNode == null) {
                         throw new InvalidDataException("Unmatched #" + name + " directive").AtLocation(startLocation);
                     }

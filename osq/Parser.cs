@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
+using osq.TreeNode;
 
-namespace osq.Parser {
-    using TreeNode;
-
+namespace osq {
     public static class Parser {
         public static IEnumerable<NodeBase> ReadNodes(LocatedTextReaderWrapper input) {
             while(true) {
@@ -60,14 +59,14 @@ namespace osq.Parser {
 
             switch(c) {
                 case '{':
-                    input.Read();   // Discard.
+                    input.Read(); // Discard.
 
                     var tokens = ReadToExpressionEnd(input);
 
                     return ExpressionRewriter.Rewrite(tokens);
 
                 case '$':
-                    input.Read();   // Discard.
+                    input.Read(); // Discard.
                     return new RawTextNode("$", startLocation);
 
                 default:
@@ -102,7 +101,7 @@ namespace osq.Parser {
             while(c >= 0 && !IsDirectiveStart((char)c, input.Location) && !IsExpressionStart((char)c)) {
                 text.Append((char)c);
 
-                input.Read();   // Discard; already peeked.
+                input.Read(); // Discard; already peeked.
                 c = input.Peek();
             }
 
@@ -116,5 +115,5 @@ namespace osq.Parser {
         private static bool IsDirectiveStart(char c, Location loc) {
             return c == '#' && loc.Column == 1;
         }
-   }
+    }
 }

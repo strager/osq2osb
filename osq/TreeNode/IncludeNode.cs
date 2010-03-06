@@ -1,8 +1,8 @@
-﻿using System.Text;
-using System.IO;
+﻿using System.IO;
+using System.Text;
 
-namespace osq.Parser.TreeNode {
-    class IncludeNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class IncludeNode : DirectiveNode {
         public TokenNode Filename {
             get;
             private set;
@@ -23,17 +23,18 @@ namespace osq.Parser.TreeNode {
             string filePath = Filename.Evaluate(context) as string;
 
             if(filePath == null) {
-                throw new InvalidDataException("Need string for filename").AtLocation(this.Location);
+                throw new InvalidDataException("Need string for filename").AtLocation(Location);
             }
 
-            if(this.Location != null && this.Location.FileName != null) {
-                filePath = Path.GetDirectoryName(this.Location.FileName) + Path.DirectorySeparatorChar + filePath;
+            if(Location != null && Location.FileName != null) {
+                filePath = Path.GetDirectoryName(Location.FileName) + Path.DirectorySeparatorChar + filePath;
             }
 
-            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
-            using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath))) {
-                foreach(var node in Parser.ReadNodes(reader)) {
-                    output.Append(node.Execute(context));
+            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
+                using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath))) {
+                    foreach(var node in Parser.ReadNodes(reader)) {
+                        output.Append(node.Execute(context));
+                    }
                 }
             }
 

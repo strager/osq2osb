@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 
-namespace osq.Parser.TreeNode {
-    class LetNode : DirectiveNode {
+namespace osq.TreeNode {
+    internal class LetNode : DirectiveNode {
         public string Variable {
             get;
             private set;
@@ -20,23 +20,23 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need a variable name for #let").AtLocation(token.Location);
             }
 
-            this.Variable = token.Value.ToString();
+            Variable = token.Value.ToString();
 
             info.ParametersReader.SkipWhiteSpace();
 
             foreach(var node in Parser.ReadNodes(info.ParametersReader)) {
-                this.ChildrenNodes.Add(node);
+                ChildrenNodes.Add(node);
             }
         }
 
         protected override bool EndsWith(NodeBase node) {
-            if(this.ChildrenNodes.Count != 0 && node == this) {
+            if(ChildrenNodes.Count != 0 && node == this) {
                 return true;
             }
 
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName) {
+            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
                 return true;
             }
 
