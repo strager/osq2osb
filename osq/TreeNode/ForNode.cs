@@ -51,11 +51,7 @@ namespace osq.TreeNode {
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                return true;
-            }
-
-            return false;
+            return endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName;
         }
 
         public override string Execute(ExecutionContext context) {

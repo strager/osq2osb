@@ -36,11 +36,7 @@ namespace osq.TreeNode {
 
             var endDirective = node as EndDirectiveNode;
 
-            if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                return true;
-            }
-
-            return false;
+            return endDirective != null && endDirective.TargetDirectiveName == this.DirectiveName;
         }
 
         public override string Execute(ExecutionContext context) {

@@ -37,11 +37,7 @@ namespace osq.TreeNode {
 
                     var asFunc = item as Func<TokenNode, ExecutionContext, object>;
 
-                    if(asFunc != null) {
-                        return asFunc.Invoke(this, context);
-                    }
-
-                    return item;
+                    return asFunc == null ? item : asFunc.Invoke(this, context);
             }
 
             throw new InvalidOperationException("Unknown token type");
