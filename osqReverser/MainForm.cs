@@ -21,7 +21,8 @@ namespace osqReverser {
             var output = new StringBuilder();
 
             // TODO Actually store original data.
-            using(var reader = new LocatedTextReaderWrapper(osqScript.Text)) {
+            using(var bufferingReader = new BufferingTextReaderWrapper(osqScript.Text))
+            using(var reader = new LocatedTextReaderWrapper(bufferingReader)) {
                 var context = new ExecutionContext();
 
                 NodeBase node;
@@ -34,10 +35,12 @@ namespace osqReverser {
                     var converted = new ConvertedNode {
                         Node = node,
                         NodeOutput = curOutput,
-                        OriginalScript = curOutput
+                        OriginalScript = bufferingReader.BufferedText
                     };
 
                     scriptNodes.Add(converted);
+
+                    bufferingReader.ClearBuffer();
                 }
             }
 
@@ -60,16 +63,12 @@ namespace osqReverser {
                 output.Append(input.Substring(0, index));
                 output.Append(convertedNode.OriginalScript);
 
-                input = input.Substring(index + convertedNode.OriginalScript.Length);
+                input = input.Substring(index + convertedNode.NodeOutput.Length);
             }
 
             output.Append(input);
 
             osqScript.Text = output.ToString();
-        }
-
-        private void osqScript_TextChanged(object sender, EventArgs e) {
-            osb2osq.Enabled = false;
         }
     }
 }

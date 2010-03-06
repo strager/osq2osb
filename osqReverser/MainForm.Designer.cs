@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.osqScript = new System.Windows.Forms.TextBox();
             this.osbScript = new System.Windows.Forms.TextBox();
             this.osq2osb = new System.Windows.Forms.Button();
@@ -47,7 +48,7 @@
             this.osqScript.Name = "osqScript";
             this.osqScript.Size = new System.Drawing.Size(581, 776);
             this.osqScript.TabIndex = 0;
-            this.osqScript.TextChanged += new System.EventHandler(this.osqScript_TextChanged);
+            this.osqScript.Text = resources.GetString("osqScript.Text");
             // 
             // osbScript
             // 
