@@ -20,7 +20,6 @@ namespace osqReverser {
 
             var output = new StringBuilder();
 
-            // TODO Actually store original data.
             using(var bufferingReader = new BufferingTextReaderWrapper(osqScript.Text))
             using(var reader = new LocatedTextReaderWrapper(bufferingReader)) {
                 var context = new ExecutionContext();
