@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C# Express 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osq", "osq\osq.csproj", "{CDED8B0F-A069-419E-A619-E29FB2B251BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osqTests", "osqTests\osqTests.csproj", "{BA4278D3-4A09-421E-B9BD-92D33EE380BB}"
