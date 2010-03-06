@@ -7,20 +7,18 @@ using System.Text.RegularExpressions;
 
 namespace osq.Parser.TreeNode {
     abstract public class DirectiveNode : NodeBase {
-        private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>();
-
-        static DirectiveNode() {
-            directiveTypes["def(ine)?"] = typeof(DefineNode);
-            directiveTypes["let"] = typeof(LetNode);
-            directiveTypes["each"] = typeof(EachNode);
-            directiveTypes["rep"] = typeof(RepNode);
-            directiveTypes["for"] = typeof(ForNode);
-            directiveTypes["inc(lude)?"] = typeof(IncludeNode);
-            directiveTypes["if"] = typeof(IfNode);
-            directiveTypes["else"] = typeof(ElseNode);
-            directiveTypes["el(se)?if"] = typeof(ElseIfNode);
-            directiveTypes["end([^\\s]+)"] = typeof(EndDirectiveNode);
-        }
+        private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>() {
+            { "def(ine)?", typeof(DefineNode) },
+            { "let", typeof(LetNode) },
+            { "each", typeof(EachNode) },
+            { "rep", typeof(RepNode) },
+            { "for", typeof(ForNode) },
+            { "inc(lude)?", typeof(IncludeNode) },
+            { "if", typeof(IfNode) },
+            { "else", typeof(ElseNode) },
+            { "el(se)?if", typeof(ElseIfNode) },
+            { "end([^\\s]+)", typeof(EndDirectiveNode) },
+        };
 
         public class DirectiveInfo {
             public string DirectiveName {
