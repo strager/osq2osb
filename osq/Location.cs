@@ -26,7 +26,7 @@ namespace osq.Parser {
 
     [Serializable()]
     public class Location {
-        public string Filename {
+        public string FileName {
             get;
             private set;
         }
@@ -47,17 +47,17 @@ namespace osq.Parser {
             this(1, 1) {
         }
 
-        public Location(string filename) :
-            this(filename, 1, 1) {
-            Filename = filename;
+        public Location(string fileName) :
+            this(fileName, 1, 1) {
+            FileName = fileName;
         }
 
         public Location(int lineNumber, int column) :
             this(null, lineNumber, column) {
         }
 
-        public Location(string filename, int lineNumber, int column) {
-            Filename = filename;
+        public Location(string fileName, int lineNumber, int column) {
+            FileName = fileName;
             LineNumber = lineNumber;
             Column = column;
         }
@@ -93,8 +93,8 @@ namespace osq.Parser {
         public override string ToString() {
             string output = "";
 
-            if(!string.IsNullOrEmpty(Filename)) {
-                output += Filename + ": ";
+            if(!string.IsNullOrEmpty(FileName)) {
+                output += FileName + ": ";
             }
 
             output += "line " + LineNumber.ToString() + ", column " + Column.ToString();
@@ -103,7 +103,7 @@ namespace osq.Parser {
         }
 
         public Location Clone() {
-            return new Location(Filename, LineNumber, Column);
+            return new Location(FileName, LineNumber, Column);
         }
     }
 }

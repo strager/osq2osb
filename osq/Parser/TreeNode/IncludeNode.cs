@@ -30,8 +30,8 @@ namespace osq.Parser.TreeNode {
                 throw new InvalidDataException("Need string for filename").AtLocation(this.Location);
             }
 
-            if(this.Location != null && this.Location.Filename != null) {
-                filePath = Path.GetDirectoryName(this.Location.Filename) + Path.DirectorySeparatorChar + filePath;
+            if(this.Location != null && this.Location.FileName != null) {
+                filePath = Path.GetDirectoryName(this.Location.FileName) + Path.DirectorySeparatorChar + filePath;
             }
 
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
