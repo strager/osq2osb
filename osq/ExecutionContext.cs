@@ -5,7 +5,7 @@ using osq.TreeNode;
 
 namespace osq {
     public class ExecutionContext {
-        private static readonly Random rand = new Random(31337);
+        private static readonly Random Rand = new Random(31337);
 
         private readonly IDictionary<string, object> variables = new Dictionary<string, object>();
 
@@ -27,7 +27,7 @@ namespace osq {
 
             SetFunction("sqrt", (token, context) => Math.Sqrt(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetFunction("rand", (token, context) => rand.NextDouble());
+            SetFunction("rand", (token, context) => Rand.NextDouble());
 
             SetVariable("pi", Math.PI);
 

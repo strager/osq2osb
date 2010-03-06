@@ -2,22 +2,22 @@
 
 namespace osq {
     public static class LocationExceptionHelpers {
-        private static readonly object locationIdentifier = "x";
+        private static readonly object LocationIdentifier = "x";
 
         public static TException AtLocation<TException>(this TException exception, Location location) where TException : Exception {
             if(location != null && exception.Data != null) {
-                exception.Data[locationIdentifier] = location.Clone();
+                exception.Data[LocationIdentifier] = location.Clone();
             }
 
             return exception;
         }
 
         public static Location GetLocation<TException>(this TException exception) where TException : Exception {
-            if(exception.Data == null || !exception.Data.Contains(locationIdentifier)) {
+            if(exception.Data == null || !exception.Data.Contains(LocationIdentifier)) {
                 return null;
             }
 
-            return exception.Data[locationIdentifier] as Location;
+            return exception.Data[LocationIdentifier] as Location;
         }
     }
 

@@ -5,14 +5,14 @@ using osq.TreeNode;
 
 namespace osq {
     public class ExpressionRewriter {
-        private static readonly string[][] unaryOperatorTiers = {
+        private static readonly string[][] UnaryOperatorTiers = {
             new string[] {},
             new string[] {},
             new string[] {},
             new string[] {"-", "!"},
         };
 
-        private static readonly string[][] binaryOperatorTiers = {
+        private static readonly string[][] BinaryOperatorTiers = {
             new string[] {","},
             new string[] {"==", "!="},
             new string[] {">", "<", ">=", "<="},
@@ -54,7 +54,7 @@ namespace osq {
 
             while(this.tokens.Count != 0
                 && this.tokens.Peek().TokenType == TokenType.Symbol
-                    && GetOperatorTier(this.tokens.Peek().Value.ToString(), binaryOperatorTiers) >= level) {
+                    && GetOperatorTier(this.tokens.Peek().Value.ToString(), BinaryOperatorTiers) >= level) {
                 tree = ReadBinaryExpression(tree);
             }
 
@@ -63,7 +63,7 @@ namespace osq {
 
         private TokenNode ReadBinaryExpression(TokenNode tree) {
             var opToken = this.tokens.Dequeue();
-            var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), binaryOperatorTiers) + 1);
+            var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), BinaryOperatorTiers) + 1);
 
             if(right == null) {
                 throw new InvalidOperationException("Expected something after operator " + opToken.Value);
@@ -97,7 +97,7 @@ namespace osq {
                 return null;
             } else if(this.tokens.Peek().TokenType == TokenType.Identifier) {
                 return ReadIdentifier();
-            } else if(GetOperatorTier(this.tokens.Peek().Value.ToString(), unaryOperatorTiers) >= 0) {
+            } else if(GetOperatorTier(this.tokens.Peek().Value.ToString(), UnaryOperatorTiers) >= 0) {
                 return ReadUnaryOperator();
             } else {
                 var token = this.tokens.Dequeue();
@@ -110,7 +110,7 @@ namespace osq {
             var token = this.tokens.Dequeue();
             var node = new TokenNode(token, null);
 
-            node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), unaryOperatorTiers)));
+            node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), UnaryOperatorTiers)));
 
             return node;
         }
