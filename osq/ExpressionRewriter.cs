@@ -5,14 +5,14 @@ using osq.TreeNode;
 
 namespace osq {
     public class ExpressionRewriter {
-        private static string[][] unaryOperatorTiers = {
+        private static readonly string[][] unaryOperatorTiers = {
             new string[] {},
             new string[] {},
             new string[] {},
             new string[] {"-", "!"},
         };
 
-        private static string[][] binaryOperatorTiers = {
+        private static readonly string[][] binaryOperatorTiers = {
             new string[] {","},
             new string[] {"==", "!="},
             new string[] {">", "<", ">=", "<="},

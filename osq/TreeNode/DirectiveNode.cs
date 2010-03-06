@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace osq.TreeNode {
     public abstract class DirectiveNode : NodeBase {
-        private static IDictionary<string, Type> directiveTypes = new Dictionary<string, Type>() {
+        private static readonly IDictionary<string, Type> DirectiveTypes = new Dictionary<string, Type>() {
             {"def(ine)?", typeof(DefineNode)},
             {"let", typeof(LetNode)},
             {"each", typeof(EachNode)},
@@ -58,7 +58,7 @@ namespace osq.TreeNode {
             var startLocation = input.Location.Clone();
             string line = input.ReadLine();
 
-            foreach(var pair in directiveTypes) {
+            foreach(var pair in DirectiveTypes) {
                 string type = pair.Key;
                 Type nodeType = pair.Value;
 

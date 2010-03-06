@@ -6,7 +6,7 @@ namespace osq {
     public class LocatedTextReaderWrapper : TextReader, IDisposable {
         private TextReader source;
         private Location location;
-        private bool mustDisposeSource = false;
+        private readonly bool mustDisposeSource = false;
 
         public Location Location {
             get {

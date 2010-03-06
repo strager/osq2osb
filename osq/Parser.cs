@@ -58,14 +58,14 @@ namespace osq {
             int c = input.Peek();
 
             switch(c) {
-                case '{':
+                case (int)'{':
                     input.Read(); // Discard.
 
                     var tokens = ReadToExpressionEnd(input);
 
                     return ExpressionRewriter.Rewrite(tokens);
 
-                case '$':
+                case (int)'$':
                     input.Read(); // Discard.
                     return new RawTextNode("$", startLocation);
 

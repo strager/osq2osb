@@ -2,7 +2,7 @@
 
 namespace osq {
     public static class LocationExceptionHelpers {
-        private static object locationIdentifier = "x";
+        private static readonly object locationIdentifier = "x";
 
         public static TException AtLocation<TException>(this TException exception, Location location) where TException : Exception {
             if(location != null && exception.Data != null) {

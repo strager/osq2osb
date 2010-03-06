@@ -137,7 +137,7 @@ namespace osq {
         }
 
         public object GetVariable(string name) {
-            object value = null;
+            object value;
 
             if(this.variables.ContainsKey(name)) {
                 value = this.variables[name];
