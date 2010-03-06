@@ -47,6 +47,7 @@
             this.osqScript.Name = "osqScript";
             this.osqScript.Size = new System.Drawing.Size(581, 776);
             this.osqScript.TabIndex = 0;
+            this.osqScript.TextChanged += new System.EventHandler(this.osqScript_TextChanged);
             // 
             // osbScript
             // 
@@ -66,6 +67,7 @@
             this.osq2osb.TabIndex = 2;
             this.osq2osb.Text = "OSQ > OSB";
             this.osq2osb.UseVisualStyleBackColor = true;
+            this.osq2osb.Click += new System.EventHandler(this.osq2osb_Click);
             // 
             // splitContainer1
             // 
@@ -95,6 +97,7 @@
             this.osb2osq.TabIndex = 4;
             this.osb2osq.Text = "OSQ < OSB";
             this.osb2osq.UseVisualStyleBackColor = true;
+            this.osb2osq.Click += new System.EventHandler(this.osb2osq_Click);
             // 
             // MainForm
             // 
