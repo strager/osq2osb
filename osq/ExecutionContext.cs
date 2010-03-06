@@ -7,9 +7,9 @@ using osq.Parser.TreeNode;
 
 namespace osq {
     public class ExecutionContext {
-        private static Random rand = new Random(31337);
+        private static readonly Random rand = new Random(31337);
 
-        private IDictionary<string, object> variables = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> variables = new Dictionary<string, object>();
 
         private void SetFunction(string name, Func<TokenNode, ExecutionContext, object> func) {
             SetVariable(name, func);
@@ -25,39 +25,23 @@ namespace osq {
 
             Func<object, double> num = (object o) => (System.Convert.ToDouble(o));
 
-            SetFunction("int", (token, context) => {
-                return (int)num(token.TokenChildren[0].Evaluate(context));
-            });
+            SetFunction("int", (token, context) => (int)num(token.TokenChildren[0].Evaluate(context)));
 
-            SetFunction("sqrt", (token, context) => {
-                return Math.Sqrt(num(token.TokenChildren[0].Evaluate(context)));
-            });
+            SetFunction("sqrt", (token, context) => Math.Sqrt(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetFunction("rand", (token, context) => {
-                return rand.NextDouble();
-            });
+            SetFunction("rand", (token, context) => rand.NextDouble());
 
             SetVariable("pi", Math.PI);
 
-            SetFunction("sin", (token, context) => {
-                return Math.Sin(num(token.TokenChildren[0].Evaluate(context)));
-            });
+            SetFunction("sin", (token, context) => Math.Sin(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetFunction("cos", (token, context) => {
-                return Math.Cos(num(token.TokenChildren[0].Evaluate(context)));
-            });
+            SetFunction("cos", (token, context) => Math.Cos(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetFunction("tan", (token, context) => {
-                return Math.Tan(num(token.TokenChildren[0].Evaluate(context)));
-            });
+            SetFunction("tan", (token, context) => Math.Tan(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetFunction("concat", (token, context) => {
-                return new Token(TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray()));
-            });
+            SetFunction("concat", (token, context) => new Token(TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray())));
 
-            SetFunction("+", (token, context) => {
-                return token.TokenChildren.Aggregate((double)0, (r, t) => r + num(t.Evaluate(context)));
-            });
+            SetFunction("+", (token, context) => token.TokenChildren.Aggregate((double)0, (r, t) => r + num(t.Evaluate(context))));
 
             SetFunction("-", (token, context) => {
                 var children = token.TokenChildren;
@@ -69,9 +53,7 @@ namespace osq {
                 return num(children[0].Evaluate(context)) - num(children[1].Evaluate(context));
             });
 
-            SetFunction("*", (token, context) => {
-                return token.TokenChildren.Aggregate((double)1, (r, t) => r * num(t.Evaluate(context)));
-            });
+            SetFunction("*", (token, context) => token.TokenChildren.Aggregate((double)1, (r, t) => r * num(t.Evaluate(context))));
 
             SetFunction("/", (token, context) => {
                 var children = token.TokenChildren;
@@ -91,9 +73,7 @@ namespace osq {
                 return Math.Pow(num(children[0].Evaluate(context)), num(children[1].Evaluate(context)));
             });
 
-            SetFunction(",", (token, context) => {
-                return token.TokenChildren.Select(child => child.Evaluate(context)).ToArray();
-            });
+            SetFunction(",", (token, context) => token.TokenChildren.Select(child => child.Evaluate(context)).ToArray());
 
             SetFunction(":", (token, context) => {
                 var children = token.TokenChildren;
