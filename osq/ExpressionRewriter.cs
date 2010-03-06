@@ -6,21 +6,21 @@ using osq.TreeNode;
 namespace osq {
     public class ExpressionRewriter {
         private static readonly string[][] UnaryOperatorTiers = {
-            new string[] {},
-            new string[] {},
-            new string[] {},
-            new string[] {"-", "!"},
+            new string[] { },
+            new string[] { },
+            new string[] { },
+            new string[] { "-", "!" },
         };
 
         private static readonly string[][] BinaryOperatorTiers = {
-            new string[] {","},
-            new string[] {"==", "!="},
-            new string[] {">", "<", ">=", "<="},
-            new string[] {},
-            new string[] {"+", "-"},
-            new string[] {"*", "/", "%"},
-            new string[] {"^"},
-            new string[] {":"},
+            new string[] { "," },
+            new string[] { "==", "!=" },
+            new string[] { ">", "<", ">=", "<=" },
+            new string[] { },
+            new string[] { "+", "-" },
+            new string[] { "*", "/", "%" },
+            new string[] { "^" },
+            new string[] { ":" },
         };
 
         private static int GetOperatorTier(string op, string[][] tiers) {
