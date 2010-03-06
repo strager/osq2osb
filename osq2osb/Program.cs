@@ -73,7 +73,7 @@ namespace osq2osb {
                             watcher.Add(filename);
                         }
 
-                        foreach(string file in executionContext.Dependancies.Where((file) => !watcher.Contains(file))) {
+                        foreach(string file in executionContext.Dependencies.Where((file) => !watcher.Contains(file))) {
                             watcher.Add(file);
                         }
                     }

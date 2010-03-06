@@ -15,13 +15,13 @@ namespace osq {
             SetVariable(name, func);
         }
 
-        public ICollection<string> Dependancies {
+        public ICollection<string> Dependencies {
             get;
             private set;
         }
 
         public ExecutionContext() {
-            Dependancies = new List<string>();
+            Dependencies = new List<string>();
 
             Func<object, double> num = (object o) => (System.Convert.ToDouble(o));
 

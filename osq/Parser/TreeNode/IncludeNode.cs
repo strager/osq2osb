@@ -41,8 +41,8 @@ namespace osq.Parser.TreeNode {
                 }
             }
 
-            if(!context.Dependancies.Contains(filePath)) {
-                context.Dependancies.Add(filePath);
+            if(!context.Dependencies.Contains(filePath)) {
+                context.Dependencies.Add(filePath);
             }
 
             return output.ToString();
