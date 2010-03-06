@@ -58,12 +58,14 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BufferingTextReaderWrapper.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="LinqBridge.cs" />
     <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="ExpressionRewriter.cs" />
     <Compile Include="Parser.cs" />
+    <Compile Include="Reverser.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TreeNode\DefineNode.cs" />
     <Compile Include="TreeNode\DirectiveNode.cs" />

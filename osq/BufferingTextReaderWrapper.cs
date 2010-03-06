@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace osqReverser {
-    public class BufferingTextReaderWrapper : TextReader, IDisposable {
+namespace osq {
+    internal class BufferingTextReaderWrapper : TextReader, IDisposable {
         private readonly bool mustDisposeSource;
         private bool disposed;
         private TextReader source;
