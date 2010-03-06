@@ -8,7 +8,7 @@ namespace osq.Parser.TreeNode {
     public abstract class NodeBase {
         public IList<NodeBase> ChildrenNodes {
             get;
-            set;
+            private set;
         }
 
         public IEnumerable<NodeBase> ExecutableChildren {
@@ -34,11 +34,11 @@ namespace osq.Parser.TreeNode {
             set;
         }
 
-        public NodeBase(Location location) :
+        protected NodeBase(Location location) :
             this(null, location) {
         }
-        
-        public NodeBase(string content, Location location) {
+
+        protected NodeBase(string content, Location location) {
             ChildrenNodes = new List<NodeBase>();
             Content = content;
             Location = location;
