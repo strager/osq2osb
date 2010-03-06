@@ -75,16 +75,16 @@ namespace osq.TreeNode {
                     parameters = parameters[0].TokenChildren;
                 }
 
-                var paramNameEnumerator = FunctionParameters.GetEnumerator();
+                using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {
+                    foreach(var child in parameters) {
+                        if(!paramNameEnumerator.MoveNext()) {
+                            break;
+                        }
 
-                foreach(var child in parameters) {
-                    if(!paramNameEnumerator.MoveNext()) {
-                        break;
+                        object value = child.Evaluate(context);
+
+                        subContext.SetVariable(paramNameEnumerator.Current, value);
                     }
-
-                    object value = child.Evaluate(context);
-
-                    subContext.SetVariable(paramNameEnumerator.Current, value);
                 }
 
                 string output = ExecuteChildren(context);
