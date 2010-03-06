@@ -46,7 +46,6 @@ namespace osq {
 
         public Location(string fileName) :
             this(fileName, 1, 1) {
-            FileName = fileName;
         }
 
         public Location(int lineNumber, int column) :
