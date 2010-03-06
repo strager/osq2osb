@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using osq;
+using ExecutionContext = osq.ExecutionContext;
 
 namespace osq2osb {
     class Program {
@@ -25,7 +27,7 @@ namespace osq2osb {
                             }
                         }
                     } catch(Exception e) {
-                        Console.WriteLine("Error: " + e.ToString());
+                        Console.WriteLine("Error: " + e);
                     }
                 }
             } else {
@@ -41,7 +43,7 @@ namespace osq2osb {
                     Console.WriteLine("Watching " + filename + " for changes...");
                 }
 
-                System.Threading.Thread.Sleep(-1);
+                Thread.Sleep(-1);
             }
         }
 
@@ -63,7 +65,7 @@ namespace osq2osb {
 
                         watcher.Clear();
                     } catch(Exception e) {
-                        Console.WriteLine("\nError: " + e.ToString());
+                        Console.WriteLine("\nError: " + e);
 
                         return;
                     } finally {

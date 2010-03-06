@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace osq2osb {
     class FileCollectionWatcher {
-        private IDictionary<string, FileSystemWatcher> watchers = new Dictionary<string, FileSystemWatcher>();
+        private readonly IDictionary<string, FileSystemWatcher> watchers = new Dictionary<string, FileSystemWatcher>();
 
         public IEnumerable<string> Files {
             get {
-                return watchers.Keys;
+                return this.watchers.Keys;
             }
-        }
-
-        public FileCollectionWatcher() {
         }
 
         public bool Contains(string file) {
@@ -23,18 +20,18 @@ namespace osq2osb {
         public void Add(string file) {
             var watcher = new FileSystemWatcher(Path.GetDirectoryName(file), Path.GetFileName(file));
 
-            watcher.Changed += this.FileChanged;
+            watcher.Changed += FileChanged;
             watcher.EnableRaisingEvents = true;
 
-            watchers[file] = watcher;
+            this.watchers[file] = watcher;
         }
 
         public void Clear() {
-            foreach(var p in watchers) {
+            foreach(var p in this.watchers) {
                 p.Value.Dispose();
             }
 
-            watchers.Clear();
+            this.watchers.Clear();
         }
 
         public event FileSystemEventHandler Changed;
