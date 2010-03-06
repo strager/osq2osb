@@ -15,8 +15,7 @@ namespace osq.TreeNode {
                 }
 
                 if(Content != null) {
-                    var contentNode = new RawTextNode(Content, Location);
-                    yield return contentNode;
+                    yield return new RawTextNode(Content, Location);
                 }
             }
         }
