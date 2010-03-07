@@ -21,20 +21,20 @@ namespace osq {
         }
     }
 
-    public class Reverser {
-        private readonly List<ConvertedNode> scriptNodes = new List<ConvertedNode>();
+    public class Converter {
+        private List<ConvertedNode> scriptNodes = null;
 
-        public string Parse(LocatedTextReaderWrapper source) {
-            return Parse(source, new ExecutionContext());
+        public string Convert(LocatedTextReaderWrapper source) {
+            return Convert(source, new ExecutionContext());
         }
 
-        public string Parse(LocatedTextReaderWrapper source, ExecutionContext context) {
-            scriptNodes.Clear();
+        public string Convert(LocatedTextReaderWrapper source, ExecutionContext context) {
+            scriptNodes = new List<ConvertedNode>();
 
             var output = new StringBuilder();
 
             using(var bufferingReader = new BufferingTextReaderWrapper(source))
-            using (var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location)) { // Sorry we have to do this...
+            using(var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location)) { // Sorry we have to do this...
                 NodeBase node;
 
                 while((node = Parser.ReadNode(myReader)) != null) {
@@ -57,7 +57,11 @@ namespace osq {
             return output.ToString();
         }
 
-        public string Reverse(string modifiedSource) {
+        public string SourceFromOutput(string modifiedSource) {
+            if(scriptNodes == null) {
+                throw new InvalidOperationException("Must convert before unconverting");
+            }
+
             var output = new StringBuilder();
 
             foreach(var convertedNode in scriptNodes) {
