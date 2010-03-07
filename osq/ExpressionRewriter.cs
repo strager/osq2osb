@@ -66,7 +66,7 @@ namespace osq {
             var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), BinaryOperatorTiers) + 1);
 
             if(right == null) {
-                throw new InvalidOperationException("Expected something after operator " + opToken.Value);
+                throw new MissingDataException("Expected something after operator " + opToken.Value);
             }
 
             var opTree = new TokenNode(opToken, null);
@@ -130,7 +130,7 @@ namespace osq {
 
                 // Eat the ).
                 if(this.tokens.Count == 0 || !this.tokens.Peek().IsSymbol(")")) {
-                    throw new InvalidOperationException("Unmatched left parentheses");
+                    throw new MissingDataException("Closing parentheses");
                 }
 
                 this.tokens.Dequeue();
@@ -145,7 +145,7 @@ namespace osq {
             var subTree = ReadLevel(1);
 
             if(this.tokens.Count == 0 || !this.tokens.Peek().IsSymbol(")")) {
-                throw new InvalidOperationException("Unmatched left parentheses");
+                throw new MissingDataException("Closing parentheses");
             }
 
             this.tokens.Dequeue();

@@ -116,7 +116,7 @@ namespace osq {
                     return num(a) == num(b);
                 }
 
-                throw new InvalidOperationException("Don't know how to handle equality of objects");
+                throw new DataTypeException("Don't know how to handle equality of objects");
             };
 
             SetFunction("==", (token, context) => {
@@ -144,7 +144,7 @@ namespace osq {
             } else if(this.variables.ContainsKey(name)) {
                 value = this.variables[name];
             } else {
-                throw new InvalidOperationException("Unknown variable: " + name);
+                throw new UnknownVariableException(name);
             }
 
             return value;

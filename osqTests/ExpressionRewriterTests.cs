@@ -83,11 +83,11 @@ namespace osq.Tests {
 
         [Test]
         public void ParenthesesExceptions() {
-            Assert.Throws<InvalidOperationException>(delegate {
+            Assert.Throws<MissingDataException>(delegate {
                 ExpressionToTokenNode("2 + (2");
             });
 
-            Assert.Throws<InvalidOperationException>(delegate {
+            Assert.Throws<MissingDataException>(delegate {
                 ExpressionToTokenNode("what(unmatched + 4");
             });
 
@@ -98,7 +98,7 @@ namespace osq.Tests {
 
         [Test]
         public void Exceptions() {
-            Assert.Throws<InvalidOperationException>(delegate {
+            Assert.Throws<MissingDataException>(delegate {
                 ExpressionToTokenNode("2 +");
             });
         }

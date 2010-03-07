@@ -43,6 +43,7 @@ namespace osq {
                     return ReadTextNode(input);
                 }
             } catch(Exception e) {
+                // FIXME badly.
                 throw e.AtLocation(loc);
             }
         }
@@ -52,8 +53,9 @@ namespace osq {
         }
 
         private static NodeBase ReadExpressionNode(LocatedTextReaderWrapper input) {
-            if(!IsExpressionStart((char)input.Read())) {
-                throw new InvalidDataException("Expressions must begin with $");
+            {
+                char tmp = (char)input.Read();
+                System.Diagnostics.Debug.Assert(IsExpressionStart(tmp));
             }
 
             var startLocation = input.Location.Clone();

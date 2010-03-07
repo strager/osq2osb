@@ -24,11 +24,11 @@ namespace osq.TreeNode {
             Token token = Token.ReadToken(reader);
 
             if(token == null) {
-                throw new InvalidDataException("Need a variable name for #define").AtLocation(startLocation);
+                throw new MissingDataException("Variable name", startLocation);
             }
 
             if(token.TokenType != TokenType.Identifier) {
-                throw new InvalidDataException("Need a variable name for #define").AtLocation(token.Location);
+                throw new MissingDataException("Variable name", token.Location);
             }
 
             Variable = token.Value.ToString();
@@ -45,7 +45,7 @@ namespace osq.TreeNode {
                 }
 
                 if(token == null) {
-                    throw new InvalidDataException("#define without closing parentheses").AtLocation(reader.Location);
+                    throw new MissingDataException("Closing parentheses", reader.Location);
                 }
             }
 

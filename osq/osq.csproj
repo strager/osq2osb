@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="BufferingTextReaderWrapper.cs" />
     <Compile Include="ExecutionContext.cs" />
+    <Compile Include="ExecutionException.cs" />
     <Compile Include="LinqBridge.cs" />
     <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />

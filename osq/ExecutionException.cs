@@ -38,4 +38,46 @@ namespace osq {
             this.node = node;
         }
     }
+
+    public class DataTypeException : ExecutionException {
+        public DataTypeException() {
+        }
+
+        public DataTypeException(string message) :
+            base(message) {
+        }
+
+        public DataTypeException(string message, NodeBase node) :
+            base(message, node) {
+        }
+
+        public DataTypeException(string message, Exception inner) :
+            base(message, inner) {
+        }
+
+        public DataTypeException(string message, NodeBase node, Exception inner) :
+            base(message, node, inner) {
+        }
+    }
+
+    public class UnknownVariableException : ExecutionException {
+        public UnknownVariableException() {
+        }
+
+        public UnknownVariableException(string message) :
+            base(message) {
+        }
+
+        public UnknownVariableException(string message, NodeBase node) :
+            base(message, node) {
+        }
+
+        public UnknownVariableException(string message, Exception inner) :
+            base(message, inner) {
+        }
+
+        public UnknownVariableException(string message, NodeBase node, Exception inner) :
+            base(message, node, inner) {
+        }
+    }
 }

@@ -11,7 +11,9 @@ namespace osq.TreeNode {
         }
 
         public override string Execute(ExecutionContext context) {
-            throw new InvalidOperationException("Cannot execute an elseif node");
+            System.Diagnostics.Debug.Assert(false, "Cannot execute an elseif node");
+
+            return "";
         }
     }
 }

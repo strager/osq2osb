@@ -33,6 +33,7 @@ namespace osq.TreeNode {
 
         public object Evaluate(ExecutionContext context) {
             switch(Token.TokenType) {
+                default:
                 case TokenType.Number:
                 case TokenType.String:
                     return Token.Value;
@@ -45,8 +46,6 @@ namespace osq.TreeNode {
 
                     return asFunc == null ? item : asFunc.Invoke(this, context);
             }
-
-            throw new InvalidOperationException("Unknown token type");
         }
 
         public override string ToString() {

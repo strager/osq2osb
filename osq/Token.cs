@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -82,44 +83,38 @@ namespace osq {
         }
 
         public static Token ReadToken(LocatedTextReaderWrapper input) {
-            Location loc = null;
+            input.SkipWhiteSpace();
 
-            try {
-                input.SkipWhiteSpace();
+            int i = input.Peek();
 
-                int i = input.Peek();
-
-                if(i < 0) {
-                    return null;
-                }
-
-                char c = (char)i;
-
-                loc = input.Location.Clone();
-
-                Token token;
-
-                if(IsStringStart(c)) {
-                    token = ReadString(input);
-                } else if(IsNumberChar(c)) {
-                    token = ReadNumber(input);
-                } else if(IsIdentifierChar(c)) {
-                    token = ReadIdentifier(input);
-                } else if(IsSymbolChar(c)) {
-                    token = ReadSymbol(input);
-                } else {
-                    throw new InvalidDataException("Unknown token starting with " + c).AtLocation(loc);
-                }
-
-                token.Location = loc;
-
-                return token;
-            } catch(Exception e) {
-                throw e.AtLocation(loc);
+            if(i < 0) {
+                return null;
             }
+
+            char c = (char)i;
+
+            var startLocation = input.Location.Clone();
+
+            Token token;
+
+            if(IsStringStart(c)) {
+                token = ReadString(input);
+            } else if(IsNumberChar(c)) {
+                token = ReadNumber(input);
+            } else if(IsIdentifierChar(c)) {
+                token = ReadIdentifier(input);
+            } else if(IsSymbolChar(c)) {
+                token = ReadSymbol(input);
+            } else {
+                throw new BadDataException("Unknown token starting with " + c, startLocation);
+            }
+
+            token.Location = startLocation;
+
+            return token;
         }
 
-        private static Token ReadSymbol(TextReader input) {
+        private static Token ReadSymbol(LocatedTextReaderWrapper input) {
             var token = new StringBuilder();
 
             while(true) {
@@ -147,17 +142,25 @@ namespace osq {
             return new Token(TokenType.Symbol, token.ToString());
         }
 
-        private static Token ReadNumber(TextReader input) {
+        private static Token ReadNumber(LocatedTextReaderWrapper input) {
+            var startLocation = input.Location.Clone();
+
             var token = new StringBuilder();
 
             while(".0123456789".Contains((char)input.Peek())) {
                 token.Append((char)input.Read());
             }
 
-            return new Token(TokenType.Number, Convert.ToDouble(token.ToString(), Parser.DefaultCulture));
+            double number;
+
+            if(!double.TryParse(token.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, Parser.DefaultCulture, out number)) {
+                throw new BadDataException("Number", startLocation);
+            }
+
+            return new Token(TokenType.Number, number);
         }
 
-        private static Token ReadIdentifier(TextReader input) {
+        private static Token ReadIdentifier(LocatedTextReaderWrapper input) {
             var token = new StringBuilder();
 
             while(input.Peek() >= 0) {
@@ -173,7 +176,7 @@ namespace osq {
             return new Token(TokenType.Identifier, token.ToString());
         }
 
-        private static Token ReadString(TextReader input) {
+        private static Token ReadString(LocatedTextReaderWrapper input) {
             var str = new StringBuilder();
 
             input.Read(); // Consume ".
@@ -182,7 +185,7 @@ namespace osq {
                 int rawChar = input.Read();
 
                 if(rawChar < 0) {
-                    throw new InvalidDataException("Unexpected end-of-stream");
+                    throw new MissingDataException("End-of-string terminator", input.Location);
                 }
 
                 char c = (char)rawChar;
@@ -195,7 +198,7 @@ namespace osq {
                     int next = input.Read();
 
                     if(next < 0) {
-                        throw new InvalidDataException("Unexpected end-of-stream following \\");
+                        throw new MissingDataException("Code following \\", input.Location);
                     }
 
                     switch((char)next) {
@@ -220,7 +223,7 @@ namespace osq {
                             break;
 
                         default:
-                            throw new InvalidDataException("Unknown escape character: \\" + (char)next);
+                            throw new BadDataException("Unknown escape character \\" + (char)next, input.Location);
                     }
                 }
 

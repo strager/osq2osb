@@ -29,17 +29,17 @@ namespace osq.TreeNode {
             var node = Parser.ExpressionToTokenNode(info.ParametersReader);
 
             if(!node.Token.IsSymbol(",")) {
-                throw new InvalidDataException("Expected comma-separated list").AtLocation(Location);
+                throw new DataTypeException("Expected comma-separated list", this);
             }
 
             var children = node.TokenChildren;
 
             if(children.Count < 3 || children.Count > 4) {
-                throw new InvalidDataException("#for directive requires 3 to 4 parameters").AtLocation(Location);
+                throw new MissingDataException("#for directive requires 3 to 4 parameters", Location);
             }
 
             if(children[0].Token.TokenType != TokenType.Identifier) {
-                throw new InvalidDataException("Identifier expected").AtLocation(children[0].Location);
+                throw new MissingDataException("Identifier", children[0].Location);
             }
 
             Variable = children[0].Token.ToString();

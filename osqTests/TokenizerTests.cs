@@ -69,9 +69,9 @@ namespace osq.Tests {
                 }
             };
 
-            Assert.Throws<InvalidDataException>(stringTester("\""));
-            Assert.Throws<InvalidDataException>(stringTester("\"\\"));
-            Assert.Throws<InvalidDataException>(stringTester("\"\\?\""));
+            Assert.Throws<MissingDataException>(stringTester("\""));
+            Assert.Throws<MissingDataException>(stringTester("\"\\"));
+            Assert.Throws<BadDataException>(stringTester("\"\\?\""));
         }
     }
 }

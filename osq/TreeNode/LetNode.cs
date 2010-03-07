@@ -13,11 +13,11 @@ namespace osq.TreeNode {
             Token token = Token.ReadToken(info.ParametersReader);
 
             if(token == null) {
-                throw new InvalidDataException("Need a variable name for #let").AtLocation(info.ParametersReader.Location);
+                throw new MissingDataException("Variable name", info.ParametersReader.Location);
             }
 
             if(token.TokenType != TokenType.Identifier) {
-                throw new InvalidDataException("Need a variable name for #let").AtLocation(token.Location);
+                throw new MissingDataException("Variable name", token.Location);
             }
 
             Variable = token.Value.ToString();

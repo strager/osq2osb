@@ -31,7 +31,7 @@ namespace osq.TreeNode {
             } else if(val is Boolean) {
                 return (Boolean)val;
             } else {
-                throw new InvalidOperationException("Condition returns unknown data type").AtLocation(Location);
+                throw new DataTypeException("Condition returns unknown data type", this);
             }
         }
 

@@ -23,7 +23,7 @@ namespace osq.TreeNode {
             string filePath = Filename.Evaluate(context) as string;
 
             if(filePath == null) {
-                throw new InvalidDataException("Need string for filename").AtLocation(Location);
+                throw new DataTypeException("Need string for filename", this);
             }
 
             if(Location != null && Location.FileName != null) {
