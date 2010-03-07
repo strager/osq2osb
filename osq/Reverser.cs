@@ -25,14 +25,16 @@ namespace osq {
         private readonly List<ConvertedNode> scriptNodes = new List<ConvertedNode>();
 
         public string Parse(LocatedTextReaderWrapper source) {
+            return Parse(source, new ExecutionContext());
+        }
+
+        public string Parse(LocatedTextReaderWrapper source, ExecutionContext context) {
             scriptNodes.Clear();
 
             var output = new StringBuilder();
 
             using(var bufferingReader = new BufferingTextReaderWrapper(source))
             using (var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location)) { // Sorry we have to do this...
-                var context = new ExecutionContext();
-
                 NodeBase node;
 
                 while((node = Parser.ReadNode(myReader)) != null) {
