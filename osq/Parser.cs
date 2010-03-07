@@ -32,19 +32,12 @@ namespace osq {
                 return null;
             }
 
-            var loc = input.Location.Clone();
-
-            try {
-                if(IsExpressionStart((char)c)) {
-                    return ReadExpressionNode(input);
-                } else if(IsDirectiveStart((char)c, loc)) {
-                    return ReadDirectiveNode(input);
-                } else {
-                    return ReadTextNode(input);
-                }
-            } catch(Exception e) {
-                // FIXME badly.
-                throw e.AtLocation(loc);
+            if(IsExpressionStart((char)c)) {
+                return ReadExpressionNode(input);
+            } else if(IsDirectiveStart((char)c, input.Location)) {
+                return ReadDirectiveNode(input);
+            } else {
+                return ReadTextNode(input);
             }
         }
 
