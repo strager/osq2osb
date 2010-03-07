@@ -21,20 +21,20 @@ namespace osq {
         }
     }
 
-    public class Converter {
+    public class Encoder {
         private List<ConvertedNode> scriptNodes = null;
 
-        public string Convert(LocatedTextReaderWrapper source) {
-            return Convert(source, new ExecutionContext());
+        public string Encode(LocatedTextReaderWrapper source) {
+            return Encode(source, new ExecutionContext());
         }
 
-        public string Convert(LocatedTextReaderWrapper source, ExecutionContext context) {
+        public string Encode(LocatedTextReaderWrapper source, ExecutionContext context) {
             scriptNodes = new List<ConvertedNode>();
 
             var output = new StringBuilder();
 
             using(var bufferingReader = new BufferingTextReaderWrapper(source))
-            using(var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location)) { // Sorry we have to do this...
+            using(var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location.Clone())) { // Sorry we have to do this...
                 NodeBase node;
 
                 while((node = Parser.ReadNode(myReader)) != null) {
@@ -57,9 +57,9 @@ namespace osq {
             return output.ToString();
         }
 
-        public string SourceFromOutput(string modifiedSource) {
+        public string Decode(string modifiedSource) {
             if(scriptNodes == null) {
-                throw new InvalidOperationException("Must convert before unconverting");
+                return modifiedSource;
             }
 
             var output = new StringBuilder();
