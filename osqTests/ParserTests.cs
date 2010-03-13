@@ -82,5 +82,24 @@ namespace osq.Tests {
                 Assert.AreEqual(expected, output.ToString());
             }
         }
+
+        [Test]
+        public void LocalVariables() {
+            string input = "" +
+                "#let x 4\n" +
+                "#def func\n" +
+                "${x}\n" +
+                "#let x 5\n" +
+                "#local x\n" +
+                "#let x 6\n" +
+                "${x}\n" +
+                "#enddef" +
+                "${func}\n" +
+                "${x}\n";
+
+            string expected = "4\n6\n5\n";
+
+            CheckParserOutput(expected, input);
+        }
     }
 }
