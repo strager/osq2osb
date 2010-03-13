@@ -108,7 +108,7 @@ namespace osq.Tests {
                 "#local x\n" +
                 "#let x 6\n" +
                 "${x}\n" +
-                "#enddef" +
+                "#enddef\n" +
                 "${func}\n" +
                 "${x}\n";
 
