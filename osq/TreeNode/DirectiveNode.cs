@@ -16,6 +16,7 @@ namespace osq.TreeNode {
             { "if", typeof(IfNode) },
             { "else", typeof(ElseNode) },
             { "el(se)?if", typeof(ElseIfNode) },
+            { "local", typeof(LocalNode) },
             { "end([^\\s]+)", typeof(EndDirectiveNode) },
         };
 

@@ -80,6 +80,7 @@
     <Compile Include="TreeNode\IfNode.cs" />
     <Compile Include="TreeNode\IncludeNode.cs" />
     <Compile Include="TreeNode\LetNode.cs" />
+    <Compile Include="TreeNode\LocalNode.cs" />
     <Compile Include="TreeNode\NodeBase.cs" />
     <Compile Include="TreeNode\RawTextNode.cs" />
     <Compile Include="TreeNode\RepNode.cs" />

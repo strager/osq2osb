@@ -175,5 +175,9 @@ namespace osq {
 
             return scope[name];
         }
+
+        public bool VariableExists(string name) {
+            return FindVariableScope(name) != null;
+        }
     }
 }
