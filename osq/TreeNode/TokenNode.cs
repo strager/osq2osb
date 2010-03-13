@@ -42,7 +42,7 @@ namespace osq.TreeNode {
                 case TokenType.Symbol:
                     object item = context.GetVariable(Token.Value.ToString());
 
-                    var asFunc = item as Func<TokenNode, ExecutionContext, object>;
+                    var asFunc = item as ExecutionContext.OsqFunction;
 
                     return asFunc == null ? item : asFunc.Invoke(this, context);
             }

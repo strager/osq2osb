@@ -67,7 +67,7 @@ namespace osq.TreeNode {
         }
 
         public override string Execute(ExecutionContext context) {
-            context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((token, subContext) => {
+            context.SetVariable(Variable, new ExecutionContext.OsqFunction((token, subContext) => {
                 subContext.PushScope();
 
                 try {
