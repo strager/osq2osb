@@ -68,27 +68,33 @@ namespace osq.TreeNode {
 
         public override string Execute(ExecutionContext context) {
             context.SetVariable(Variable, new Func<TokenNode, ExecutionContext, object>((token, subContext) => {
-                var parameters = token.TokenChildren;
+                subContext.PushScope();
 
-                if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
-                    parameters = parameters[0].TokenChildren;
-                }
+                try {
+                    var parameters = token.TokenChildren;
 
-                using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {
-                    foreach(var child in parameters) {
-                        if(!paramNameEnumerator.MoveNext()) {
-                            break;
-                        }
-
-                        object value = child.Evaluate(context);
-
-                        subContext.SetVariable(paramNameEnumerator.Current, value);
+                    if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
+                        parameters = parameters[0].TokenChildren;
                     }
+
+                    using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {
+                        foreach(var child in parameters) {
+                            if(!paramNameEnumerator.MoveNext()) {
+                                break;
+                            }
+
+                            object value = child.Evaluate(context);
+
+                            subContext.SetLocalVariable(paramNameEnumerator.Current, value);
+                        }
+                    }
+
+                    string output = ExecuteChildren(context);
+
+                    return output.TrimEnd(Environment.NewLine.ToCharArray());
+                } finally {
+                    subContext.PopScope();
                 }
-
-                string output = ExecuteChildren(context);
-
-                return output.TrimEnd(Environment.NewLine.ToCharArray());
             }));
 
             return "";

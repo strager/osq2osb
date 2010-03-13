@@ -7,7 +7,9 @@ namespace osq {
     public class ExecutionContext {
         private static readonly Random Rand = new Random(31337);
 
-        private readonly IDictionary<string, object> variables = new Dictionary<string, object>();
+        private readonly IList<IDictionary<string, object>> variableStack = new List<IDictionary<string, object>>();
+        private readonly IDictionary<string, object> builtinVariables = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> globalVariables = new Dictionary<string, object>();
 
         private void SetFunction(string name, Func<TokenNode, ExecutionContext, object> func) {
             SetVariable(name, func);
@@ -20,6 +22,8 @@ namespace osq {
 
         public ExecutionContext() {
             Dependencies = new List<string>();
+
+            variableStack.Add(builtinVariables);
 
             Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.DefaultCulture));
 
@@ -130,24 +134,46 @@ namespace osq {
 
                 return !areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
             });
+
+            variableStack.Add(globalVariables);
+        }
+
+        public void PushScope() {
+            variableStack.Add(new Dictionary<string, object>());
+        }
+
+        public void PopScope() {
+            if(variableStack.Count <= 2) {
+                throw new InvalidOperationException("Cannot pop global scope");
+            }
+
+            variableStack.RemoveAt(variableStack.Count - 1);
+        }
+
+        public void SetLocalVariable(string name, object value) {
+            var localScope = variableStack.Reverse().First();
+
+            localScope[name] = value;
+        }
+
+        private IDictionary<string, object> FindVariableScope(string name) {
+            return variableStack.Reverse().FirstOrDefault((scope) => scope.ContainsKey(name));
         }
 
         public void SetVariable(string name, object value) {
-            this.variables[name] = value;
+            var scope = FindVariableScope(name) ?? this.globalVariables;
+
+            scope[name] = value;
         }
 
         public object GetVariable(string name) {
-            object value;
+            var scope = FindVariableScope(name);
 
-            if(this.variables.ContainsKey(name)) {
-                value = this.variables[name];
-            } else if(this.variables.ContainsKey(name)) {
-                value = this.variables[name];
-            } else {
+            if(scope == null) {
                 throw new UnknownVariableException(name);
             }
 
-            return value;
+            return scope[name];
         }
     }
 }
