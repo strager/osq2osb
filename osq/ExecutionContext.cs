@@ -13,11 +13,11 @@ namespace osq {
 
         public delegate object OsqFunction(TokenNode input, ExecutionContext context);
 
-        public void SetBuiltin(string name, OsqFunction func) {
+        public void SetBuiltinVariable(string name, OsqFunction func) {
             builtinVariables[name] = func;
         }
 
-        public void SetBuiltin(string name, object obj) {
+        public void SetBuiltinVariable(string name, object obj) {
             builtinVariables[name] = obj;
         }
 
@@ -34,25 +34,25 @@ namespace osq {
 
             Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.DefaultCulture));
 
-            SetBuiltin("int", (token, context) => (int)num(token.TokenChildren[0].Evaluate(context)));
+            SetBuiltinVariable("int", (token, context) => (int)num(token.TokenChildren[0].Evaluate(context)));
 
-            SetBuiltin("sqrt", (token, context) => Math.Sqrt(num(token.TokenChildren[0].Evaluate(context))));
+            SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetBuiltin("rand", (token, context) => Rand.NextDouble());
+            SetBuiltinVariable("rand", (token, context) => Rand.NextDouble());
 
-            SetBuiltin("pi", Math.PI);
+            SetBuiltinVariable("pi", Math.PI);
 
-            SetBuiltin("sin", (token, context) => Math.Sin(num(token.TokenChildren[0].Evaluate(context))));
+            SetBuiltinVariable("sin", (token, context) => Math.Sin(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetBuiltin("cos", (token, context) => Math.Cos(num(token.TokenChildren[0].Evaluate(context))));
+            SetBuiltinVariable("cos", (token, context) => Math.Cos(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetBuiltin("tan", (token, context) => Math.Tan(num(token.TokenChildren[0].Evaluate(context))));
+            SetBuiltinVariable("tan", (token, context) => Math.Tan(num(token.TokenChildren[0].Evaluate(context))));
 
-            SetBuiltin("concat", (token, context) => new Token(TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray())));
+            SetBuiltinVariable("concat", (token, context) => new Token(TokenType.String, string.Join("", token.TokenChildren.Select((t) => (string)t.Evaluate(context)).ToArray())));
 
-            SetBuiltin("+", (token, context) => token.TokenChildren.Aggregate((double)0, (r, t) => r + num(t.Evaluate(context))));
+            SetBuiltinVariable("+", (token, context) => token.TokenChildren.Aggregate((double)0, (r, t) => r + num(t.Evaluate(context))));
 
-            SetBuiltin("-", (token, context) => {
+            SetBuiltinVariable("-", (token, context) => {
                 var children = token.TokenChildren;
 
                 if(children.Count == 1) {
@@ -62,29 +62,29 @@ namespace osq {
                 return num(children[0].Evaluate(context)) - num(children[1].Evaluate(context));
             });
 
-            SetBuiltin("*", (token, context) => token.TokenChildren.Aggregate((double)1, (r, t) => r * num(t.Evaluate(context))));
+            SetBuiltinVariable("*", (token, context) => token.TokenChildren.Aggregate((double)1, (r, t) => r * num(t.Evaluate(context))));
 
-            SetBuiltin("/", (token, context) => {
+            SetBuiltinVariable("/", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) / num(children[1].Evaluate(context));
             });
 
-            SetBuiltin("%", (token, context) => {
+            SetBuiltinVariable("%", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) % num(children[1].Evaluate(context));
             });
 
-            SetBuiltin("^", (token, context) => {
+            SetBuiltinVariable("^", (token, context) => {
                 var children = token.TokenChildren;
 
                 return Math.Pow(num(children[0].Evaluate(context)), num(children[1].Evaluate(context)));
             });
 
-            SetBuiltin(",", (token, context) => token.TokenChildren.Select(child => child.Evaluate(context)).ToArray());
+            SetBuiltinVariable(",", (token, context) => token.TokenChildren.Select(child => child.Evaluate(context)).ToArray());
 
-            SetBuiltin(":", (token, context) => {
+            SetBuiltinVariable(":", (token, context) => {
                 var children = token.TokenChildren;
 
                 double val = (num(children[0].Evaluate(context)) * 60 + num(children[1].Evaluate(context))) * 1000;
@@ -96,25 +96,25 @@ namespace osq {
                 return val;
             });
 
-            SetBuiltin(">", (token, context) => {
+            SetBuiltinVariable(">", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) > num(children[1].Evaluate(context));
             });
 
-            SetBuiltin("<", (token, context) => {
+            SetBuiltinVariable("<", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) < num(children[1].Evaluate(context));
             });
 
-            SetBuiltin(">=", (token, context) => {
+            SetBuiltinVariable(">=", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) >= num(children[1].Evaluate(context));
             });
 
-            SetBuiltin("<=", (token, context) => {
+            SetBuiltinVariable("<=", (token, context) => {
                 var children = token.TokenChildren;
 
                 return num(children[0].Evaluate(context)) <= num(children[1].Evaluate(context));
@@ -130,13 +130,13 @@ namespace osq {
                 throw new DataTypeException("Don't know how to handle equality of objects");
             };
 
-            SetBuiltin("==", (token, context) => {
+            SetBuiltinVariable("==", (token, context) => {
                 var children = token.TokenChildren;
 
                 return areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
             });
 
-            SetBuiltin("!=", (token, context) => {
+            SetBuiltinVariable("!=", (token, context) => {
                 var children = token.TokenChildren;
 
                 return !areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
