@@ -69,6 +69,7 @@
     <Compile Include="ParserException.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Encoder.cs" />
+    <Compile Include="ParserOptions.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TreeNode\DefineNode.cs" />
     <Compile Include="TreeNode\DirectiveNode.cs" />

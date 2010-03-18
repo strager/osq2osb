@@ -14,6 +14,14 @@ namespace osq {
             set;
         }
 
+        private readonly ParserOptions options = new ParserOptions();
+
+        public ParserOptions Options {
+            get {
+                return options;
+            }
+        }
+
         public Parser(Parser other) {
             InputReader = other.InputReader;
         }
@@ -69,22 +77,25 @@ namespace osq {
 
             int c = InputReader.Peek();
 
-            switch(c) {
-                case (int)'{':
-                    InputReader.Read(); // Discard.
+            if(c == '{') {
+                InputReader.Read(); // Discard.
 
-                    var tokens = ReadToExpressionEnd();
+                var tokens = ReadToExpressionEnd();
 
-                    return ExpressionRewriter.Rewrite(tokens);
+                return ExpressionRewriter.Rewrite(tokens);
+            }
 
-                case (int)'$':
+            if(options.AllowVariableShorthand) {
+                if(c == '$') {
                     InputReader.Read(); // Discard.
                     return new RawTextNode("$", startLocation);
-
-                default:
-                    Token varName = Token.ReadToken(InputReader);
-                    return new TokenNode(varName, startLocation);
+                }
+                
+                Token varName = Token.ReadToken(InputReader);
+                return new TokenNode(varName, startLocation);
             }
+
+            return new RawTextNode("$", startLocation);
         }
 
         private IEnumerable<Token> ReadToExpressionEnd() {
