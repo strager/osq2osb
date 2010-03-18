@@ -51,10 +51,7 @@ namespace osq.TreeNode {
 
             reader.SkipWhiteSpace();
 
-            var parser = new Parser(info.Parser);
-            parser.InputReader = reader;
-
-            foreach(var node in parser.ReadNodes()) {
+            foreach(var node in (new Parser(info.Parser, reader)).ReadNodes()) {
                 ChildrenNodes.Add(node);
             }
         }

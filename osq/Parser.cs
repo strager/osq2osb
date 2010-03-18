@@ -18,6 +18,11 @@ namespace osq {
             InputReader = other.InputReader;
         }
 
+        public Parser(Parser other, LocatedTextReaderWrapper newReader) :
+            this(other) {
+            InputReader = newReader;
+        }
+
         public Parser(LocatedTextReaderWrapper reader) {
             InputReader = reader;
         }

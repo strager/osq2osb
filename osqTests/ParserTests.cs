@@ -11,6 +11,7 @@ namespace osq.Tests {
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
                 var parser = new Parser(reader);
+
                 foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
                 }

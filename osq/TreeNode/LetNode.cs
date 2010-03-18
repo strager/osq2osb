@@ -24,11 +24,7 @@ namespace osq.TreeNode {
 
             info.ParametersReader.SkipWhiteSpace();
 
-            // TODO Fluent
-            var parser = new Parser(info.Parser);
-            parser.InputReader = info.ParametersReader;
-
-            foreach(var node in parser.ReadNodes()) {
+            foreach(var node in (new Parser(info.Parser, info.ParametersReader)).ReadNodes()) {
                 ChildrenNodes.Add(node);
             }
         }
