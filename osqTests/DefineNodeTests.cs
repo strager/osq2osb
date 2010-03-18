@@ -11,7 +11,8 @@ namespace osq.Tests {
             TreeNode.NodeBase node;
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                node = Parser.ReadNode(reader);
+                var parser = new Parser(reader);
+                node = parser.ReadNode();
             }
 
             Assert.IsInstanceOf(typeof(TreeNode.DefineNode), node);

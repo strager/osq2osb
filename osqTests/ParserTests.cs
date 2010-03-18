@@ -10,7 +10,8 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.ReadNodes(reader)) {
+                var parser = new Parser(reader);
+                foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
                 }
 
@@ -56,7 +57,9 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.ReadNodes(reader)) {
+                var parser = new Parser(reader);
+
+                foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
                 }
 
@@ -75,7 +78,9 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                foreach(var node in Parser.ReadNodes(reader)) {
+                var parser = new Parser(reader);
+
+                foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
                 }
 

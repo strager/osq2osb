@@ -6,12 +6,25 @@ using System.Text;
 using osq.TreeNode;
 
 namespace osq {
-    public static class Parser {
+    public class Parser {
         internal static readonly CultureInfo DefaultCulture = new CultureInfo("en-US");
 
-        public static IEnumerable<NodeBase> ReadNodes(LocatedTextReaderWrapper input) {
+        public LocatedTextReaderWrapper InputReader {
+            get;
+            set;
+        }
+
+        public Parser(Parser other) {
+            InputReader = other.InputReader;
+        }
+
+        public Parser(LocatedTextReaderWrapper reader) {
+            InputReader = reader;
+        }
+
+        public IEnumerable<NodeBase> ReadNodes() {
             while(true) {
-                var node = ReadNode(input);
+                var node = ReadNode();
 
                 if(node == null) {
                     break;
@@ -21,23 +34,19 @@ namespace osq {
             }
         }
 
-        public static NodeBase ReadNode(LocatedTextReaderWrapper input) {
-            if(input == null) {
-                throw new ArgumentNullException("input");
-            }
-
-            int c = input.Peek();
+        public NodeBase ReadNode() {
+            int c = InputReader.Peek();
 
             if(c < 0) {
                 return null;
             }
 
             if(IsExpressionStart((char)c)) {
-                return ReadExpressionNode(input);
-            } else if(IsDirectiveStart((char)c, input.Location)) {
-                return ReadDirectiveNode(input);
+                return ReadExpressionNode();
+            } else if(IsDirectiveStart((char)c, InputReader.Location)) {
+                return ReadDirectiveNode();
             } else {
-                return ReadTextNode(input);
+                return ReadTextNode();
             }
         }
 
@@ -45,38 +54,38 @@ namespace osq {
             return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
         }
 
-        private static NodeBase ReadExpressionNode(LocatedTextReaderWrapper input) {
+        private NodeBase ReadExpressionNode() {
             {
-                char tmp = (char)input.Read();
+                char tmp = (char)InputReader.Read();
                 System.Diagnostics.Debug.Assert(IsExpressionStart(tmp));
             }
 
-            var startLocation = input.Location.Clone();
+            var startLocation = InputReader.Location.Clone();
 
-            int c = input.Peek();
+            int c = InputReader.Peek();
 
             switch(c) {
                 case (int)'{':
-                    input.Read(); // Discard.
+                    InputReader.Read(); // Discard.
 
-                    var tokens = ReadToExpressionEnd(input);
+                    var tokens = ReadToExpressionEnd();
 
                     return ExpressionRewriter.Rewrite(tokens);
 
                 case (int)'$':
-                    input.Read(); // Discard.
+                    InputReader.Read(); // Discard.
                     return new RawTextNode("$", startLocation);
 
                 default:
-                    Token varName = Token.ReadToken(input);
+                    Token varName = Token.ReadToken(InputReader);
                     return new TokenNode(varName, startLocation);
             }
         }
 
-        private static IEnumerable<Token> ReadToExpressionEnd(LocatedTextReaderWrapper input) {
+        private IEnumerable<Token> ReadToExpressionEnd() {
             Token token;
 
-            while((token = Token.ReadToken(input)) != null) {
+            while((token = Token.ReadToken(InputReader)) != null) {
                 if(token.IsSymbol("}")) {
                     break;
                 }
@@ -85,22 +94,22 @@ namespace osq {
             }
         }
 
-        private static DirectiveNode ReadDirectiveNode(LocatedTextReaderWrapper input) {
-            return DirectiveNode.Create(input);
+        private DirectiveNode ReadDirectiveNode() {
+            return DirectiveNode.Create(this);
         }
 
-        private static RawTextNode ReadTextNode(LocatedTextReaderWrapper input) {
-            var startLocation = input.Location.Clone();
+        private RawTextNode ReadTextNode() {
+            var startLocation = InputReader.Location.Clone();
 
             StringBuilder text = new StringBuilder();
 
-            int c = input.Peek();
+            int c = InputReader.Peek();
 
-            while(c >= 0 && !IsDirectiveStart((char)c, input.Location) && !IsExpressionStart((char)c)) {
+            while(c >= 0 && !IsDirectiveStart((char)c, InputReader.Location) && !IsExpressionStart((char)c)) {
                 text.Append((char)c);
 
-                input.Read(); // Discard; already peeked.
-                c = input.Peek();
+                InputReader.Read(); // Discard; already peeked.
+                c = InputReader.Peek();
             }
 
             return new RawTextNode(text.ToString(), startLocation);

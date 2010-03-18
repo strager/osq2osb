@@ -21,6 +21,11 @@ namespace osq.TreeNode {
         };
 
         public class DirectiveInfo {
+            public Parser Parser {
+                get;
+                set;
+            }
+
             public string DirectiveName {
                 get;
                 set;
@@ -36,7 +41,8 @@ namespace osq.TreeNode {
                 set;
             }
 
-            public DirectiveInfo(Location location, string directiveName, LocatedTextReaderWrapper parametersReader) {
+            public DirectiveInfo(Parser parser, Location location, string directiveName, LocatedTextReaderWrapper parametersReader) {
+                Parser = parser;
                 Location = location;
                 DirectiveName = directiveName;
                 ParametersReader = parametersReader;
@@ -55,9 +61,9 @@ namespace osq.TreeNode {
 
         protected abstract bool EndsWith(NodeBase node);
 
-        public static DirectiveNode Create(LocatedTextReaderWrapper input) {
-            var startLocation = input.Location.Clone();
-            string line = input.ReadLine();
+        public static DirectiveNode Create(Parser parser) {
+            var startLocation = parser.InputReader.Location.Clone();
+            string line = parser.InputReader.ReadLine();
 
             foreach(var pair in DirectiveTypes) {
                 string type = pair.Key;
@@ -80,7 +86,7 @@ namespace osq.TreeNode {
                 parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
 
                 using(var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation)) {
-                    DirectiveInfo info = new DirectiveInfo(startLocation, name, parametersReader);
+                    DirectiveInfo info = new DirectiveInfo(parser, startLocation, name, parametersReader);
 
                     var ctor = nodeType.GetConstructor(new[] { typeof(DirectiveInfo) });
                     Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
@@ -92,7 +98,7 @@ namespace osq.TreeNode {
                 NodeBase curNode = newNode;
 
                 while(!newNode.EndsWith(curNode)) {
-                    curNode = Parser.ReadNode(input);
+                    curNode = parser.ReadNode();
 
                     if(curNode == null) {
                         throw new MissingDataException("Closing #" + name + " directive", startLocation);

@@ -8,9 +8,13 @@ namespace osq.TreeNode {
             private set;
         }
 
+        private Parser parentParser;
+
         public IncludeNode(DirectiveInfo info) :
             base(info) {
             Filename = Parser.ExpressionToTokenNode(info.ParametersReader);
+
+            this.parentParser = info.Parser;
         }
 
         protected override bool EndsWith(NodeBase node) {
@@ -30,10 +34,14 @@ namespace osq.TreeNode {
                 filePath = Path.GetDirectoryName(Location.FileName) + Path.DirectorySeparatorChar + filePath;
             }
 
-            // Warning	29	CA2202 : Microsoft.Usage : Object 'inputFile' can be disposed more than once in method 'IncludeNode.Execute(ExecutionContext)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.
+            // TODO Clean up
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
-                using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath), false)) {
-                    foreach(var node in Parser.ReadNodes(reader)) {
+                using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath), wraperOwnsStream: false)) {
+                    var parser = new Parser(parentParser);
+
+                    parser.InputReader = reader;
+
+                    foreach(var node in parser.ReadNodes()) {
                         output.Append(node.Execute(context));
                     }
                 }

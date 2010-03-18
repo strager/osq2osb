@@ -35,9 +35,11 @@ namespace osq {
 
             using(var bufferingReader = new BufferingTextReaderWrapper(source))
             using(var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location.Clone())) { // Sorry we have to do this...
+                var parser = new Parser(myReader);
+
                 NodeBase node;
 
-                while((node = Parser.ReadNode(myReader)) != null) {
+                while((node = parser.ReadNode()) != null) {
                     string curOutput = node.Execute(context);
 
                     output.Append(curOutput);
