@@ -17,7 +17,9 @@ namespace osqReverser {
 
         private void osq2osb_Click(object sender, EventArgs e) {
             using(var reader = new LocatedTextReaderWrapper(osqScript.Text)) {
-                osbScript.Text = reverser.Encode(reader);
+                reverser.Parser.InputReader = reader;
+
+                osbScript.Text = reverser.Encode();
             }
 
             osb2osq.Enabled = true;

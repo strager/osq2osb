@@ -24,23 +24,72 @@ namespace osq {
     public class Encoder {
         private List<ConvertedNode> scriptNodes = null;
 
-        public string Encode(LocatedTextReaderWrapper source) {
-            return Encode(source, new ExecutionContext());
+        private Parser parser;
+
+        public Parser Parser {
+            get {
+                return this.parser;
+            }
+
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                }
+
+                this.parser = value;
+            }
         }
 
-        public string Encode(LocatedTextReaderWrapper source, ExecutionContext context) {
+        private ExecutionContext executionContext;
+
+        public ExecutionContext ExecutionContext {
+            get {
+                return this.executionContext;
+            }
+
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                }
+
+                this.executionContext = value;
+            }
+        }
+
+        public Encoder() :
+            this(new Parser()) {
+        }
+
+        public Encoder(LocatedTextReaderWrapper reader) :
+            this(new Parser(reader)) {
+        }
+
+        public Encoder(LocatedTextReaderWrapper reader, ExecutionContext context) :
+            this(new Parser(reader), context) {
+        }
+
+        public Encoder(Parser parser) :
+            this(parser, new ExecutionContext()) {
+        }
+
+        public Encoder(Parser parser, ExecutionContext context) {
+            Parser = parser;
+            ExecutionContext = context;
+        }
+
+        public string Encode() {
             scriptNodes = new List<ConvertedNode>();
 
             var output = new StringBuilder();
 
-            using(var bufferingReader = new BufferingTextReaderWrapper(source))
-            using(var myReader = new LocatedTextReaderWrapper(bufferingReader, source.Location.Clone())) { // Sorry we have to do this...
-                var parser = new Parser(myReader);
+            using(var bufferingReader = new BufferingTextReaderWrapper(Parser.InputReader))
+            using(var myReader = new LocatedTextReaderWrapper(bufferingReader, Parser.InputReader.Location.Clone())) { // Sorry we have to do this...
+                var parser = new Parser(Parser, myReader);
 
                 NodeBase node;
 
                 while((node = parser.ReadNode()) != null) {
-                    string curOutput = node.Execute(context);
+                    string curOutput = node.Execute(ExecutionContext);
 
                     output.Append(curOutput);
 

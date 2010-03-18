@@ -26,6 +26,9 @@ namespace osq {
             }
         }
 
+        public Parser() {
+        }
+
         public Parser(Parser other) {
             InputReader = other.InputReader;
             Options = other.Options.Clone();
@@ -53,6 +56,10 @@ namespace osq {
         }
 
         public NodeBase ReadNode() {
+            if(InputReader == null) {
+                throw new InvalidOperationException("Must have an InputReader to parse");
+            }
+
             int c = InputReader.Peek();
 
             if(c < 0) {
