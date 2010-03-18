@@ -90,6 +90,28 @@ namespace osq.Tests {
         }
 
         [Test]
+        public void NotVariableShorthand() {
+            string input = "x$test.2";
+            string expected = "x$test.2";
+
+            var context = new ExecutionContext();
+
+            var output = new StringBuilder();
+
+            using(var reader = new LocatedTextReaderWrapper(input)) {
+                var parser = new Parser(reader);
+
+                parser.Options.AllowVariableShorthand = false;
+
+                foreach(var node in parser.ReadNodes()) {
+                    output.Append(node.Execute(context));
+                }
+
+                Assert.AreEqual(expected, output.ToString());
+            }
+        }
+
+        [Test]
         public void VariableScope() {
             string input = "" +
                 "#let global 10\n" +
