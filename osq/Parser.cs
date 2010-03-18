@@ -14,16 +14,21 @@ namespace osq {
             set;
         }
 
-        private readonly ParserOptions options = new ParserOptions();
+        private ParserOptions options = new ParserOptions();
 
         public ParserOptions Options {
             get {
-                return options;
+                return this.options;
+            }
+
+            private set {
+                this.options = value;
             }
         }
 
         public Parser(Parser other) {
             InputReader = other.InputReader;
+            Options = other.Options.Clone();
         }
 
         public Parser(Parser other, LocatedTextReaderWrapper newReader) :

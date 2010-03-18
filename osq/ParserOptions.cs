@@ -12,5 +12,9 @@ namespace osq {
         public ParserOptions() {
             AllowVariableShorthand = true;
         }
+
+        public ParserOptions Clone() {
+            return this.MemberwiseClone() as ParserOptions;
+        }
     }
 }
