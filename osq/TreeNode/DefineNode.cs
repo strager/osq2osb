@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("def(ine)?")]
@@ -72,10 +73,10 @@ namespace osq.TreeNode {
                 subContext.PushScope();
 
                 try {
-                    var parameters = token.TokenChildren;
+                    var parameters = token.GetChildrenTokens();
 
                     if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
-                        parameters = parameters[0].TokenChildren;
+                        parameters = parameters[0].GetChildrenTokens();
                     }
 
                     using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {

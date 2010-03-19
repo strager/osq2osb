@@ -10,10 +10,8 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public IList<TokenNode> TokenChildren {
-            get {
-                return ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
-            }
+        public IList<TokenNode> GetChildrenTokens() {
+            return this.ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
         }
 
         public TokenNode(Token token, Location location) :
@@ -50,7 +48,7 @@ namespace osq.TreeNode {
 
         public override string ToString() {
             StringBuilder str = new StringBuilder();
-            var c = TokenChildren;
+            var c = GetChildrenTokens();
 
             str.Append(Token.Value.ToString());
 

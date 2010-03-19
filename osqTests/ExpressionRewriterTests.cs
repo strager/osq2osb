@@ -10,7 +10,7 @@ namespace osq.Tests {
             if(array != null) {
                 CheckTree(array[0], tree);
 
-                var tokenChildren = tree.TokenChildren;
+                var tokenChildren = tree.GetChildrenTokens();
 
                 Assert.AreEqual(array.Length - 1, tokenChildren.Count);
 

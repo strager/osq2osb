@@ -72,7 +72,7 @@ namespace osq {
             var opTree = new TokenNode(opToken, null);
 
             if((opToken.IsSymbol(",") && tree.Token.IsSymbol(","))
-                || (opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.TokenChildren.Count == 2)) {
+                || (opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.GetChildrenTokens().Count == 2)) {
                 foreach(var newChild in tree.ChildrenNodes) {
                     opTree.ChildrenNodes.Add(newChild);
                 }
