@@ -52,6 +52,10 @@ namespace osq {
         }
 
         private static bool IsIdentifierChar(char c) {
+            return "_".Contains(c) || char.IsLetterOrDigit(c);
+        }
+
+        private static bool IsIdentifierStart(char c) {
             return "_".Contains(c) || char.IsLetter(c);
         }
 
@@ -101,7 +105,7 @@ namespace osq {
                 token = ReadString(input);
             } else if(IsNumberChar(nextCharacter)) {
                 token = ReadNumber(input);
-            } else if(IsIdentifierChar(nextCharacter)) {
+            } else if(IsIdentifierStart(nextCharacter)) {
                 token = ReadIdentifier(input);
             } else if(IsSymbolChar(nextCharacter)) {
                 token = ReadSymbol(input);
@@ -186,49 +190,50 @@ namespace osq {
                     throw new MissingDataException("End-of-string terminator", input.Location);
                 }
 
-                char c = (char)rawChar;
+                char nextCharacter = (char)rawChar;
 
-                if(c == '"') {
+                if(nextCharacter == '"') {
                     break;
                 }
 
-                if(c == '\\') {
-                    int next = input.Read();
-
-                    if(next < 0) {
-                        throw new MissingDataException("Code following \\", input.Location);
-                    }
-
-                    switch((char)next) {
-                        case 'n':
-                            c = '\n';
-                            break;
-
-                        case 't':
-                            c = '\t';
-                            break;
-
-                        case 'r':
-                            c = '\r';
-                            break;
-
-                        case '\\':
-                            c = '\\';
-                            break;
-
-                        case '"':
-                            c = '"';
-                            break;
-
-                        default:
-                            throw new BadDataException("Unknown escape character \\" + (char)next, input.Location);
-                    }
+                if(nextCharacter == '\\') {
+                    nextCharacter = ReadEscapeCode(input);
                 }
 
-                str.Append(c);
+                str.Append(nextCharacter);
             }
 
             return new Token(TokenType.String, str.ToString());
+        }
+
+        private static char ReadEscapeCode(LocatedTextReaderWrapper input) {
+            int nextCharacter = input.Read();
+
+            if(nextCharacter < 0) {
+                throw new MissingDataException("Code following \\", input.Location);
+            }
+
+            switch((char)nextCharacter) {
+                case 'n':
+                    return '\n';
+
+                case 't':
+                    return '\t';
+
+                case 'r':
+                    return '\r';
+
+                case '\\':
+                    return '\\';
+
+                case '"':
+                    return '"';
+
+                default:
+                    var e = new BadDataException("Unknown escape character", input.Location);
+                    e.Data["character"] = (char)nextCharacter;
+                    throw e;
+            }
         }
     }
 }
