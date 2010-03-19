@@ -85,28 +85,28 @@ namespace osq {
         public static Token ReadToken(LocatedTextReaderWrapper input) {
             input.SkipWhiteSpace();
 
-            int i = input.Peek();
+            int nextCharacterCode = input.Peek();
 
-            if(i < 0) {
+            if(nextCharacterCode < 0) {
                 return null;
             }
 
-            char c = (char)i;
+            char nextCharacter = (char)nextCharacterCode;
 
             var startLocation = input.Location.Clone();
 
             Token token;
 
-            if(IsStringStart(c)) {
+            if(IsStringStart(nextCharacter)) {
                 token = ReadString(input);
-            } else if(IsNumberChar(c)) {
+            } else if(IsNumberChar(nextCharacter)) {
                 token = ReadNumber(input);
-            } else if(IsIdentifierChar(c)) {
+            } else if(IsIdentifierChar(nextCharacter)) {
                 token = ReadIdentifier(input);
-            } else if(IsSymbolChar(c)) {
+            } else if(IsSymbolChar(nextCharacter)) {
                 token = ReadSymbol(input);
             } else {
-                throw new BadDataException("Unknown token starting with " + c, startLocation);
+                throw new BadDataException("Unknown token starting with " + nextCharacter, startLocation);
             }
 
             token.Location = startLocation;
@@ -115,45 +115,41 @@ namespace osq {
         }
 
         private static Token ReadSymbol(LocatedTextReaderWrapper input) {
-            var token = new StringBuilder();
+            var curToken = "";
 
-            while(true) {
-                int i = input.Peek();
+            while(input.Peek() >= 0) {
+                char nextCharacter = (char)input.Peek();
 
-                if(i < 0) {
+                if(!IsSymbolChar(nextCharacter)) {
                     break;
                 }
 
-                char c = (char)i;
+                string newToken = curToken + nextCharacter;
 
-                if(!IsSymbolChar(c)) {
+                if(!IsSymbolStart(newToken)) {
                     break;
                 }
 
-                if(!IsSymbolStart(token.ToString() + c)) {
-                    break;
-                }
+                curToken = newToken;
 
-                token.Append(c);
-
-                input.Read();
+                input.Read();   // Discard.
             }
 
-            return new Token(TokenType.Symbol, token.ToString());
+            return new Token(TokenType.Symbol, curToken);
         }
 
         private static Token ReadNumber(LocatedTextReaderWrapper input) {
             var startLocation = input.Location.Clone();
 
-            var token = new StringBuilder();
+            var numberString = new StringBuilder();
 
             while(".0123456789".Contains((char)input.Peek())) {
-                token.Append((char)input.Read());
+                numberString.Append((char)input.Read());
             }
 
             double number;
 
-            if(!double.TryParse(token.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, Parser.DefaultCulture, out number)) {
+            if(!double.TryParse(numberString.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, Parser.DefaultCulture, out number)) {
                 throw new BadDataException("Number", startLocation);
             }
 
@@ -164,13 +160,15 @@ namespace osq {
             var token = new StringBuilder();
 
             while(input.Peek() >= 0) {
-                char c = (char)input.Peek();
+                char nextCharacter = (char)input.Peek();
 
-                if(!("_".Contains(c) || char.IsLetterOrDigit(c))) {
+                if(!("_".Contains(nextCharacter) || char.IsLetterOrDigit(nextCharacter))) {
                     break;
                 }
 
-                token.Append((char)input.Read());
+                token.Append(nextCharacter);
+
+                input.Read();   // Discard.
             }
 
             return new Token(TokenType.Identifier, token.ToString());
