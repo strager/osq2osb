@@ -46,9 +46,7 @@ namespace osq.TreeNode {
             string line = parser.InputReader.ReadLine();
 
             foreach(var type in GetDirectiveTypes()) {
-                var attrs = type.GetCustomAttributes(typeof(DirectiveAttribute), true).OfType<DirectiveAttribute>();
-
-                foreach(var attr in attrs) {
+                foreach(var attr in type.GetCustomAttributes(typeof(DirectiveAttribute), true).OfType<DirectiveAttribute>()) {
                     var info = ParseDirectiveLine(parser, attr.NameExpression, line, startLocation);
 
                     if(info == null) {
