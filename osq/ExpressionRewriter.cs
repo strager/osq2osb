@@ -52,9 +52,15 @@ namespace osq {
                 return null;
             }
 
-            while(this.tokens.Count != 0
-                && this.tokens.Peek().TokenType == TokenType.Symbol
-                    && GetOperatorTier(this.tokens.Peek().Value.ToString(), BinaryOperatorTiers) >= level) {
+            while(this.tokens.Count != 0) {
+                if(this.tokens.Peek().TokenType != TokenType.Symbol) {
+                    break;
+                }
+
+                if(GetOperatorTier(this.tokens.Peek().Value.ToString(), BinaryOperatorTiers) < level) {
+                    break;
+                }
+
                 tree = ReadBinaryExpression(tree);
             }
 
@@ -62,28 +68,33 @@ namespace osq {
         }
 
         private TokenNode ReadBinaryExpression(TokenNode tree) {
-            var opToken = this.tokens.Dequeue();
-            var right = ReadLevel(GetOperatorTier(opToken.Value.ToString(), BinaryOperatorTiers) + 1);
+            var opcodeToken = this.tokens.Dequeue();
+            var right = ReadLevel(GetOperatorTier(opcodeToken.Value.ToString(), BinaryOperatorTiers) + 1);
 
             if(right == null) {
-                throw new MissingDataException("Expected something after operator " + opToken.Value);
+                throw new MissingDataException("Expected something after operator " + opcodeToken.Value);
             }
 
-            var opTree = new TokenNode(opToken, null);
+            var opcodeNode = new TokenNode(opcodeToken, location: null);
 
-            if((opToken.IsSymbol(",") && tree.Token.IsSymbol(","))
-                || (opToken.IsSymbol(":") && tree.Token.IsSymbol(":") && tree.GetChildrenTokens().Count == 2)) {
-                foreach(var newChild in tree.ChildrenNodes) {
-                    opTree.ChildrenNodes.Add(newChild);
+            AddChildToOperator(tree, opcodeNode);
+
+            opcodeNode.ChildrenNodes.Add(right);
+
+            return opcodeNode;
+        }
+
+        private void AddChildToOperator(TokenNode child, TokenNode parent) {
+            bool mergeCommas = (parent.Token.IsSymbol(",") && child.Token.IsSymbol(","));
+            bool mergeColons = (parent.Token.IsSymbol(":") && child.Token.IsSymbol(":") && child.GetChildrenTokens().Count == 2);
+
+            if(mergeCommas || mergeColons) {
+                foreach(var newChild in child.ChildrenNodes) {
+                    parent.ChildrenNodes.Add(newChild);
                 }
             } else {
-                opTree.ChildrenNodes.Add(tree);
+                parent.ChildrenNodes.Add(child);
             }
-
-            opTree.ChildrenNodes.Add(right);
-            tree = opTree;
-
-            return tree;
         }
 
         private TokenNode ReadNumber() {
@@ -93,17 +104,21 @@ namespace osq {
 
             if(this.tokens.Peek().IsSymbol("(")) {
                 return ReadParentheticalExpression();
-            } else if(this.tokens.Peek().IsSymbol(")")) {
-                return null;
-            } else if(this.tokens.Peek().TokenType == TokenType.Identifier) {
-                return ReadIdentifier();
-            } else if(GetOperatorTier(this.tokens.Peek().Value.ToString(), UnaryOperatorTiers) >= 0) {
-                return ReadUnaryOperator();
-            } else {
-                var token = this.tokens.Dequeue();
-
-                return new TokenNode(token, null);
             }
+
+            if(this.tokens.Peek().IsSymbol(")")) {
+                return null;
+            }
+
+            if(this.tokens.Peek().TokenType == TokenType.Identifier) {
+                return ReadIdentifier();
+            }
+
+            if(GetOperatorTier(this.tokens.Peek().Value.ToString(), UnaryOperatorTiers) >= 0) {
+                return ReadUnaryOperator();
+            }
+
+            return new TokenNode(this.tokens.Dequeue(), null);
         }
 
         private TokenNode ReadUnaryOperator() {
@@ -116,41 +131,42 @@ namespace osq {
         }
 
         private TokenNode ReadIdentifier() {
-            var token = this.tokens.Dequeue();
-            var node = new TokenNode(token, null);
-
+            var identifier = this.tokens.Dequeue();
+            var identifierNode = new TokenNode(identifier, location: null);
+            
             if(this.tokens.Count != 0 && this.tokens.Peek().IsSymbol("(")) {
                 this.tokens.Dequeue();
 
-                var args = ReadLevel(0);
+                var arguments = ReadLevel(0);
 
-                if(args != null) {
-                    node.ChildrenNodes.Add(args);
+                if(arguments != null) {
+                    identifierNode.ChildrenNodes.Add(arguments);
                 }
 
-                // Eat the ).
-                if(this.tokens.Count == 0 || !this.tokens.Peek().IsSymbol(")")) {
-                    throw new MissingDataException("Closing parentheses");
-                }
-
-                this.tokens.Dequeue();
+                ReadClosingParentheses();
             }
 
-            return node;
+            return identifierNode;
         }
 
         private TokenNode ReadParentheticalExpression() {
-            this.tokens.Dequeue();
+            var leftParentheses = this.tokens.Dequeue();
+
+            System.Diagnostics.Debug.Assert(leftParentheses.IsSymbol("("));
 
             var subTree = ReadLevel(1);
 
+            ReadClosingParentheses();
+
+            return subTree;
+        }
+
+        private void ReadClosingParentheses() {
             if(this.tokens.Count == 0 || !this.tokens.Peek().IsSymbol(")")) {
                 throw new MissingDataException("Closing parentheses");
             }
 
             this.tokens.Dequeue();
-
-            return subTree;
         }
     }
 }
