@@ -69,48 +69,66 @@ namespace osq.TreeNode {
                 string type = pair.Key;
                 Type nodeType = pair.Value;
 
-                Regex re = new Regex("^#(?<name>" + type + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
+                var info = ParseDirectiveLine(parser, type, line, startLocation);
 
-                var match = re.Match(line);
-
-                if(!match.Success) {
+                if(info == null) {
                     continue;
                 }
 
-                string name = match.Groups["name"].Value;
+                using(info.ParametersReader) {
+                    var node = CreateInstance(nodeType, info);
 
-                DirectiveNode newNode;
+                    node.ReadSubNodes(parser);
 
-                string parametersText = match.Groups["params"].Value;
-                var parametersLocation = startLocation.Clone();
-                parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
-
-                using(var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation)) {
-                    DirectiveInfo info = new DirectiveInfo(parser, startLocation, name, parametersReader);
-
-                    var ctor = nodeType.GetConstructor(new[] { typeof(DirectiveInfo) });
-                    Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
-
-                    newNode = ctor.Invoke(new object[] { info }) as DirectiveNode;
-                    Debug.Assert(newNode != null, "Problem making new " + nodeType.Name);
+                    return node;
                 }
-
-                NodeBase curNode = newNode;
-
-                while(!newNode.EndsWith(curNode)) {
-                    curNode = parser.ReadNode();
-
-                    if(curNode == null) {
-                        throw new MissingDataException("Closing #" + name + " directive", startLocation);
-                    }
-
-                    newNode.ChildrenNodes.Add(curNode);
-                }
-
-                return newNode;
             }
 
             throw new BadDataException("Unknown directive " + line, startLocation);
+        }
+
+        private static DirectiveInfo ParseDirectiveLine(Parser parser, string type, string line, Location location) {
+            Regex re = new Regex("^#(?<name>" + type + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
+
+            var match = re.Match(line);
+
+            if(!match.Success) {
+                return null;
+            }
+
+            var name = match.Groups["name"].Value;
+            var parametersText = match.Groups["params"].Value;
+
+            var parametersLocation = location.Clone();
+            parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
+
+            var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation);
+
+            return new DirectiveInfo(parser, location, name, parametersReader);
+        }
+
+        private static DirectiveNode CreateInstance(Type nodeType, DirectiveInfo info) {
+            var ctor = nodeType.GetConstructor(new[] { typeof(DirectiveInfo) });
+            Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+
+            var node = ctor.Invoke(new[] { info }) as DirectiveNode;
+            Debug.Assert(node != null, "Problem making new " + nodeType.Name);
+
+            return node;
+        }
+
+        private void ReadSubNodes(Parser parser) {
+            NodeBase curNode = this;
+
+            while(!this.EndsWith(curNode)) {
+                curNode = parser.ReadNode();
+
+                if(curNode == null) {
+                    throw new MissingDataException("Closing #" + this.DirectiveName + " directive", this.Location);
+                }
+
+                this.ChildrenNodes.Add(curNode);
+            }
         }
 
         public override string ToString() {
