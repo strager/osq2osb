@@ -27,13 +27,6 @@ namespace osq.TreeNode {
                 get;
                 set;
             }
-
-            public DirectiveInfo(Parser parser, Location location, string directiveName, LocatedTextReaderWrapper parametersReader) {
-                Parser = parser;
-                Location = location;
-                DirectiveName = directiveName;
-                ParametersReader = parametersReader;
-            }
         }
 
         public string DirectiveName {
@@ -96,7 +89,12 @@ namespace osq.TreeNode {
 
             var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation);
 
-            return new DirectiveInfo(parser, location, name, parametersReader);
+            return new DirectiveInfo {
+                Parser = parser,
+                Location = location,
+                DirectiveName = name,
+                ParametersReader = parametersReader
+            };
         }
 
         private static DirectiveNode CreateInstance(Type nodeType, DirectiveInfo info) {
