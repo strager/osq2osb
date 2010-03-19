@@ -2,6 +2,7 @@
 using System.IO;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("let")]
     internal class LetNode : DirectiveNode {
         public string Variable {
             get;

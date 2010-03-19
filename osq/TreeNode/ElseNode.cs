@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("else")]
     internal class ElseNode : DirectiveNode {
         public ElseNode(DirectiveInfo info) :
             base(info) {

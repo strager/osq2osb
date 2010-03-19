@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("end([^\\s]+)")]
     internal class EndDirectiveNode : DirectiveNode {
         public string TargetDirectiveName {
             get {

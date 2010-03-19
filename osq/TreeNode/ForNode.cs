@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("for")]
     internal class ForNode : DirectiveNode {
         public string Variable {
             get;

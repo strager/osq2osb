@@ -1,25 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace osq.TreeNode {
     public abstract class DirectiveNode : NodeBase {
-        private static readonly IDictionary<string, Type> DirectiveTypes = new Dictionary<string, Type> {
-            { "def(ine)?", typeof(DefineNode) },
-            { "let", typeof(LetNode) },
-            { "each", typeof(EachNode) },
-            { "rep", typeof(RepNode) },
-            { "for", typeof(ForNode) },
-            { "inc(lude)?", typeof(IncludeNode) },
-            { "if", typeof(IfNode) },
-            { "else", typeof(ElseNode) },
-            { "el(se)?if", typeof(ElseIfNode) },
-            { "local", typeof(LocalNode) },
-            { "end([^\\s]+)", typeof(EndDirectiveNode) },
-        };
-
         public class DirectiveInfo {
             public Parser Parser {
                 get;
@@ -65,30 +52,35 @@ namespace osq.TreeNode {
             var startLocation = parser.InputReader.Location.Clone();
             string line = parser.InputReader.ReadLine();
 
-            foreach(var pair in DirectiveTypes) {
-                string type = pair.Key;
-                Type nodeType = pair.Value;
+            foreach(var type in GetDirectiveTypes()) {
+                var attrs = type.GetCustomAttributes(typeof(DirectiveAttribute), true).OfType<DirectiveAttribute>();
 
-                var info = ParseDirectiveLine(parser, type, line, startLocation);
+                foreach(var attr in attrs) {
+                    var info = ParseDirectiveLine(parser, attr.NameExpression, line, startLocation);
 
-                if(info == null) {
-                    continue;
-                }
+                    if(info == null) {
+                        continue;
+                    }
 
-                using(info.ParametersReader) {
-                    var node = CreateInstance(nodeType, info);
+                    using(info.ParametersReader) {
+                        var node = CreateInstance(type, info);
 
-                    node.ReadSubNodes(parser);
+                        if(node == null) {
+                            continue;
+                        }
 
-                    return node;
+                        node.ReadSubNodes(parser);
+
+                        return node;
+                    }
                 }
             }
 
             throw new BadDataException("Unknown directive " + line, startLocation);
         }
 
-        private static DirectiveInfo ParseDirectiveLine(Parser parser, string type, string line, Location location) {
-            Regex re = new Regex("^#(?<name>" + type + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
+        private static DirectiveInfo ParseDirectiveLine(Parser parser, string nameExpression, string line, Location location) {
+            Regex re = new Regex("^#(?<name>" + nameExpression + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
 
             var match = re.Match(line);
 
@@ -108,13 +100,15 @@ namespace osq.TreeNode {
         }
 
         private static DirectiveNode CreateInstance(Type nodeType, DirectiveInfo info) {
-            var ctor = nodeType.GetConstructor(new[] { typeof(DirectiveInfo) });
-            Debug.Assert(ctor != null, nodeType.Name + " doesn't have DirectiveInfo ctor");
+            return Activator.CreateInstance(nodeType, info) as DirectiveNode;
+        }
 
-            var node = ctor.Invoke(new[] { info }) as DirectiveNode;
-            Debug.Assert(node != null, "Problem making new " + nodeType.Name);
+        private static IEnumerable<Type> GetDirectiveTypes() {
+            return GetDirectiveTypes(Assembly.GetCallingAssembly());
+        }
 
-            return node;
+        private static IEnumerable<Type> GetDirectiveTypes(Assembly assembly) {
+            return assembly.GetTypes().Where((type) => !type.IsAbstract && type.IsSubclassOf(typeof(DirectiveNode)));
         }
 
         private void ReadSubNodes(Parser parser) {

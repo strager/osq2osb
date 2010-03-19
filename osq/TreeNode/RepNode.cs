@@ -1,6 +1,7 @@
 ﻿using System.Text;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("rep")]
     internal class RepNode : DirectiveNode {
         public TokenNode Value {
             get;

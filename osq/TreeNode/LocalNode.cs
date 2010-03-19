@@ -1,11 +1,9 @@
 ﻿using System.Text;
 
-namespace osq.TreeNode
-{
-    internal class LocalNode : DirectiveNode
-    {
-        public Token VariableName
-        {
+namespace osq.TreeNode {
+    [DirectiveAttribute("local")]
+    internal class LocalNode : DirectiveNode {
+        public Token VariableName {
             get;
             private set;
         }

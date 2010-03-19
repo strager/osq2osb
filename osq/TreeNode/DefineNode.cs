@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("def(ine)?")]
     public class DefineNode : DirectiveNode {
         public string Variable {
             get;

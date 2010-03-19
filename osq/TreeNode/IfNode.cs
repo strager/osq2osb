@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace osq.TreeNode {
+    [DirectiveAttribute("if")]
     internal class IfNode : DirectiveNode {
         public TokenNode Condition {
             get;
