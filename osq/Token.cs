@@ -143,7 +143,7 @@ namespace osq {
 
             var numberString = new StringBuilder();
 
-            while(".0123456789".Contains((char)input.Peek())) {
+            while(IsNumberChar((char)input.Peek())) {
                 numberString.Append((char)input.Read());
             }
 
@@ -162,7 +162,7 @@ namespace osq {
             while(input.Peek() >= 0) {
                 char nextCharacter = (char)input.Peek();
 
-                if(!("_".Contains(nextCharacter) || char.IsLetterOrDigit(nextCharacter))) {
+                if(!IsIdentifierChar(nextCharacter)) {
                     break;
                 }
 
