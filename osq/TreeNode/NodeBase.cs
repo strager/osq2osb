@@ -25,19 +25,26 @@ namespace osq.TreeNode {
             set;
         }
 
-        public Location Location {
-            get;
-            set;
+        private Location location;
+
+        public virtual Location Location {
+            get {
+                return this.location;
+            }
+
+            set {
+                this.location = value;
+            }
         }
 
-        protected NodeBase(Location location) :
+        protected NodeBase(Location location = null) :
             this(null, location) {
         }
 
-        protected NodeBase(string content, Location location) {
+        protected NodeBase(string content, Location location = null) {
             ChildrenNodes = new List<NodeBase>();
             Content = content;
-            Location = location;
+            this.location = location;
         }
 
         public abstract string Execute(ExecutionContext context);
