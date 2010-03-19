@@ -75,7 +75,7 @@ namespace osq {
                 throw new MissingDataException("Expected something after operator " + opcodeToken.Value);
             }
 
-            var opcodeNode = new TokenNode(opcodeToken, location: null);
+            var opcodeNode = new TokenNode(opcodeToken);
 
             AddChildToOperator(tree, opcodeNode);
 
@@ -118,12 +118,12 @@ namespace osq {
                 return ReadUnaryOperator();
             }
 
-            return new TokenNode(this.tokens.Dequeue(), null);
+            return new TokenNode(this.tokens.Dequeue());
         }
 
         private TokenNode ReadUnaryOperator() {
             var token = this.tokens.Dequeue();
-            var node = new TokenNode(token, null);
+            var node = new TokenNode(token);
 
             node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), UnaryOperatorTiers)));
 
@@ -132,7 +132,7 @@ namespace osq {
 
         private TokenNode ReadIdentifier() {
             var identifier = this.tokens.Dequeue();
-            var identifierNode = new TokenNode(identifier, location: null);
+            var identifierNode = new TokenNode(identifier);
             
             if(this.tokens.Count != 0 && this.tokens.Peek().IsSymbol("(")) {
                 this.tokens.Dequeue();

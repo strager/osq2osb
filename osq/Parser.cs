@@ -104,7 +104,7 @@ namespace osq {
                 }
                 
                 Token varName = Token.ReadToken(InputReader);
-                return new TokenNode(varName, startLocation);
+                return new TokenNode(varName);
             }
 
             return new RawTextNode("$", startLocation);

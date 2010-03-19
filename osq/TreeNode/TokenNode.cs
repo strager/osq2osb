@@ -14,8 +14,8 @@ namespace osq.TreeNode {
             return this.ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
         }
 
-        public TokenNode(Token token, Location location) :
-            base(null, location) {
+        public TokenNode(Token token) :
+            base(token.Location) {
             Token = token;
         }
 
