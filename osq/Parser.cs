@@ -87,9 +87,9 @@ namespace osq {
 
             var startLocation = InputReader.Location.Clone();
 
-            int c = InputReader.Peek();
+            int nextCharacter = InputReader.Peek();
 
-            if(c == '{') {
+            if(nextCharacter == '{') {
                 InputReader.Read(); // Discard.
 
                 var tokens = ReadToExpressionEnd();
@@ -98,7 +98,7 @@ namespace osq {
             }
 
             if(options.AllowVariableShorthand) {
-                if(c == '$') {
+                if(nextCharacter == '$') {
                     InputReader.Read(); // Discard.
                     return new RawTextNode("$", startLocation);
                 }
