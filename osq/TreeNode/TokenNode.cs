@@ -52,7 +52,7 @@ namespace osq.TreeNode {
         }
 
         public IList<TokenNode> GetChildrenTokens() {
-            return this.ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
+            return ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
         }
 
         public override string ToString() {
