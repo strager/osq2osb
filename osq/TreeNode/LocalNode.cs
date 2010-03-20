@@ -28,7 +28,7 @@ namespace osq.TreeNode {
         public override string Execute(ExecutionContext context) {
             string varName = VariableName.ToString();
 
-            context.SetLocalVariable(varName, context.VariableExists(varName) ? context.GetVariable(varName) : null);
+            context.SetLocalVariable(varName, context.IsVariableSet(varName) ? context.GetVariable(varName) : null);
 
             return "";
         }
