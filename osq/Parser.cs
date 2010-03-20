@@ -6,12 +6,15 @@ using System.Text;
 using osq.TreeNode;
 
 namespace osq {
+    /// <summary>
+    /// Parses an osq script into <see cref="NodeBase"/> instances.
+    /// </summary>
     public class Parser {
         /// <summary>
         /// Default culture used in parsing.
         /// </summary>
         internal static readonly CultureInfo DefaultCulture = new CultureInfo("en-US");
-
+        
         /// <summary>
         /// Gets or sets the input reader from which the <see cref="Parser"/> reads nodes.
         /// </summary>
