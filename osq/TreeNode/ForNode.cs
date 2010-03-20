@@ -27,7 +27,7 @@ namespace osq.TreeNode {
 
         public ForNode(DirectiveInfo info) :
             base(info) {
-            var node = Parser.ExpressionToTokenNode(info.ParametersReader);
+            var node = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
 
             if(!node.Token.IsSymbol(",")) {
                 throw new DataTypeException("Expected comma-separated list", this);

@@ -72,15 +72,13 @@ namespace osq {
 
             if(IsExpressionStart((char)c)) {
                 return ReadExpressionNode();
-            } else if(IsDirectiveStart((char)c, InputReader.Location)) {
-                return ReadDirectiveNode();
-            } else {
-                return ReadTextNode();
             }
-        }
 
-        public static TokenNode ExpressionToTokenNode(LocatedTextReaderWrapper reader) {
-            return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
+            if(IsDirectiveStart((char)c, this.InputReader.Location)) {
+                return ReadDirectiveNode();
+            }
+
+            return ReadTextNode();
         }
 
         private NodeBase ReadExpressionNode() {

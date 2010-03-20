@@ -13,7 +13,7 @@ namespace osq.TreeNode {
 
         public IncludeNode(DirectiveInfo info) :
             base(info) {
-            Filename = Parser.ExpressionToTokenNode(info.ParametersReader);
+            Filename = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
 
             this.parentParser = info.Parser;
         }

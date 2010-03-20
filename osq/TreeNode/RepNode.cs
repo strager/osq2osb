@@ -10,7 +10,7 @@ namespace osq.TreeNode {
 
         public RepNode(DirectiveInfo info) :
             base(info) {
-            Value = Parser.ExpressionToTokenNode(info.ParametersReader);
+            Value = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
         }
 
         protected override bool EndsWith(NodeBase node) {
