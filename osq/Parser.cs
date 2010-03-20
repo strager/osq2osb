@@ -7,15 +7,29 @@ using osq.TreeNode;
 
 namespace osq {
     public class Parser {
+        /// <summary>
+        /// Default culture used in parsing.
+        /// </summary>
         internal static readonly CultureInfo DefaultCulture = new CultureInfo("en-US");
 
+        /// <summary>
+        /// Gets or sets the input reader from which the <see cref="Parser"/> reads nodes.
+        /// </summary>
+        /// <value>The input reader.</value>
         public LocatedTextReaderWrapper InputReader {
             get;
             set;
         }
 
+        /// <summary>
+        /// Parser options.
+        /// </summary>
         private ParserOptions options = new ParserOptions();
 
+        /// <summary>
+        /// Gets or sets the parser options.
+        /// </summary>
+        /// <value>The parser options.</value>
         public ParserOptions Options {
             get {
                 return this.options;
@@ -26,9 +40,16 @@ namespace osq {
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parser"/> class.
+        /// </summary>
         public Parser() {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parser"/> class given a <see cref="Parser"/> to model after.
+        /// </summary>
+        /// <param name="other">Parser to copy the options and reader from.</param>
         public Parser(Parser other) {
             if(other == null) {
                 throw new ArgumentNullException("other");
@@ -38,15 +59,28 @@ namespace osq {
             Options = other.Options.Clone();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parser"/> class given a <see cref="Parser"/> to model after and a new reader.
+        /// </summary>
+        /// <param name="other">Parser to copy the options from.</param>
+        /// <param name="newReader">The new reader.</param>
         public Parser(Parser other, LocatedTextReaderWrapper newReader) :
             this(other) {
             InputReader = newReader;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Parser"/> class.
+        /// </summary>
+        /// <param name="reader">The reader with which to parse.</param>
         public Parser(LocatedTextReaderWrapper reader) {
             InputReader = reader;
         }
 
+        /// <summary>
+        /// Reads parser nodes from <see cref="InputReader"/>.
+        /// </summary>
+        /// <returns>Collection of nodes in <see cref="InputReader"/>'s contents.</returns>
         public IEnumerable<NodeBase> ReadNodes() {
             while(true) {
                 var node = ReadNode();
@@ -59,6 +93,10 @@ namespace osq {
             }
         }
 
+        /// <summary>
+        /// Reads a parser node from <see cref="InputReader"/>.
+        /// </summary>
+        /// <returns>Node reperesenting the read text.</returns>
         public NodeBase ReadNode() {
             if(InputReader == null) {
                 throw new InvalidOperationException("Must have an InputReader to parse");
@@ -81,6 +119,10 @@ namespace osq {
             return ReadTextNode();
         }
 
+        /// <summary>
+        /// Reads an expression node.
+        /// </summary>
+        /// <returns>Node representing the read expression.</returns>
         private NodeBase ReadExpressionNode() {
             {
                 char tmp = (char)InputReader.Read();
@@ -112,6 +154,10 @@ namespace osq {
             return new RawTextNode("$", startLocation);
         }
 
+        /// <summary>
+        /// Reads tokens until the end of an expression.  Discards the end of the expression.
+        /// </summary>
+        /// <returns>Tokens representing the expression.</returns>
         private IEnumerable<Token> ReadToExpressionEnd() {
             Token token;
 
@@ -124,10 +170,18 @@ namespace osq {
             }
         }
 
+        /// <summary>
+        /// Reads a directive node, including any children nodes.
+        /// </summary>
+        /// <returns>Directive node.</returns>
         private DirectiveNode ReadDirectiveNode() {
             return DirectiveNode.Create(this);
         }
 
+        /// <summary>
+        /// Reads a plain text node.
+        /// </summary>
+        /// <returns>Raw text node.</returns>
         private RawTextNode ReadTextNode() {
             var startLocation = InputReader.Location.Clone();
 
@@ -145,10 +199,25 @@ namespace osq {
             return new RawTextNode(text.ToString(), startLocation);
         }
 
+        /// <summary>
+        /// Determines whether the specified character is the start of an expression.
+        /// </summary>
+        /// <param name="c">The character to test.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified character is the start of an expression; otherwise, <c>false</c>.
+        /// </returns>
         private static bool IsExpressionStart(char c) {
             return c == '$';
         }
 
+        /// <summary>
+        /// Determines whether the specified character at the given location is the start of an directive.
+        /// </summary>
+        /// <param name="c">The character to test.</param>
+        /// <param name="loc">The location of <paramref name="c"/>.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified character at the given location is the start of an directive; otherwise, <c>false</c>.
+        /// </returns>
         private static bool IsDirectiveStart(char c, Location loc) {
             return c == '#' && loc.Column == 1;
         }
