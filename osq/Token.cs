@@ -29,11 +29,7 @@ namespace osq {
             set;
         }
 
-        public Token(TokenType type, object value) :
-            this(type, value, null) {
-        }
-
-        public Token(TokenType type, object value, Location location) {
+        public Token(TokenType type, object value, Location location = null) {
             TokenType = type;
             Value = value;
             Location = location;
