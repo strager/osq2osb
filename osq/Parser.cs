@@ -100,6 +100,8 @@ namespace osq {
         /// Reads a parser node from <see cref="InputReader"/>.
         /// </summary>
         /// <returns>Node reperesenting the read text.</returns>
+        /// <exception cref="ParserException">Failed to parse a node.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="InputReader"/> is <c>null</c>.</exception>
         public NodeBase ReadNode() {
             if(InputReader == null) {
                 throw new InvalidOperationException("Must have an InputReader to parse");
