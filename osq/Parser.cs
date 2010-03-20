@@ -30,6 +30,10 @@ namespace osq {
         }
 
         public Parser(Parser other) {
+            if(other == null) {
+                throw new ArgumentNullException("other");
+            }
+
             InputReader = other.InputReader;
             Options = other.Options.Clone();
         }
