@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace osq.TreeNode {
@@ -8,21 +9,11 @@ namespace osq.TreeNode {
             private set;
         }
 
+        [Obsolete("Use ChildrenNodes instead")]
         public IEnumerable<NodeBase> ExecutableChildren {
             get {
-                foreach(var child in ChildrenNodes) {
-                    yield return child;
-                }
-
-                if(Content != null) {
-                    yield return new RawTextNode(Content, Location);
-                }
+                return ChildrenNodes;
             }
-        }
-
-        public string Content {
-            get;
-            set;
         }
 
         private Location location;
@@ -43,7 +34,6 @@ namespace osq.TreeNode {
 
         protected NodeBase(string content, Location location = null) {
             ChildrenNodes = new List<NodeBase>();
-            Content = content;
             this.location = location;
         }
 
