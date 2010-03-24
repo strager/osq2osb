@@ -39,7 +39,7 @@ namespace osq.TreeNode {
         public override string Execute(ExecutionContext context) {
             var output = new StringBuilder();
 
-            IEnumerable<NodeBase> nodes = ExecutableChildren;
+            IEnumerable<NodeBase> nodes = ChildrenNodes;
 
             bool condition = TestCondition(context);
 

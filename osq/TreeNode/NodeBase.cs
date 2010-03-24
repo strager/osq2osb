@@ -9,13 +9,6 @@ namespace osq.TreeNode {
             private set;
         }
 
-        [Obsolete("Use ChildrenNodes instead")]
-        public IEnumerable<NodeBase> ExecutableChildren {
-            get {
-                return ChildrenNodes;
-            }
-        }
-
         private Location location;
 
         public virtual Location Location {
@@ -38,7 +31,7 @@ namespace osq.TreeNode {
         public string ExecuteChildren(ExecutionContext context) {
             var output = new StringBuilder();
 
-            foreach(var child in ExecutableChildren) {
+            foreach(var child in ChildrenNodes) {
                 output.Append(child.Execute(context));
             }
 
