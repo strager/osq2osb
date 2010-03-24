@@ -18,11 +18,42 @@ namespace osq.TreeNode {
 
         public DefineNode(DirectiveInfo info) :
             base(info) {
-            FunctionParameters = new List<string>();
-
             var reader = info.ParametersReader;
             var startLocation = reader.Location.Clone();
 
+            Variable = ReadVariableName(reader, startLocation);
+            FunctionParameters = ReadParameters(reader).ToList();
+
+            reader.SkipWhiteSpace();
+
+            foreach(var node in ReadInlineData(info, reader)) {
+                ChildrenNodes.Add(node);
+            }
+        }
+
+        private IEnumerable<NodeBase> ReadInlineData(DirectiveInfo info, LocatedTextReaderWrapper reader) {
+            return (new Parser(info.Parser, reader)).ReadNodes();
+        }
+
+        private IEnumerable<string> ReadParameters(LocatedTextReaderWrapper reader) {
+            if(reader.Peek() == '(') {
+                Token token = Token.ReadToken(reader);
+
+                while(token != null && !token.IsSymbol(")")) {
+                    token = Token.ReadToken(reader);
+
+                    if(token.TokenType == TokenType.Identifier) {
+                        yield return token.Value.ToString();
+                    }
+                }
+
+                if(token == null) {
+                    throw new MissingDataException("Closing parentheses", reader.Location);
+                }
+            }
+        }
+
+        private string ReadVariableName(LocatedTextReaderWrapper reader, Location startLocation) {
             Token token = Token.ReadToken(reader);
 
             if(token == null) {
@@ -33,29 +64,7 @@ namespace osq.TreeNode {
                 throw new MissingDataException("Variable name", token.Location);
             }
 
-            Variable = token.Value.ToString();
-
-            if(reader.Peek() == '(') {
-                token = Token.ReadToken(reader);
-
-                while(token != null && !token.IsSymbol(")")) {
-                    token = Token.ReadToken(reader);
-
-                    if(token.TokenType == TokenType.Identifier) {
-                        FunctionParameters.Add(token.Value.ToString());
-                    }
-                }
-
-                if(token == null) {
-                    throw new MissingDataException("Closing parentheses", reader.Location);
-                }
-            }
-
-            reader.SkipWhiteSpace();
-
-            foreach(var node in (new Parser(info.Parser, reader)).ReadNodes()) {
-                ChildrenNodes.Add(node);
-            }
+            return token.Value.ToString();
         }
 
         protected override bool EndsWith(NodeBase node) {
