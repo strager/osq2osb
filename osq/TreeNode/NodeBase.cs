@@ -28,11 +28,7 @@ namespace osq.TreeNode {
             }
         }
 
-        protected NodeBase(Location location = null) :
-            this(null, location) {
-        }
-
-        protected NodeBase(string content, Location location = null) {
+        protected NodeBase(Location location = null) {
             ChildrenNodes = new List<NodeBase>();
             this.location = location;
         }
