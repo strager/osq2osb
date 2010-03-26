@@ -10,7 +10,8 @@ namespace osq {
         Symbol,
         Number,
         Identifier,
-        String
+        String,
+        Whitespace
     }
 
     public class Token {

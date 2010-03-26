@@ -65,8 +65,8 @@ namespace osq.TreeNode {
         /// </summary>
         /// <param name="info">The directive's information.</param>
         protected DirectiveNode(DirectiveInfo info) :
-            base(info.Location) {
-            DirectiveName = info.DirectiveName;
+            base(/*info.Location*/) {
+            //DirectiveName = info.DirectiveName;
         }
 
         protected abstract bool EndsWith(NodeBase node);

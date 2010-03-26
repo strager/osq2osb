@@ -31,6 +31,48 @@ namespace osq.TreeNode {
             }
         }
 
+        public DefineNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(null) {
+            Token variable = tokenReader.ReadToken();
+
+            if(variable == null) {
+                throw new MissingDataException("Variable name", location);
+            }
+
+            if(variable.TokenType != TokenType.Identifier) {
+                throw new MissingDataException("Variable name", variable.Location);
+            }
+
+            Variable = variable.ToString();
+
+            FunctionParameters = new List<string>();
+
+            if(tokenReader.PeekToken().IsSymbol("(")) {
+                Token token = tokenReader.ReadToken();
+
+                while(token != null && !token.IsSymbol(")")) {
+                    token = tokenReader.ReadToken();
+
+                    if(token.TokenType == TokenType.Identifier) {
+                        FunctionParameters.Add(token.Value.ToString());
+                    }
+                }
+
+                if(token == null) {
+                    throw new MissingDataException("Closing parentheses");
+                }
+            }
+
+            ICollection<Token> tmp = new List<Token>();
+            Token t;
+
+            while((t = tokenReader.ReadToken()) != null) {
+                tmp.Add(t);
+            }
+
+            ChildrenNodes.Add(ExpressionRewriter.Rewrite(tmp));
+        }
+
         private IEnumerable<NodeBase> ReadInlineData(DirectiveInfo info, LocatedTextReaderWrapper reader) {
             return (new Parser(info.Parser, reader)).ReadNodes();
         }

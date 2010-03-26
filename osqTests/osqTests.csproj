@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="DefineNodeTests.cs" />
     <Compile Include="ExpressionRewriterTests.cs" />
+    <Compile Include="Helpers\CollectionNodeReader.cs" />
+    <Compile Include="Helpers\CollectionTokenReader.cs" />
     <Compile Include="LocationTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

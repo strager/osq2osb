@@ -34,7 +34,7 @@ namespace osq {
                 throw new ArgumentNullException("tokens");
             }
 
-            this.tokens = new Queue<Token>(tokens);
+            this.tokens = new Queue<Token>(tokens.Where((token) => token.TokenType != TokenType.Whitespace));
         }
 
         public static TokenNode Rewrite(IEnumerable<Token> tokens) {
@@ -154,7 +154,7 @@ namespace osq {
 
             System.Diagnostics.Debug.Assert(leftParentheses.IsSymbol("("));
 
-            var subTree = ReadLevel(1);
+            var subTree = ReadLevel(0);
 
             ReadClosingParentheses();
 

@@ -13,12 +13,18 @@ namespace osq.Tests.Helpers {
             this.curToken = 0;
         }
 
-        public Token ReadToken() {
+        public Token PeekToken() {
             if(curToken >= tokens.Count) {
                 return null;
             }
 
-            return tokens[curToken++];
+            return tokens[curToken];    
+        }
+
+        public Token ReadToken() {
+            var token = PeekToken();
+            ++curToken;
+            return token;
         }
     }
 }
