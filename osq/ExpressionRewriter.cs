@@ -48,7 +48,9 @@ namespace osq {
             Token token;
             
             while((token = tokenReader.ReadToken()) != null) {
-                this.tokens.Enqueue(token);
+                if(token.TokenType != TokenType.WhiteSpace) {
+                    this.tokens.Enqueue(token);
+                }
             }
         }
 
