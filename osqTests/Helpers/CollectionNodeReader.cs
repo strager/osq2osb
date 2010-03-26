@@ -9,6 +9,12 @@ namespace osq.Tests.Helpers {
         private IList<NodeBase> nodes;
         private int curNode;
 
+        public Location Location {
+            get {
+                return null;
+            }
+        }
+
         public CollectionNodeReader(IEnumerable<NodeBase> nodes) {
             this.nodes = nodes.ToList();
             this.curNode = 0;

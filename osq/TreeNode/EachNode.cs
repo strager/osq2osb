@@ -32,6 +32,25 @@ namespace osq.TreeNode {
             Values = ExpressionRewriter.Rewrite(tokenReader);
         }
 
+        public EachNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            var startLocation = tokenReader.CurrentLocation;
+
+            Token token = tokenReader.ReadToken();
+
+            if(token == null) {
+                throw new MissingDataException("Variable name", startLocation);
+            }
+
+            if(token.TokenType != TokenType.Identifier) {
+                throw new MissingDataException("Variable name", token.Location);
+            }
+
+            Variable = token.Value.ToString();
+
+            Values = ExpressionRewriter.Rewrite(tokenReader);
+        }
+
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 

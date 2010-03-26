@@ -6,6 +6,10 @@ namespace osq.TreeNode {
         public ElseIfNode(DirectiveInfo info) :
             base(info) {
         }
+        
+        public ElseIfNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(tokenReader, nodeReader, location) {
+        }
 
         protected override bool EndsWith(NodeBase node) {
             return node == this;

@@ -32,11 +32,13 @@ namespace osq.TreeNode {
         }
 
         public DefineNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(null) {
+            base(location) {
+            var startLocation = tokenReader.CurrentLocation;
+
             Token variable = tokenReader.ReadToken();
 
             if(variable == null) {
-                throw new MissingDataException("Variable name", location);
+                throw new MissingDataException("Variable name", startLocation);
             }
 
             if(variable.TokenType != TokenType.Identifier) {

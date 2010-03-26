@@ -7,6 +7,10 @@ namespace osq.TreeNode {
             base(info) {
         }
 
+        public ElseNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+        }
+
         protected override bool EndsWith(NodeBase node) {
             return node == this;
         }

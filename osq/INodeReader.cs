@@ -2,6 +2,10 @@
 
 namespace osq {
     public interface INodeReader {
+        Location Location {
+            get;
+        }
+
         NodeBase ReadNode();
     }
 }

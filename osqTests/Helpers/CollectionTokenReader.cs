@@ -8,6 +8,12 @@ namespace osq.Tests.Helpers {
         private IList<Token> tokens;
         private int curToken;
 
+        public Location CurrentLocation {
+            get {
+                return null;
+            }
+        }
+
         public CollectionTokenReader(IEnumerable<Token> tokens) {
             this.tokens = tokens.ToList();
             this.curToken = 0;

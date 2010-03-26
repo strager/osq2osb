@@ -18,6 +18,11 @@ namespace osq.TreeNode {
             Condition = ExpressionRewriter.Rewrite(tokenReader);
         }
 
+        public IfNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            Condition = ExpressionRewriter.Rewrite(tokenReader);
+        }
+
         protected override bool EndsWith(NodeBase node) {
             var endDirective = node as EndDirectiveNode;
 

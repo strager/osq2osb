@@ -24,6 +24,12 @@ namespace osq {
             set;
         }
 
+        public Location Location {
+            get {
+                return InputReader == null ? null : InputReader.Location;
+            }
+        }
+
         /// <summary>
         /// Parser options.
         /// </summary>

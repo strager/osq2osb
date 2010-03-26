@@ -22,6 +22,21 @@ namespace osq.TreeNode {
                 throw new BadDataException("Expected a variable name", VariableName.Location);
             }
         }
+        
+        public LocalNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            var startLocation = tokenReader.CurrentLocation;
+
+            VariableName = tokenReader.ReadToken();
+
+            if(VariableName == null) {
+                throw new MissingDataException("Expected a variable name", startLocation);
+            }
+
+            if(VariableName.TokenType != TokenType.Identifier) {
+                throw new BadDataException("Expected a variable name", VariableName.Location);
+            }
+        }
 
         protected override bool EndsWith(NodeBase node) {
             return node == this;

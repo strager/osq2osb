@@ -37,7 +37,31 @@ namespace osq.TreeNode {
             var children = node.GetChildrenTokens();
 
             if(children.Count < 3 || children.Count > 4) {
-                throw new MissingDataException("#for directive requires 3 to 4 parameters", Location);
+                throw new MissingDataException("#for directive requires 3 to 4 parameters", info.Location);
+            }
+
+            if(children[0].Token.TokenType != TokenType.Identifier) {
+                throw new MissingDataException("Identifier", children[0].Location);
+            }
+
+            Variable = children[0].Token.ToString();
+            Start = children[1];
+            End = children[2];
+            Step = children.Count > 3 ? children[3] : null;
+        }
+
+        public ForNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            var node = ExpressionRewriter.Rewrite(tokenReader);
+
+            if(!node.Token.IsSymbol(",")) {
+                throw new DataTypeException("Expected comma-separated list", this);
+            }
+
+            var children = node.GetChildrenTokens();
+
+            if(children.Count < 3 || children.Count > 4) {
+                throw new MissingDataException("#for directive requires 3 to 4 parameters", location);
             }
 
             if(children[0].Token.TokenType != TokenType.Identifier) {

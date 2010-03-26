@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace osq.TreeNode {
@@ -18,6 +19,15 @@ namespace osq.TreeNode {
             Filename = ExpressionRewriter.Rewrite(tokenReader);
 
             this.parentParser = info.Parser;
+        }
+
+        public IncludeNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            Filename = ExpressionRewriter.Rewrite(tokenReader);
+
+            throw new NotImplementedException("#include not done yet =X");
+
+            this.parentParser = null;
         }
 
         protected override bool EndsWith(NodeBase node) {

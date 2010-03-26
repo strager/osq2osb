@@ -32,6 +32,29 @@ namespace osq.TreeNode {
             }
         }
 
+        public LetNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
+            base(location) {
+            var startLocation = tokenReader.CurrentLocation;
+
+            Token token = tokenReader.ReadToken();
+
+            if(token == null) {
+                throw new MissingDataException("Variable name", startLocation);
+            }
+
+            if(token.TokenType != TokenType.Identifier) {
+                throw new MissingDataException("Variable name", token.Location);
+            }
+
+            Variable = token.Value.ToString();
+
+            NodeBase node;
+
+            while((node = nodeReader.ReadNode()) != null) {
+                ChildrenNodes.Add(node);
+            }
+        }
+
         protected override bool EndsWith(NodeBase node) {
             if(ChildrenNodes.Count != 0 && node == this) {
                 return true;
