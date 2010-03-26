@@ -16,7 +16,8 @@ namespace osq.TreeNode {
 
         public EachNode(DirectiveInfo info) :
             base(info) {
-            Token token = Token.ReadToken(info.ParametersReader);
+            var tokenReader = new TokenReader(info.ParametersReader);
+            Token token = tokenReader.ReadToken();
 
             if(token == null) {
                 throw new MissingDataException("Variable name", info.ParametersReader.Location);
@@ -28,7 +29,7 @@ namespace osq.TreeNode {
 
             Variable = token.Value.ToString();
 
-            Values = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
+            Values = ExpressionRewriter.Rewrite(tokenReader);
         }
 
         protected override bool EndsWith(NodeBase node) {

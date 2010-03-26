@@ -35,7 +35,7 @@ namespace osq {
                 throw new ArgumentNullException("tokens");
             }
 
-            this.tokens = new Queue<Token>(tokens.Where((token) => token.TokenType != TokenType.Whitespace));
+            this.tokens = new Queue<Token>(tokens.Where((token) => token.TokenType != TokenType.WhiteSpace));
         }
 
         private ExpressionRewriter(ITokenReader tokenReader) {

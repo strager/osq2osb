@@ -78,11 +78,13 @@ namespace osq.TreeNode {
         }
 
         private IEnumerable<string> ReadParameters(LocatedTextReaderWrapper reader) {
+            var tokenReader = new TokenReader(reader);
+
             if(reader.Peek() == '(') {
-                Token token = Token.ReadToken(reader);
+                Token token = tokenReader.ReadToken();
 
                 while(token != null && !token.IsSymbol(")")) {
-                    token = Token.ReadToken(reader);
+                    token = tokenReader.ReadToken();
 
                     if(token.TokenType == TokenType.Identifier) {
                         yield return token.Value.ToString();
@@ -96,7 +98,8 @@ namespace osq.TreeNode {
         }
 
         private string ReadVariableName(LocatedTextReaderWrapper reader, Location startLocation) {
-            Token token = Token.ReadToken(reader);
+            var tokenReader = new TokenReader(reader);
+            Token token = tokenReader.ReadToken();
 
             if(token == null) {
                 throw new MissingDataException("Variable name", startLocation);

@@ -10,7 +10,9 @@ namespace osq.TreeNode {
 
         public LocalNode(DirectiveInfo info) :
             base(info) {
-            VariableName = Token.ReadToken(info.ParametersReader);
+            var tokenReader = new TokenReader(info.ParametersReader);
+
+            VariableName = tokenReader.ReadToken();
 
             if(VariableName == null) {
                 throw new MissingDataException("Expected a variable name", info.ParametersReader.Location);

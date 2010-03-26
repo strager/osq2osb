@@ -9,7 +9,7 @@ namespace osq {
     /// <summary>
     /// Parses an osq script into <see cref="NodeBase"/> instances.
     /// </summary>
-    public class Parser {
+    public class Parser : INodeReader {
         /// <summary>
         /// Default culture used in parsing.
         /// </summary>
@@ -152,7 +152,7 @@ namespace osq {
                     return new RawTextNode("$", startLocation);
                 }
                 
-                Token varName = Token.ReadToken(InputReader);
+                Token varName = (new TokenReader(InputReader)).ReadToken();
                 return new TokenNode(varName);
             }
 
@@ -164,9 +164,10 @@ namespace osq {
         /// </summary>
         /// <returns>Tokens representing the expression.</returns>
         private IEnumerable<Token> ReadToExpressionEnd() {
+            var tokenReader = new TokenReader(InputReader);
             Token token;
 
-            while((token = Token.ReadToken(InputReader)) != null) {
+            while((token = tokenReader.ReadToken()) != null) {
                 if(token.IsSymbol("}")) {
                     break;
                 }

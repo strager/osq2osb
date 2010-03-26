@@ -53,7 +53,7 @@ namespace osq.Tests {
             var node = new DefineNode(
                 new CollectionTokenReader(new[] {
                     new Token(TokenType.Identifier, "test"),
-                    new Token(TokenType.Whitespace, " "),
+                    new Token(TokenType.WhiteSpace, " "),
                     new Token(TokenType.Identifier, "a"),
                 }),
                 null

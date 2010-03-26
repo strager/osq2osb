@@ -11,7 +11,9 @@ namespace osq.TreeNode {
 
         public LetNode(DirectiveInfo info) :
             base(info) {
-            Token token = Token.ReadToken(info.ParametersReader);
+            var tokenReader = new TokenReader(info.ParametersReader);
+
+            Token token = tokenReader.ReadToken();
 
             if(token == null) {
                 throw new MissingDataException("Variable name", info.ParametersReader.Location);

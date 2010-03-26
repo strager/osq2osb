@@ -73,6 +73,7 @@
     <Compile Include="Encoder.cs" />
     <Compile Include="ParserOptions.cs" />
     <Compile Include="Token.cs" />
+    <Compile Include="TokenReader.cs" />
     <Compile Include="TreeNode\DefineNode.cs" />
     <Compile Include="TreeNode\DirectiveAttribute.cs" />
     <Compile Include="TreeNode\DirectiveNode.cs" />

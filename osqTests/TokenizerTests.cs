@@ -9,7 +9,8 @@ namespace osq.Tests {
     class TokenizerTests {
         private static IEnumerable<Token> ReadTokensFromString(string input) {
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                return Token.ReadTokens(reader).ToList();
+                var tokenReader = new TokenReader(reader);
+                return tokenReader.ReadTokens().ToList();
             }
         }
 
@@ -27,7 +28,7 @@ namespace osq.Tests {
         public void MathExpression() {
             CheckTokenization(
                 "( 2 + 4 ) * 7 + eval ( \"2 pi\" ) / func ( a , b )",
-                new object[] { "(", 2, "+", 4, ")", "*", 7, "+", "eval", "(", "2 pi", ")", "/", "func", "(", "a", ",", "b", ")" }
+                new object[] { "(", " ", 2, " ", "+", " ", 4, " ", ")", " ", "*", " ", 7, " ", "+", " ", "eval", " ", "(", " ", "2 pi", " ", ")", " ", "/", " ", "func", " ", "(", " ", "a", " ", ",", " ", "b", " ", ")" }
             );
         }
 
@@ -35,7 +36,7 @@ namespace osq.Tests {
         public void Parentheses() {
             CheckTokenization(
                 "((rand()) - (-(0.5))) / 4",
-                new object[] { "(", "(", "rand", "(", ")", ")", "-", "(", "-", "(", 0.5, ")", ")", ")", "/", 4 }
+                new object[] { "(", "(", "rand", "(", ")", ")", " ", "-", " ", "(", "-", "(", 0.5, ")", ")", ")", " ", "/", " ", 4 }
             );
         }
 
@@ -43,7 +44,7 @@ namespace osq.Tests {
         public void MultiCharOperators() {
             CheckTokenization(
                 "<<=>=> = ==! = != ===",
-                new object[] { "<", "<=", ">=", ">", "=", "==", "!", "=", "!=", "==", "=" }
+                new object[] { "<", "<=", ">=", ">", " ", "=", " ", "==", "!", " ", "=", " ", "!=", " ", "==", "=" }
             );
         }
 
@@ -52,7 +53,8 @@ namespace osq.Tests {
             string input = "\"\\\"hello \\\\\\t\\r\\nworld\\\"\"";
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                var token = Token.ReadToken(reader);
+                var tokenReader = new TokenReader(reader);
+                var token = tokenReader.ReadToken();
 
                 Assert.AreEqual(-1, reader.Peek());    // EOF
 
@@ -65,7 +67,8 @@ namespace osq.Tests {
         public void BadStrings() {
             Func<string, TestDelegate> stringTester = (input) => () => {
                 using(var reader = new LocatedTextReaderWrapper(input)) {
-                    Token.ReadToken(reader);
+                    var tokenReader = new TokenReader(reader);
+                    tokenReader.ReadToken();
                 }
             };
 

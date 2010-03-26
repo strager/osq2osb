@@ -22,7 +22,9 @@ namespace osq.Tests {
 
         private static TreeNode.TokenNode ExpressionToTokenNode(string expression) {
             using(var reader = new LocatedTextReaderWrapper(expression, new Location())) {
-                return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
+                var tokenReader = new TokenReader(reader);
+
+                return ExpressionRewriter.Rewrite(tokenReader);
             }
         }
 

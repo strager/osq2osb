@@ -13,7 +13,9 @@ namespace osq.TreeNode {
 
         public IfNode(DirectiveInfo info) :
             base(info) {
-            Condition = ExpressionRewriter.Rewrite(Token.ReadTokens(info.ParametersReader));
+            var tokenReader = new TokenReader(info.ParametersReader);
+
+            Condition = ExpressionRewriter.Rewrite(tokenReader);
         }
 
         protected override bool EndsWith(NodeBase node) {
