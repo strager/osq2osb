@@ -71,5 +71,35 @@ namespace osq.TreeNode {
 
             return str.ToString();
         }
+
+       public override bool Equals(object obj) {
+           var objAsTokenNode = obj as TokenNode;
+
+           if(objAsTokenNode == null) {
+               return false;
+           }
+
+           return Equals(objAsTokenNode);
+        }
+
+        public bool Equals(TokenNode otherTokenNode) {
+            if(otherTokenNode == null) {
+                return false;
+            }
+
+            if(otherTokenNode.Token == null) {
+                if(this.Token != null) {
+                    return false;
+                }
+            } else if(!otherTokenNode.Token.Equals(this.Token)) {
+                return false;
+            }
+
+            if(!otherTokenNode.ChildrenNodes.SequenceEqual(this.ChildrenNodes)) {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

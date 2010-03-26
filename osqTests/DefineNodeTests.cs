@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using osq.Tests.Helpers;
 using osq.TreeNode;
@@ -53,19 +54,15 @@ namespace osq.Tests {
                 new CollectionTokenReader(new[] {
                     new Token(TokenType.Identifier, "test"),
                     new Token(TokenType.Whitespace, " "),
-                    new Token(TokenType.Symbol, "("),
                     new Token(TokenType.Identifier, "a"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "b"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "c"),
-                    new Token(TokenType.Symbol, ")"),
                 }),
                 null
             );
 
             Assert.AreEqual(new Token[] { }, node.FunctionParameters);
-            Assert.AreEqual(new NodeBase[] { new TokenNode(new Token(TokenType.Identifier, ",")) }, node.ChildrenNodes);
+            Assert.AreEqual(new NodeBase[] {
+                new TokenNode(new Token(TokenType.Identifier, "a"))
+            }, node.ChildrenNodes);
         }
 
     }

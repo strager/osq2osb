@@ -40,6 +40,44 @@ namespace osq {
             return Value.ToString();
         }
 
+        public override bool Equals(object obj) {
+            var objAsToken = obj as Token;
+
+            if(objAsToken == null) {
+                return false;
+            }
+
+            return Equals(objAsToken);
+        }
+
+        public bool Equals(Token otherToken) {
+            if(otherToken == null) {
+                return false;
+            }
+
+            if(otherToken.Location == null) {
+                if(this.Location != null) {
+                    return false;
+                }
+            } else if(!otherToken.Location.Equals(this.Location)) {
+                return false;
+            }
+
+            if(!otherToken.TokenType.Equals(this.TokenType)) {
+                return false;
+            }
+
+            if(otherToken.Value == null) {
+                if(this.Value != null) {
+                    return false;
+                }
+            } else if(!otherToken.Value.Equals(this.Value)) {
+                return false;
+            }
+
+            return true;
+        }
+
         private static bool IsStringStart(char c) {
             return c == '"';
         }
