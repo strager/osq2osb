@@ -6,9 +6,9 @@ namespace osq.TreeNode {
         public ElseIfNode(DirectiveInfo info) :
             base(info) {
         }
-        
-        public ElseIfNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(tokenReader, nodeReader, location) {
+
+        public ElseIfNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(tokenReader, nodeReader, directiveName, location) {
         }
 
         protected override bool EndsWith(NodeBase node) {

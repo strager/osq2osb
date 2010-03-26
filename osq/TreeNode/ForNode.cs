@@ -50,8 +50,8 @@ namespace osq.TreeNode {
             Step = children.Count > 3 ? children[3] : null;
         }
 
-        public ForNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public ForNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             var node = ExpressionRewriter.Rewrite(tokenReader);
 
             if(!node.Token.IsSymbol(",")) {

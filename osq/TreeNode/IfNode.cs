@@ -18,8 +18,8 @@ namespace osq.TreeNode {
             Condition = ExpressionRewriter.Rewrite(tokenReader);
         }
 
-        public IfNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public IfNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             Condition = ExpressionRewriter.Rewrite(tokenReader);
         }
 

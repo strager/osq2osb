@@ -32,8 +32,8 @@ namespace osq.TreeNode {
             }
         }
 
-        public LetNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public LetNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             var startLocation = tokenReader.CurrentLocation;
 
             Token token = tokenReader.ReadToken();

@@ -21,8 +21,8 @@ namespace osq.TreeNode {
             this.parentParser = info.Parser;
         }
 
-        public IncludeNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public IncludeNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             Filename = ExpressionRewriter.Rewrite(tokenReader);
 
             throw new NotImplementedException("#include not done yet =X");

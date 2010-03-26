@@ -15,8 +15,8 @@ namespace osq.TreeNode {
             Value = ExpressionRewriter.Rewrite(tokenReader);
         }
 
-        public RepNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public RepNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             Value = ExpressionRewriter.Rewrite(tokenReader);
         }
 

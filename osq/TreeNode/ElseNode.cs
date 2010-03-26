@@ -7,8 +7,8 @@ namespace osq.TreeNode {
             base(info) {
         }
 
-        public ElseNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+        public ElseNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
         }
 
         protected override bool EndsWith(NodeBase node) {

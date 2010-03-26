@@ -69,11 +69,10 @@ namespace osq.TreeNode {
             //DirectiveName = info.DirectiveName;
         }
 
-        protected DirectiveNode(Location location) :
+        protected DirectiveNode(string directiveName, Location location) :
             base(location) {
+            DirectiveName = directiveName;
         }
-
-        protected abstract bool EndsWith(NodeBase node);
 
         /// <summary>
         /// Reads a directive node.

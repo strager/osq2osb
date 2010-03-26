@@ -22,9 +22,9 @@ namespace osq.TreeNode {
                 throw new BadDataException("Expected a variable name", VariableName.Location);
             }
         }
-        
-        public LocalNode(ITokenReader tokenReader, INodeReader nodeReader, Location location = null) :
-            base(location) {
+
+        public LocalNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
+            base(directiveName, location) {
             var startLocation = tokenReader.CurrentLocation;
 
             VariableName = tokenReader.ReadToken();
