@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using osq.Tests.Helpers;
 
 namespace osq.Tests {
     [TestFixture]
@@ -22,45 +23,70 @@ namespace osq.Tests {
             }
         }
 
-        private static TreeNode.TokenNode ExpressionToTokenNode(string expression) {
-            using(var reader = new LocatedTextReaderWrapper(expression, new Location())) {
-                return ExpressionRewriter.Rewrite(Token.ReadTokens(reader));
-            }
-        }
-
         [Test]
         public void MathTree() {
             CheckTree(new object[] {
-                    "+",
-                    2,
-                    3
-                },
-                ExpressionToTokenNode("2 + 3"));
+                "+",
+                2,
+                3
+            }, ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                new Token(TokenType.Number, 2),
+                new Token(TokenType.Symbol, "+"),
+                new Token(TokenType.Number, 3),
+            })));
 
             CheckTree(new object[] {
-                    "/",
+                "/",
+                new object[] {
+                    "-",
+                    "rand",
                     new object[] {
                         "-",
-                        "rand",
-                        new object[] {
-                            "-",
-                            0.5
-                        }
-                    },
-                    4
-                },
-                ExpressionToTokenNode("((rand()) - (-(0.5))) / ((4))"));
-
-            CheckTree(new object[] {
-                    "a",
-                    new object[] {
-                        ",",
-                        "b",
-                        "c",
-                        "d"
+                        0.5
                     }
                 },
-                ExpressionToTokenNode("a(b, c, d)"));
+                4
+            }, ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Identifier, "rand"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, "-"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Symbol, "-"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Number, 0.5),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, "/"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Number, 4),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, ")"),
+            })));
+
+            CheckTree(new object[] {
+                "a",
+                new object[] {
+                    ",",
+                    "b",
+                    "c",
+                    "d"
+                }
+            }, ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                new Token(TokenType.Identifier, "a"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Identifier, "b"),
+                new Token(TokenType.Symbol, ","),
+                new Token(TokenType.Identifier, "c"),
+                new Token(TokenType.Symbol, ","),
+                new Token(TokenType.Identifier, "d"),
+                new Token(TokenType.Symbol, ")"),
+            })));
 
             CheckTree(new object[] {
                 "int",
@@ -77,29 +103,61 @@ namespace osq.Tests {
                     },
                     320
                 },
-                },
-                ExpressionToTokenNode("int((from - 320) * mscale + 320)"));
+            }, ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                new Token(TokenType.Identifier, "int"),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Symbol, "("),
+                new Token(TokenType.Identifier, "from"),
+                new Token(TokenType.Symbol, "-"),
+                new Token(TokenType.Number, 320),
+                new Token(TokenType.Symbol, ")"),
+                new Token(TokenType.Symbol, "*"),
+                new Token(TokenType.Identifier, "mscale"),
+                new Token(TokenType.Symbol, "+"),
+                new Token(TokenType.Number, 320),
+                new Token(TokenType.Symbol, ")"),
+            })));
         }
 
         [Test]
         public void ParenthesesExceptions() {
             Assert.Throws<MissingDataException>(delegate {
-                ExpressionToTokenNode("2 + (2");
+                ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                    new Token(TokenType.Number, 2),
+                    new Token(TokenType.Symbol, "+"),
+                    new Token(TokenType.Symbol, "("),
+                    new Token(TokenType.Number, 2),
+                }));
             });
 
             Assert.Throws<MissingDataException>(delegate {
-                ExpressionToTokenNode("what(unmatched + 4");
+                ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "what"),
+                    new Token(TokenType.Symbol, "("),
+                    new Token(TokenType.Identifier, "unmatched"),
+                    new Token(TokenType.Symbol, "+"),
+                    new Token(TokenType.Number, 4),
+                }));
             });
 
             Assert.DoesNotThrow(delegate {
-                ExpressionToTokenNode("2) + 2)");
+                ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                    new Token(TokenType.Number, 2),
+                    new Token(TokenType.Symbol, ")"),
+                    new Token(TokenType.Symbol, "+"),
+                    new Token(TokenType.Number, 2),
+                    new Token(TokenType.Symbol, ")"),
+                }));
             });
         }
 
         [Test]
         public void Exceptions() {
             Assert.Throws<MissingDataException>(delegate {
-                ExpressionToTokenNode("2 +");
+                ExpressionRewriter.Rewrite(new CollectionTokenReader(new[] {
+                    new Token(TokenType.Number, 2),
+                    new Token(TokenType.Symbol, "+"),
+                }));
             });
         }
     }

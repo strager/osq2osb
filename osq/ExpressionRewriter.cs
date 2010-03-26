@@ -29,6 +29,7 @@ namespace osq {
 
         private readonly Queue<Token> tokens;
 
+        [Obsolete]
         private ExpressionRewriter(IEnumerable<Token> tokens) {
             if(tokens == null) {
                 throw new ArgumentNullException("tokens");
@@ -37,6 +38,25 @@ namespace osq {
             this.tokens = new Queue<Token>(tokens.Where((token) => token.TokenType != TokenType.Whitespace));
         }
 
+        private ExpressionRewriter(ITokenReader tokenReader) {
+            if(tokenReader == null) {
+                throw new ArgumentNullException("tokenReader");
+            }
+
+            this.tokens = new Queue<Token>();
+
+            Token token;
+            
+            while((token = tokenReader.ReadToken()) != null) {
+                this.tokens.Enqueue(token);
+            }
+        }
+
+        public static TokenNode Rewrite(ITokenReader tokenReader) {
+            return (new ExpressionRewriter(tokenReader)).Rewrite();
+        }
+
+        [Obsolete]
         public static TokenNode Rewrite(IEnumerable<Token> tokens) {
             return (new ExpressionRewriter(tokens)).Rewrite();
         }
