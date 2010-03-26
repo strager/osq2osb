@@ -189,6 +189,8 @@ namespace osq.TreeNode {
             }
         }
 
+        protected abstract bool EndsWith(NodeBase b);
+
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>

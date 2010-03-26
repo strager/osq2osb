@@ -2,7 +2,7 @@
 
 namespace osq.TreeNode {
     [DirectiveAttribute("end([^\\s]+)")]
-    internal class EndDirectiveNode : DirectiveNode {
+    public class EndDirectiveNode : DirectiveNode {
         public string TargetDirectiveName {
             get {
                 var re = new Regex(@"^end");

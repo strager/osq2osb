@@ -22,6 +22,7 @@ namespace osq.Tests {
                     new Token(TokenType.Symbol, ","),
                     new Token(TokenType.Identifier, "c"),
                     new Token(TokenType.Symbol, ")"),
+                    new Token(TokenType.Identifier, "blah"),
                 }),
                 null
             );
@@ -41,6 +42,7 @@ namespace osq.Tests {
                     new Token(TokenType.Symbol, ","),
                     new Token(TokenType.Identifier, "c"),
                     new Token(TokenType.Symbol, ")"),
+                    new Token(TokenType.Identifier, "blah"),
                 }),
                 null
             );
@@ -65,5 +67,24 @@ namespace osq.Tests {
             }, node.ChildrenNodes);
         }
 
+        [Test]
+        public void TestLonghand() {
+            var nodeChildren = new NodeBase[] {
+                new RawTextNode("text", null),
+                new RawTextNode("text", null),
+                new EndDirectiveNode(null, null, "enddef"),
+                new RawTextNode("blah", null),
+            };
+
+            var node = new DefineNode(
+                new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "test"),
+                }),
+                new CollectionNodeReader(nodeChildren),
+                "def"
+            );
+
+            Assert.AreEqual(nodeChildren.Take(2), node.ChildrenNodes);
+        }
     }
 }

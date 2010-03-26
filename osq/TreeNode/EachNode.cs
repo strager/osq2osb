@@ -3,7 +3,7 @@ using System.Text;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("each")]
-    internal class EachNode : DirectiveNode {
+    public class EachNode : DirectiveNode {
         public string Variable {
             get;
             private set;

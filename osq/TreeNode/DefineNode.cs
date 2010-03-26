@@ -16,21 +16,6 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public DefineNode(DirectiveInfo info) :
-            base(info) {
-            var reader = info.ParametersReader;
-            var startLocation = reader.Location.Clone();
-
-            Variable = ReadVariableName(reader, startLocation);
-            FunctionParameters = ReadParameters(reader).ToList();
-
-            reader.SkipWhiteSpace();
-
-            foreach(var node in ReadInlineData(info, reader)) {
-                ChildrenNodes.Add(node);
-            }
-        }
-
         public DefineNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
             var startLocation = tokenReader.CurrentLocation;
@@ -49,8 +34,10 @@ namespace osq.TreeNode {
 
             FunctionParameters = new List<string>();
 
-            if(tokenReader.PeekToken().IsSymbol("(")) {
-                Token token = tokenReader.ReadToken();
+            Token token = tokenReader.PeekToken();
+
+            if(token != null && token.IsSymbol("(")) {
+                token = tokenReader.ReadToken();
 
                 while(token != null && !token.IsSymbol(")")) {
                     token = tokenReader.ReadToken();
@@ -65,53 +52,44 @@ namespace osq.TreeNode {
                 }
             }
 
-            ICollection<Token> tmp = new List<Token>();
-            Token t;
+            var shorthand = ReadShorthandNode(tokenReader);
 
-            while((t = tokenReader.ReadToken()) != null) {
-                tmp.Add(t);
-            }
-
-            ChildrenNodes.Add(ExpressionRewriter.Rewrite(tmp));
-        }
-
-        private IEnumerable<NodeBase> ReadInlineData(DirectiveInfo info, LocatedTextReaderWrapper reader) {
-            return (new Parser(info.Parser, reader)).ReadNodes();
-        }
-
-        private IEnumerable<string> ReadParameters(LocatedTextReaderWrapper reader) {
-            var tokenReader = new TokenReader(reader);
-
-            if(reader.Peek() == '(') {
-                Token token = tokenReader.ReadToken();
-
-                while(token != null && !token.IsSymbol(")")) {
-                    token = tokenReader.ReadToken();
-
-                    if(token.TokenType == TokenType.Identifier) {
-                        yield return token.Value.ToString();
-                    }
-                }
-
-                if(token == null) {
-                    throw new MissingDataException("Closing parentheses", reader.Location);
+            if(shorthand != null) {
+                ChildrenNodes.Add(shorthand);
+            } else {
+                foreach(var node in ReadNodes(nodeReader)) {
+                    ChildrenNodes.Add(node);
                 }
             }
         }
 
-        private string ReadVariableName(LocatedTextReaderWrapper reader, Location startLocation) {
-            var tokenReader = new TokenReader(reader);
-            Token token = tokenReader.ReadToken();
+        private NodeBase ReadShorthandNode(ITokenReader tokenReader) {
+            ICollection<Token> tokens = new List<Token>();
+            Token curToken;
 
-            if(token == null) {
-                throw new MissingDataException("Variable name", startLocation);
+            while((curToken = tokenReader.ReadToken()) != null) {
+                tokens.Add(curToken);
             }
 
-            if(token.TokenType != TokenType.Identifier) {
-                throw new MissingDataException("Variable name", token.Location);
+            if(tokens.Count((token) => token.TokenType != TokenType.WhiteSpace) == 0) {
+                return null;
             }
 
-            return token.Value.ToString();
+            return ExpressionRewriter.Rewrite(tokens);
+        }
+
+        private IEnumerable<NodeBase> ReadNodes(INodeReader nodeReader) {
+            NodeBase curNode;
+
+            while((curNode = nodeReader.ReadNode()) != null) {
+                var endDirective = curNode as EndDirectiveNode;
+
+                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                    yield break;
+                }
+
+                yield return curNode;
+            }
         }
 
         protected override bool EndsWith(NodeBase node) {

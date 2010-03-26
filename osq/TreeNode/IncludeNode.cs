@@ -4,7 +4,7 @@ using System.Text;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("inc(lude)?")]
-    internal class IncludeNode : DirectiveNode {
+    public class IncludeNode : DirectiveNode {
         public TokenNode Filename {
             get;
             private set;

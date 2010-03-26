@@ -2,7 +2,7 @@
 
 namespace osq.TreeNode {
     [DirectiveAttribute("local")]
-    internal class LocalNode : DirectiveNode {
+    public class LocalNode : DirectiveNode {
         public Token VariableName {
             get;
             private set;

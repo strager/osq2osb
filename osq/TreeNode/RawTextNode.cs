@@ -1,5 +1,5 @@
 ﻿namespace osq.TreeNode {
-    internal class RawTextNode : NodeBase {
+    public class RawTextNode : NodeBase {
         public string Content {
             get;
             private set;
