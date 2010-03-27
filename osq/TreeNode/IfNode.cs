@@ -27,26 +27,12 @@ namespace osq.TreeNode {
             }));
         }
 
-        public bool TestCondition(ExecutionContext context) {
-            object val = Condition.Evaluate(context);
-
-            if(val is double) {
-                return (double)val != 0;
-            } else if(val is string) {
-                return !string.IsNullOrEmpty((string)val);
-            } else if(val is Boolean) {
-                return (Boolean)val;
-            } else {
-                throw new DataTypeException("Condition returns unknown data type", this);
-            }
-        }
-
         public override string Execute(ExecutionContext context) {
             var output = new StringBuilder();
 
             IEnumerable<NodeBase> nodes = ChildrenNodes;
 
-            bool condition = TestCondition(context);
+            bool condition = context.IsTrue(Condition);
 
             while(true) {
                 if(condition == true) {
@@ -73,7 +59,7 @@ namespace osq.TreeNode {
                         continue;
                     }
 
-                    condition = ((ElseIfNode)nextNode).TestCondition(context);
+                    condition = context.IsTrue(((ElseIfNode)nextNode).Condition);
                 }
             }
 

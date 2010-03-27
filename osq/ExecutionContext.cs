@@ -167,6 +167,27 @@ namespace osq {
             });
         }
 
+        public bool IsTrue(object value) {
+            if(value is double) {
+                return (double)value != 0;
+            }
+            
+            if(value is string) {
+                return !string.IsNullOrEmpty((string)value);
+            }
+            
+            if(value is Boolean) {
+                return (Boolean)value;
+            }
+
+            throw new DataTypeException("Condition returns unknown data type");
+            
+        }
+
+        public bool IsTrue(TokenNode tokenNode) {
+            return IsTrue(tokenNode.Evaluate(this));
+        }
+
         /// <summary>
         /// Creates a new scope and pushes it on the stack.
         /// </summary>
