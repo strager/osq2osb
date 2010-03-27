@@ -27,7 +27,7 @@ namespace osq.TreeNode {
             }));
         }
 
-        protected bool TestCondition(ExecutionContext context) {
+        public bool TestCondition(ExecutionContext context) {
             object val = Condition.Evaluate(context);
 
             if(val is double) {
