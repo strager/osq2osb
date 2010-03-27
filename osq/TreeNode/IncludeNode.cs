@@ -12,15 +12,6 @@ namespace osq.TreeNode {
 
         private Parser parentParser;
 
-        public IncludeNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-
-            Filename = ExpressionRewriter.Rewrite(tokenReader);
-
-            this.parentParser = info.Parser;
-        }
-
         public IncludeNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
             Filename = ExpressionRewriter.Rewrite(tokenReader);
@@ -28,10 +19,6 @@ namespace osq.TreeNode {
             throw new NotImplementedException("#include not done yet =X");
 
             this.parentParser = null;
-        }
-
-        protected override bool EndsWith(NodeBase node) {
-            return node == this;
         }
 
         public override string Execute(ExecutionContext context) {

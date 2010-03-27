@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("let")]
@@ -7,29 +9,6 @@ namespace osq.TreeNode {
         public string Variable {
             get;
             private set;
-        }
-
-        public LetNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-
-            Token token = tokenReader.ReadToken();
-
-            if(token == null) {
-                throw new MissingDataException("Variable name", info.ParametersReader.Location);
-            }
-
-            if(token.TokenType != TokenType.Identifier) {
-                throw new MissingDataException("Variable name", token.Location);
-            }
-
-            Variable = token.Value.ToString();
-
-            info.ParametersReader.SkipWhiteSpace();
-
-            foreach(var node in (new Parser(info.Parser, info.ParametersReader)).ReadNodes()) {
-                ChildrenNodes.Add(node);
-            }
         }
 
         public LetNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
@@ -48,21 +27,36 @@ namespace osq.TreeNode {
 
             Variable = token.Value.ToString();
 
-            NodeBase node;
+            var shorthand = ReadShorthandNode(tokenReader);
 
-            while((node = nodeReader.ReadNode()) != null) {
-                ChildrenNodes.Add(node);
+            if(shorthand != null) {
+                ChildrenNodes.Add(shorthand);
+            } else {
+                ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                    var endDirective = node as EndDirectiveNode;
+
+                    if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                        return false;
+                    }
+
+                    return true;
+                }));
             }
         }
 
-        protected override bool EndsWith(NodeBase node) {
-            if(ChildrenNodes.Count != 0 && node == this) {
-                return true;
+        private NodeBase ReadShorthandNode(ITokenReader tokenReader) {
+            ICollection<Token> tokens = new List<Token>();
+            Token curToken;
+
+            while((curToken = tokenReader.ReadToken()) != null) {
+                tokens.Add(curToken);
             }
 
-            var endDirective = node as EndDirectiveNode;
+            if(tokens.Count((token) => token.TokenType != TokenType.WhiteSpace) == 0) {
+                return null;
+            }
 
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
+            return ExpressionRewriter.Rewrite(tokens);
         }
 
         public override string Execute(ExecutionContext context) {

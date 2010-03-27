@@ -117,8 +117,8 @@ namespace osq.Tests {
         public void VariableScope() {
             string input = "" +
                 "#let global 10\n" +
-                "#def f1(global) ${global}\n" +
-                "#def f2(x) ${global}\n" +
+                "#def f1(global) global\n" +
+                "#def f2(x) global\n" +
                 "${global}\n" +
                 "${f1(42)}\n" +
                 "${f2(42)}\n";

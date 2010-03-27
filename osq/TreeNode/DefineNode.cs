@@ -57,9 +57,15 @@ namespace osq.TreeNode {
             if(shorthand != null) {
                 ChildrenNodes.Add(shorthand);
             } else {
-                foreach(var node in ReadNodes(nodeReader)) {
-                    ChildrenNodes.Add(node);
-                }
+                ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                    var endDirective = node as EndDirectiveNode;
+
+                    if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                        return false;
+                    }
+
+                    return true;
+                }));
             }
         }
 
@@ -76,30 +82,6 @@ namespace osq.TreeNode {
             }
 
             return ExpressionRewriter.Rewrite(tokens);
-        }
-
-        private IEnumerable<NodeBase> ReadNodes(INodeReader nodeReader) {
-            NodeBase curNode;
-
-            while((curNode = nodeReader.ReadNode()) != null) {
-                var endDirective = curNode as EndDirectiveNode;
-
-                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    yield break;
-                }
-
-                yield return curNode;
-            }
-        }
-
-        protected override bool EndsWith(NodeBase node) {
-            if(ChildrenNodes.Count != 0 && node == this) {
-                return true;
-            }
-
-            var endDirective = node as EndDirectiveNode;
-
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
         }
 
         public override string Execute(ExecutionContext context) {

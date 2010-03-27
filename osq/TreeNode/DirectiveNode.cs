@@ -11,62 +11,12 @@ namespace osq.TreeNode {
     /// </summary>
     public abstract class DirectiveNode : NodeBase {
         /// <summary>
-        /// Contains information about a directive.
-        /// </summary>
-        public class DirectiveInfo {
-            /// <summary>
-            /// Gets or sets the parser the directive is from.
-            /// </summary>
-            /// <value>The parser the directive is from.</value>
-            public Parser Parser {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets or sets the name of the directive.
-            /// </summary>
-            /// <value>The name of the directive.</value>
-            public string DirectiveName {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets or sets the location of the directive.
-            /// </summary>
-            /// <value>The location of the directive.</value>
-            public Location Location {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Gets or sets a reader for the directive's parameters.
-            /// </summary>
-            /// <value>A reader for the directive's parameters.</value>
-            public LocatedTextReaderWrapper ParametersReader {
-                get;
-                set;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the name of the directive.
         /// </summary>
         /// <value>The name of the directive.</value>
         public string DirectiveName {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectiveNode"/> class.
-        /// </summary>
-        /// <param name="info">The directive's information.</param>
-        protected DirectiveNode(DirectiveInfo info) :
-            base(/*info.Location*/) {
-            //DirectiveName = info.DirectiveName;
         }
 
         protected DirectiveNode(string directiveName, Location location) :
@@ -87,23 +37,22 @@ namespace osq.TreeNode {
 
             foreach(var type in GetDirectiveTypes()) {
                 foreach(var attr in type.GetCustomAttributes(typeof(DirectiveAttribute), true).OfType<DirectiveAttribute>()) {
-                    var info = ParseDirectiveLine(parser, attr.NameExpression, line, startLocation);
+                    string directiveName;
+                    ITokenReader parameterReader;
 
-                    if(info == null) {
+                    var parseSuccesful = ParseDirectiveLine(parser, attr.NameExpression, line, startLocation, out parameterReader, out directiveName);
+
+                    if(!parseSuccesful) {
                         continue;
                     }
 
-                    using(info.ParametersReader) {
-                        var node = CreateInstance(type, info);
+                    var node = CreateInstance(type, parameterReader, parser, directiveName, startLocation);
 
-                        if(node == null) {
-                            continue;
-                        }
-
-                        node.ReadSubNodes(parser);
-
-                        return node;
+                    if(node == null) {
+                        continue;
                     }
+                    
+                    return node;
                 }
             }
 
@@ -117,30 +66,31 @@ namespace osq.TreeNode {
         /// <param name="nameExpression">The regular expression to match the name of the directive.</param>
         /// <param name="line">The line containing the directive.</param>
         /// <param name="location">The location of the directive.</param>
+        /// <param name="parameterReader"></param>
+        /// <param name="directiveName"></param>
         /// <returns>A <see cref="DirectiveInfo"/> instance containing information about the directive, or <c>null</c> if the directive does not match the expression.</returns>
-        private static DirectiveInfo ParseDirectiveLine(Parser parser, string nameExpression, string line, Location location) {
+        private static bool ParseDirectiveLine(Parser parser, string nameExpression, string line, Location location, out ITokenReader parameterReader, out string directiveName) {
+            parameterReader = null;
+            directiveName = null;
+
             Regex re = new Regex("^#(?<name>" + nameExpression + ")(\\s+(?<params>.*))?$", RegexOptions.ExplicitCapture);
 
             var match = re.Match(line);
 
             if(!match.Success) {
-                return null;
+                return false;
             }
 
-            var name = match.Groups["name"].Value;
-            var parametersText = match.Groups["params"].Value;
+            directiveName = match.Groups["name"].Value;
 
+            var parametersText = match.Groups["params"].Value;
             var parametersLocation = location.Clone();
             parametersLocation.AdvanceString(line.Substring(0, match.Groups["params"].Index));
-
             var parametersReader = new LocatedTextReaderWrapper(parametersText, parametersLocation);
 
-            return new DirectiveInfo {
-                Parser = parser,
-                Location = location,
-                DirectiveName = name,
-                ParametersReader = parametersReader
-            };
+            parameterReader = new TokenReader(parametersReader);
+
+            return true;
         }
 
         /// <summary>
@@ -149,8 +99,8 @@ namespace osq.TreeNode {
         /// <param name="nodeType">Type of the directive node.</param>
         /// <param name="info">The new instance's directive information.</param>
         /// <returns>The new <see cref="DirectiveNode"/> instance.</returns>
-        private static DirectiveNode CreateInstance(Type nodeType, DirectiveInfo info) {
-            return Activator.CreateInstance(nodeType, info) as DirectiveNode;
+        private static DirectiveNode CreateInstance(Type nodeType, ITokenReader tokenReader, INodeReader nodeReader, string directiveName, Location location) {
+            return Activator.CreateInstance(nodeType, tokenReader, nodeReader, directiveName, location) as DirectiveNode;
         }
 
         /// <summary>
@@ -169,27 +119,6 @@ namespace osq.TreeNode {
         private static IEnumerable<Type> GetDirectiveTypes(Assembly assembly) {
             return assembly.GetTypes().Where((type) => !type.IsAbstract && type.IsSubclassOf(typeof(DirectiveNode)));
         }
-
-        /// <summary>
-        /// Reads the sub-nodes required by this node.
-        /// </summary>
-        /// <param name="parser">The parser to read sub-nodes from.</param>
-        /// <exception cref="MissingDataException">Closing directive node was not available.</exception>
-        private void ReadSubNodes(Parser parser) {
-            NodeBase curNode = this;
-
-            while(!this.EndsWith(curNode)) {
-                curNode = parser.ReadNode();
-
-                if(curNode == null) {
-                    throw new MissingDataException("Closing #" + this.DirectiveName + " directive", this.Location);
-                }
-
-                this.ChildrenNodes.Add(curNode);
-            }
-        }
-
-        protected abstract bool EndsWith(NodeBase b);
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace osq.TreeNode {
@@ -25,40 +26,15 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public ForNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-            var node = ExpressionRewriter.Rewrite(tokenReader);
-
-            if(!node.Token.IsSymbol(",")) {
-                throw new DataTypeException("Expected comma-separated list", this);
-            }
-
-            var children = node.GetChildrenTokens();
-
-            if(children.Count < 3 || children.Count > 4) {
-                throw new MissingDataException("#for directive requires 3 to 4 parameters", info.Location);
-            }
-
-            if(children[0].Token.TokenType != TokenType.Identifier) {
-                throw new MissingDataException("Identifier", children[0].Location);
-            }
-
-            Variable = children[0].Token.ToString();
-            Start = children[1];
-            End = children[2];
-            Step = children.Count > 3 ? children[3] : null;
-        }
-
         public ForNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
-            var node = ExpressionRewriter.Rewrite(tokenReader);
+            var parameters = ExpressionRewriter.Rewrite(tokenReader);
 
-            if(!node.Token.IsSymbol(",")) {
+            if(!parameters.Token.IsSymbol(",")) {
                 throw new DataTypeException("Expected comma-separated list", this);
             }
 
-            var children = node.GetChildrenTokens();
+            var children = parameters.GetChildrenTokens();
 
             if(children.Count < 3 || children.Count > 4) {
                 throw new MissingDataException("#for directive requires 3 to 4 parameters", location);
@@ -72,12 +48,16 @@ namespace osq.TreeNode {
             Start = children[1];
             End = children[2];
             Step = children.Count > 3 ? children[3] : null;
-        }
 
-        protected override bool EndsWith(NodeBase node) {
-            var endDirective = node as EndDirectiveNode;
+            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                var endDirective = node as EndDirectiveNode;
 
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
+                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                    return false;
+                }
+
+                return true;
+            }));
         }
 
         public override string Execute(ExecutionContext context) {

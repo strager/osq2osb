@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace osq.TreeNode {
@@ -12,24 +13,6 @@ namespace osq.TreeNode {
         public TokenNode Values {
             get;
             private set;
-        }
-
-        public EachNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-            Token token = tokenReader.ReadToken();
-
-            if(token == null) {
-                throw new MissingDataException("Variable name", info.ParametersReader.Location);
-            }
-
-            if(token.TokenType != TokenType.Identifier) {
-                throw new MissingDataException("Variable name", token.Location);
-            }
-
-            Variable = token.Value.ToString();
-
-            Values = ExpressionRewriter.Rewrite(tokenReader);
         }
 
         public EachNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
@@ -49,12 +32,16 @@ namespace osq.TreeNode {
             Variable = token.Value.ToString();
 
             Values = ExpressionRewriter.Rewrite(tokenReader);
-        }
 
-        protected override bool EndsWith(NodeBase node) {
-            var endDirective = node as EndDirectiveNode;
+            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                var endDirective = node as EndDirectiveNode;
 
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
+                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                    return false;
+                }
+
+                return true;
+            }));
         }
 
         public override string Execute(ExecutionContext context) {

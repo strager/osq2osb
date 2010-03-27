@@ -233,5 +233,13 @@ namespace osq {
         private static bool IsDirectiveStart(char c, Location loc) {
             return c == '#' && loc.Column == 1;
         }
+        
+        IEnumerator<NodeBase> IEnumerable<NodeBase>.GetEnumerator() {
+            return ReadNodes().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+            return ReadNodes().GetEnumerator();
+        }
     }
 }

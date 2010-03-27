@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("rep")]
@@ -8,22 +9,19 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public RepNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-
-            Value = ExpressionRewriter.Rewrite(tokenReader);
-        }
-
         public RepNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
             Value = ExpressionRewriter.Rewrite(tokenReader);
-        }
 
-        protected override bool EndsWith(NodeBase node) {
-            var endDirective = node as EndDirectiveNode;
+            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                var endDirective = node as EndDirectiveNode;
 
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
+                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                    return false;
+                }
+
+                return true;
+            }));
         }
 
         public override string Execute(ExecutionContext context) {

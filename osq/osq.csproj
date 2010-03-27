@@ -67,6 +67,7 @@
     <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="ExpressionRewriter.cs" />
+    <Compile Include="MyExtensions.cs" />
     <Compile Include="OsqException.cs" />
     <Compile Include="ParserException.cs" />
     <Compile Include="Parser.cs" />

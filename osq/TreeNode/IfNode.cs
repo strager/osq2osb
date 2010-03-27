@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace osq.TreeNode {
+    // TODO Rewrite.
     [DirectiveAttribute("if")]
     public class IfNode : DirectiveNode {
         public TokenNode Condition {
@@ -11,22 +12,19 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public IfNode(DirectiveInfo info) :
-            base(info) {
-            var tokenReader = new TokenReader(info.ParametersReader);
-
-            Condition = ExpressionRewriter.Rewrite(tokenReader);
-        }
-
         public IfNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
             Condition = ExpressionRewriter.Rewrite(tokenReader);
-        }
 
-        protected override bool EndsWith(NodeBase node) {
-            var endDirective = node as EndDirectiveNode;
+            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                var endDirective = node as EndDirectiveNode;
 
-            return endDirective != null && endDirective.TargetDirectiveName == DirectiveName;
+                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
+                    return false;
+                }
+
+                return true;
+            }));
         }
 
         protected bool TestCondition(ExecutionContext context) {

@@ -27,5 +27,21 @@ namespace osq.Tests.Helpers {
 
             return this.nodes[this.curNode++];
         }
+
+        public IEnumerable<NodeBase> ReadNodes() {
+            NodeBase node;
+            
+            while((node = ReadNode()) != null) {
+                yield return node;
+            }
+        }
+
+        IEnumerator<NodeBase> IEnumerable<NodeBase>.GetEnumerator() {
+            return ReadNodes().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+            return ReadNodes().GetEnumerator();
+        }
     }
 }
