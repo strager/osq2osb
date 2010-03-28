@@ -58,54 +58,52 @@ namespace osq {
             variableStack.Add(builtinVariables);
             variableStack.Add(globalVariables);
 
-            Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.Parser.DefaultCulture));
+            SetBuiltinVariable("int", (token, context) => (int)GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context)));
 
-            SetBuiltinVariable("int", (token, context) => (int)num(token.GetChildrenTokens()[0].Evaluate(context)));
-
-            SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(num(token.GetChildrenTokens()[0].Evaluate(context))));
+            SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context))));
 
             SetBuiltinVariable("rand", (token, context) => Rand.NextDouble());
 
             SetBuiltinVariable("pi", Math.PI);
 
-            SetBuiltinVariable("sin", (token, context) => Math.Sin(num(token.GetChildrenTokens()[0].Evaluate(context))));
+            SetBuiltinVariable("sin", (token, context) => Math.Sin(GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context))));
 
-            SetBuiltinVariable("cos", (token, context) => Math.Cos(num(token.GetChildrenTokens()[0].Evaluate(context))));
+            SetBuiltinVariable("cos", (token, context) => Math.Cos(GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context))));
 
-            SetBuiltinVariable("tan", (token, context) => Math.Tan(num(token.GetChildrenTokens()[0].Evaluate(context))));
+            SetBuiltinVariable("tan", (token, context) => Math.Tan(GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context))));
 
             SetBuiltinVariable("concat", (token, context) => new Token(TokenType.String, string.Join("", token.GetChildrenTokens().Select((t) => (string)t.Evaluate(context)).ToArray())));
 
-            SetBuiltinVariable("+", (token, context) => token.GetChildrenTokens().Aggregate((double)0, (r, t) => r + num(t.Evaluate(context))));
+            SetBuiltinVariable("+", (token, context) => token.GetChildrenTokens().Aggregate((double)0, (r, t) => r + GetDoubleFrom(t.Evaluate(context))));
 
             SetBuiltinVariable("-", (token, context) => {
                 var children = token.GetChildrenTokens();
 
                 if(children.Count == 1) {
-                    return -num(children[0].Evaluate(context));
+                    return -GetDoubleFrom(children[0].Evaluate(context));
                 }
 
-                return num(children[0].Evaluate(context)) - num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) - GetDoubleFrom(children[1].Evaluate(context));
             });
 
-            SetBuiltinVariable("*", (token, context) => token.GetChildrenTokens().Aggregate((double)1, (r, t) => r * num(t.Evaluate(context))));
+            SetBuiltinVariable("*", (token, context) => token.GetChildrenTokens().Aggregate((double)1, (r, t) => r * GetDoubleFrom(t.Evaluate(context))));
 
             SetBuiltinVariable("/", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) / num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) / GetDoubleFrom(children[1].Evaluate(context));
             });
 
             SetBuiltinVariable("%", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) % num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) % GetDoubleFrom(children[1].Evaluate(context));
             });
 
             SetBuiltinVariable("^", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return Math.Pow(num(children[0].Evaluate(context)), num(children[1].Evaluate(context)));
+                return Math.Pow(GetDoubleFrom(children[0].Evaluate(context)), GetDoubleFrom(children[1].Evaluate(context)));
             });
 
             SetBuiltinVariable(",", (token, context) => token.GetChildrenTokens().Select(child => child.Evaluate(context)).ToArray());
@@ -113,10 +111,10 @@ namespace osq {
             SetBuiltinVariable(":", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                double val = (num(children[0].Evaluate(context)) * 60 + num(children[1].Evaluate(context))) * 1000;
+                double val = (GetDoubleFrom(children[0].Evaluate(context)) * 60 + GetDoubleFrom(children[1].Evaluate(context))) * 1000;
 
                 if(children.Count == 3) {
-                    val += num(children[2].Evaluate(context));
+                    val += GetDoubleFrom(children[2].Evaluate(context));
                 }
 
                 return val;
@@ -125,32 +123,32 @@ namespace osq {
             SetBuiltinVariable(">", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) > num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) > GetDoubleFrom(children[1].Evaluate(context));
             });
 
             SetBuiltinVariable("<", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) < num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) < GetDoubleFrom(children[1].Evaluate(context));
             });
 
             SetBuiltinVariable(">=", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) >= num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) >= GetDoubleFrom(children[1].Evaluate(context));
             });
 
             SetBuiltinVariable("<=", (token, context) => {
                 var children = token.GetChildrenTokens();
 
-                return num(children[0].Evaluate(context)) <= num(children[1].Evaluate(context));
+                return GetDoubleFrom(children[0].Evaluate(context)) <= GetDoubleFrom(children[1].Evaluate(context));
             });
 
             Func<object, object, bool> areEqual = (a, b) => {
                 if(a is string || b is string) {
                     return a.ToString() == b.ToString();
                 } else if(a is double || b is double) {
-                    return num(a) == num(b);
+                    return GetDoubleFrom(a) == GetDoubleFrom(b);
                 }
 
                 throw new DataTypeException("Don't know how to handle equality of objects");
@@ -215,6 +213,10 @@ namespace osq {
             }
 
             throw new DataTypeException("Don't know how to stringify value");
+        }
+
+        public double GetDoubleFrom(object obj) {
+            return Convert.ToDouble(obj, Parser.Parser.DefaultCulture);
         }
 
         /// <summary>
