@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using osq.Parser;
 using osq.Tests.Helpers;
@@ -168,6 +169,85 @@ namespace osq.Tests.TokenNode {
             var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
 
             Assert.AreEqual("texttext", func(null, context).ToString());
+        }
+
+        [Test]
+        public void TestFunctionCallWithShorthand() {
+            var node = new DefineNode(
+                new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "test"),
+                    new Token(TokenType.Symbol, "("),
+                    new Token(TokenType.Identifier, "a"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "b"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "c"),
+                    new Token(TokenType.Symbol, ")"),
+                    new Token(TokenType.Identifier, "a"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "b"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "c"),
+                }),
+                null
+            );
+
+            var context = new ExecutionContext();
+
+            node.Execute(context);
+
+            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
+
+            var functionCall = new TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 1)));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 2)));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 3)));
+
+            Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), func(functionCall, context) as IEnumerable);
+        }
+
+        [Test]
+        public void TestFunctionCallWithLonghand() {
+            var functionContents = new TreeNode.TokenNode(new Token(TokenType.Symbol, ","));
+            functionContents.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Identifier, "a")));
+            functionContents.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Identifier, "b")));
+            functionContents.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Identifier, "c")));
+
+            var nodeChildren = new NodeBase[] {
+                functionContents,
+                new EndDirectiveNode(null, null, "endlet"),
+                new RawTextNode("blah", null),
+            };
+
+            var node = new DefineNode(
+                new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "test"),
+                    new Token(TokenType.Symbol, "("),
+                    new Token(TokenType.Identifier, "a"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "b"),
+                    new Token(TokenType.Symbol, ","),
+                    new Token(TokenType.Identifier, "c"),
+                    new Token(TokenType.Symbol, ")"),
+                }),
+                new CollectionNodeReader(nodeChildren),
+                "let"
+            );
+
+            var context = new ExecutionContext();
+
+            node.Execute(context);
+
+            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
+
+            var functionCall = new TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 1)));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 2)));
+            functionCall.ChildrenNodes.Add(new TreeNode.TokenNode(new Token(TokenType.Number, 3)));
+
+            var ret = func(functionCall, context);
+
+            Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), ret as IEnumerable);
         }
 
     }

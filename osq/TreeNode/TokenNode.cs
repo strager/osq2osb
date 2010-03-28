@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,12 +28,8 @@ namespace osq.TreeNode {
 
         public override string Execute(ExecutionContext context) {
             var ret = Evaluate(context);
-            
-            if(ret is double) {
-                return ((double)ret).ToString(Parser.Parser.DefaultCulture);
-            }
-            
-            return ret.ToString();
+
+            return context.GetStringOf(ret);
         }
 
         public object Evaluate(ExecutionContext context) {
