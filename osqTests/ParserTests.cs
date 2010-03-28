@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using NUnit.Framework;
 using osq.Parser;
+using osq.TreeNode;
 
 namespace osq.Tests {
     [TestFixture]
@@ -21,7 +22,7 @@ namespace osq.Tests {
             }
         }
 
-        private static TreeNode.TokenNode ExpressionToTokenNode(string expression) {
+        private static TokenNode ExpressionToTokenNode(string expression) {
             using(var reader = new LocatedTextReaderWrapper(expression, new Location())) {
                 var tokenReader = new TokenReader(reader);
 

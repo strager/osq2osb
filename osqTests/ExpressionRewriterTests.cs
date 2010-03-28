@@ -2,11 +2,12 @@
 using NUnit.Framework;
 using osq.Parser;
 using osq.Tests.Helpers;
+using osq.TreeNode;
 
 namespace osq.Tests {
     [TestFixture]
     public class ExpressionRewriterTests {
-        private static void CheckTree(object expected, TreeNode.TokenNode tree) {
+        private static void CheckTree(object expected, TokenNode tree) {
             object[] array = expected as object[];
 
             if(array != null) {

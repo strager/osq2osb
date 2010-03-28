@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using osq.Parser;
 using osq.Tests.Helpers;
 using osq.TreeNode;
 
-namespace osq.Tests.TokenNode {
+namespace osq.Tests.TreeNode {
     [TestFixture]
     class LetNodeTests {
         [Test]
@@ -22,7 +21,7 @@ namespace osq.Tests.TokenNode {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-            );
+                );
 
             Assert.AreEqual("test", node.Variable);
         }
@@ -35,7 +34,7 @@ namespace osq.Tests.TokenNode {
                     new Token(TokenType.Number, 42),
                 }),
                 null
-            );
+                );
 
             var context = new ExecutionContext();
 
@@ -59,7 +58,7 @@ namespace osq.Tests.TokenNode {
                 }),
                 new CollectionNodeReader(nodeChildren),
                 "let"
-            );
+                );
 
             var context = new ExecutionContext();
 
@@ -69,3 +68,5 @@ namespace osq.Tests.TokenNode {
         }
     }
 }
+
+

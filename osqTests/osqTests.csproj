@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExecutionContextTests.cs" />
-    <Compile Include="TokenNode\DefineNodeTests.cs" />
+    <Compile Include="TreeNode\DefineNodeTests.cs" />
     <Compile Include="ExpressionRewriterTests.cs" />
     <Compile Include="Helpers\CollectionNodeReader.cs" />
     <Compile Include="Helpers\CollectionTokenReader.cs" />
@@ -68,7 +68,7 @@
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TokenizerTests.cs" />
-    <Compile Include="TokenNode\LetNodeTests.cs" />
+    <Compile Include="TreeNode\LetNodeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\osq\osq.csproj">
