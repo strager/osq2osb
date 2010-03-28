@@ -59,7 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefineNodeTests.cs" />
+    <Compile Include="TokenNode\DefineNodeTests.cs" />
     <Compile Include="ExpressionRewriterTests.cs" />
     <Compile Include="Helpers\CollectionNodeReader.cs" />
     <Compile Include="Helpers\CollectionTokenReader.cs" />

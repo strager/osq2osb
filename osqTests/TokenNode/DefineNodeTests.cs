@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using osq.Parser;
 using osq.Tests.Helpers;
 using osq.TreeNode;
 
-namespace osq.Tests {
-    // TODO Make ITokenReader and INodeReader.
-    // Make implementations for a real token/node reader (currently Token and Parser),
-    // and for testy ones (reading from IEnumerables).
+namespace osq.Tests.TokenNode {
     [TestFixture]
     class DefineNodeTests {
         [Test]
@@ -26,7 +22,7 @@ namespace osq.Tests {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-            );
+                );
 
             Assert.AreEqual("test", node.Variable);
         }
@@ -46,7 +42,7 @@ namespace osq.Tests {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-            );
+                );
 
             Assert.AreEqual(new[] { "a", "b", "c" }, node.FunctionParameters);
         }
@@ -60,11 +56,11 @@ namespace osq.Tests {
                     new Token(TokenType.Identifier, "a"),
                 }),
                 null
-            );
+                );
 
             Assert.AreEqual(new Token[] { }, node.FunctionParameters);
             Assert.AreEqual(new NodeBase[] {
-                new TokenNode(new Token(TokenType.Identifier, "a"))
+                new TreeNode.TokenNode(new Token(TokenType.Identifier, "a"))
             }, node.ChildrenNodes);
         }
 
@@ -83,9 +79,11 @@ namespace osq.Tests {
                 }),
                 new CollectionNodeReader(nodeChildren),
                 "def"
-            );
+                );
 
             Assert.AreEqual(nodeChildren.Take(2), node.ChildrenNodes);
         }
     }
 }
+
+
