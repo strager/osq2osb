@@ -22,7 +22,7 @@ namespace osq.Tests.TokenNode {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual("test", node.Variable);
         }
@@ -42,7 +42,7 @@ namespace osq.Tests.TokenNode {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual(new[] { "a", "b", "c" }, node.FunctionParameters);
         }
@@ -56,7 +56,7 @@ namespace osq.Tests.TokenNode {
                     new Token(TokenType.Identifier, "a"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual(new Token[] { }, node.FunctionParameters);
             Assert.AreEqual(new NodeBase[] {
@@ -79,7 +79,7 @@ namespace osq.Tests.TokenNode {
                 }),
                 new CollectionNodeReader(nodeChildren),
                 "def"
-                );
+            );
 
             Assert.AreEqual(nodeChildren.Take(2), node.ChildrenNodes);
         }
