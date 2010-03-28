@@ -41,7 +41,7 @@ namespace osq.TreeNode {
                     string directiveName;
                     ITokenReader parameterReader;
 
-                    var parseSuccesful = ParseDirectiveLine(parser, attr.NameExpression, line, startLocation, out parameterReader, out directiveName);
+                    var parseSuccesful = ParseDirectiveLine(attr.NameExpression, line, startLocation, out parameterReader, out directiveName);
 
                     if(!parseSuccesful) {
                         continue;
@@ -63,14 +63,13 @@ namespace osq.TreeNode {
         /// <summary>
         /// Parses a line containing a directive reference.
         /// </summary>
-        /// <param name="parser">The parser.</param>
         /// <param name="nameExpression">The regular expression to match the name of the directive.</param>
         /// <param name="line">The line containing the directive.</param>
         /// <param name="location">The location of the directive.</param>
-        /// <param name="parameterReader"></param>
-        /// <param name="directiveName"></param>
-        /// <returns>A <see cref="DirectiveInfo"/> instance containing information about the directive, or <c>null</c> if the directive does not match the expression.</returns>
-        private static bool ParseDirectiveLine(Parser.Parser parser, string nameExpression, string line, Location location, out ITokenReader parameterReader, out string directiveName) {
+        /// <param name="parameterReader">The reader of the parsed directive parameters.</param>
+        /// <param name="directiveName">The parsed name of the directive.</param>
+        /// <returns>True if the directive was successfully parsed; otherwise, false.</returns>
+        private static bool ParseDirectiveLine(string nameExpression, string line, Location location, out ITokenReader parameterReader, out string directiveName) {
             parameterReader = null;
             directiveName = null;
 
@@ -98,7 +97,10 @@ namespace osq.TreeNode {
         /// Creates an instance of a directive.
         /// </summary>
         /// <param name="nodeType">Type of the directive node.</param>
-        /// <param name="info">The new instance's directive information.</param>
+        /// <param name="tokenReader">The token reader.</param>
+        /// <param name="nodeReader">The node reader.</param>
+        /// <param name="directiveName">Name of the directive.</param>
+        /// <param name="location">The location of the directive.</param>
         /// <returns>The new <see cref="DirectiveNode"/> instance.</returns>
         private static DirectiveNode CreateInstance(Type nodeType, ITokenReader tokenReader, INodeReader nodeReader, string directiveName, Location location) {
             return Activator.CreateInstance(nodeType, tokenReader, nodeReader, directiveName, location) as DirectiveNode;
