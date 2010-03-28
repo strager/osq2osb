@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace osq.Parser {
     public class TokenReader : ITokenReader {
+        private readonly NumberFormatInfo numberFormat = new CultureInfo("en-US").NumberFormat;
+
         public LocatedTextReaderWrapper InputReader {
             get;
             set;
@@ -130,7 +132,7 @@ namespace osq.Parser {
 
             double number;
 
-            if(!double.TryParse(numberString.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, Parser.DefaultCulture, out number)) {
+            if(!double.TryParse(numberString.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, numberFormat, out number)) {
                 throw new BadDataException("Number", startLocation);
             }
 

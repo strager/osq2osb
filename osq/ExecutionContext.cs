@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using osq.Parser;
 using osq.TreeNode;
@@ -11,8 +12,9 @@ namespace osq {
     /// Stores variables and handles scope during osq script execution.
     /// </summary>
     public class ExecutionContext {
-        private static readonly Random Rand = new Random(31337);
-
+        private readonly Random rand = new Random(31337);
+        private readonly NumberFormatInfo numberFormat = new CultureInfo("en-US").NumberFormat;
+        
         private readonly IList<IDictionary<string, object>> variableStack = new List<IDictionary<string, object>>();
         private readonly IDictionary<string, object> builtinVariables = new Dictionary<string, object>();
         private readonly IDictionary<string, object> globalVariables = new Dictionary<string, object>();
@@ -62,7 +64,7 @@ namespace osq {
 
             SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(GetDoubleFrom(token.GetChildrenTokens()[0].Evaluate(context))));
 
-            SetBuiltinVariable("rand", (token, context) => Rand.NextDouble());
+            SetBuiltinVariable("rand", (token, context) => this.rand.NextDouble());
 
             SetBuiltinVariable("pi", Math.PI);
 
@@ -195,11 +197,11 @@ namespace osq {
             }
 
             if(value is int) {
-                return ((int)value).ToString(Parser.Parser.DefaultCulture);
+                return ((int)value).ToString(numberFormat);
             }
 
             if(value is double) {
-                return NumberHelpers.ToFloatingPointString((double)value, Parser.Parser.DefaultCulture.NumberFormat);
+                return NumberHelpers.ToFloatingPointString((double)value, numberFormat);
             }
 
             if(value is bool) {
@@ -216,7 +218,7 @@ namespace osq {
         }
 
         public double GetDoubleFrom(object obj) {
-            return Convert.ToDouble(obj, Parser.Parser.DefaultCulture);
+            return Convert.ToDouble(obj, numberFormat);
         }
 
         /// <summary>

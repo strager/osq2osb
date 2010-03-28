@@ -8,13 +8,7 @@ namespace osq.Parser {
     /// <summary>
     /// Parses an osq script into <see cref="NodeBase"/> instances.
     /// </summary>
-    public class Parser : INodeReader {
-        /// <summary>
-        /// Default culture used in parsing.
-        /// </summary>
-        internal static readonly CultureInfo DefaultCulture = new CultureInfo("en-US");
-        
-        /// <summary>
+    public class Parser : INodeReader {/// <summary>
         /// Gets or sets the input reader from which the <see cref="Parser"/> reads nodes.
         /// </summary>
         /// <value>The input reader.</value>

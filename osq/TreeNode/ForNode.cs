@@ -64,17 +64,17 @@ namespace osq.TreeNode {
         public override string Execute(ExecutionContext context) {
             var output = new StringBuilder();
 
-            double counter = Convert.ToDouble(Start.Evaluate(context), Parser.Parser.DefaultCulture);
+            double counter = context.GetDoubleFrom(Start.Evaluate(context));
 
             while(true) {
                 context.SetVariable(Variable, counter);
 
                 output.Append(ExecuteChildren(context));
 
-                counter = Convert.ToDouble(context.GetVariable(Variable), Parser.Parser.DefaultCulture);
-                counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context), Parser.Parser.DefaultCulture);
+                counter = context.GetDoubleFrom(context.GetVariable(Variable));
+                counter += Step == null ? 1.0 : context.GetDoubleFrom(Step.Evaluate(context));
 
-                if(counter >= Convert.ToDouble(End.Evaluate(context), Parser.Parser.DefaultCulture)) {
+                if(counter >= context.GetDoubleFrom(End.Evaluate(context))) {
                     break;
                 }
             }
