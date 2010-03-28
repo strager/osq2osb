@@ -61,8 +61,8 @@
     <Compile Include="BufferingTextReaderWrapper.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="ExecutionException.cs" />
-    <Compile Include="INodeReader.cs" />
-    <Compile Include="ITokenReader.cs" />
+    <Compile Include="Parser\INodeReader.cs" />
+    <Compile Include="Parser\ITokenReader.cs" />
     <Compile Include="LinqBridge.cs" />
     <Compile Include="LocatedTextReaderWrapper.cs" />
     <Compile Include="Location.cs" />
@@ -70,11 +70,11 @@
     <Compile Include="MyExtensions.cs" />
     <Compile Include="OsqException.cs" />
     <Compile Include="ParserException.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="Parser\Parser.cs" />
     <Compile Include="Encoder.cs" />
-    <Compile Include="ParserOptions.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenReader.cs" />
+    <Compile Include="Parser\ParserOptions.cs" />
+    <Compile Include="Parser\Token.cs" />
+    <Compile Include="Parser\TokenReader.cs" />
     <Compile Include="TreeNode\DefineNode.cs" />
     <Compile Include="TreeNode\DirectiveAttribute.cs" />
     <Compile Include="TreeNode\DirectiveNode.cs" />

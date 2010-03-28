@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace osq {
+﻿namespace osq.Parser {
     public class ParserOptions {
         public bool AllowVariableShorthand {
             get;
@@ -18,3 +14,5 @@ namespace osq {
         }
     }
 }
+
+

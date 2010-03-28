@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using osq.Parser;
 
 namespace osq.Tests.Helpers {
     public class CollectionTokenReader : ITokenReader {

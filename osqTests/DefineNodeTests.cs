@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using osq.Parser;
 using osq.Tests.Helpers;
 using osq.TreeNode;
 

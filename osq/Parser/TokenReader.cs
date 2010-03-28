@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Linq;
 
-namespace osq {
+namespace osq.Parser {
     public class TokenReader : ITokenReader {
         public LocatedTextReaderWrapper InputReader {
             get;
@@ -233,3 +232,5 @@ namespace osq {
         }
     }
 }
+
+

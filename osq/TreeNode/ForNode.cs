@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("for")]
@@ -63,17 +64,17 @@ namespace osq.TreeNode {
         public override string Execute(ExecutionContext context) {
             var output = new StringBuilder();
 
-            double counter = Convert.ToDouble(Start.Evaluate(context), Parser.DefaultCulture);
+            double counter = Convert.ToDouble(Start.Evaluate(context), Parser.Parser.DefaultCulture);
 
             while(true) {
                 context.SetVariable(Variable, counter);
 
                 output.Append(ExecuteChildren(context));
 
-                counter = Convert.ToDouble(context.GetVariable(Variable), Parser.DefaultCulture);
-                counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context), Parser.DefaultCulture);
+                counter = Convert.ToDouble(context.GetVariable(Variable), Parser.Parser.DefaultCulture);
+                counter += Step == null ? 1.0 : Convert.ToDouble(Step.Evaluate(context), Parser.Parser.DefaultCulture);
 
-                if(counter >= Convert.ToDouble(End.Evaluate(context), Parser.DefaultCulture)) {
+                if(counter >= Convert.ToDouble(End.Evaluate(context), Parser.Parser.DefaultCulture)) {
                     break;
                 }
             }

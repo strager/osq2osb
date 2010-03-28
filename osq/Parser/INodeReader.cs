@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using osq.TreeNode;
 
-namespace osq {
+namespace osq.Parser {
     public interface INodeReader : IEnumerable<NodeBase> {
         Location Location {
             get;
@@ -10,3 +10,5 @@ namespace osq {
         NodeBase ReadNode();
     }
 }
+
+

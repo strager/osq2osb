@@ -33,13 +33,13 @@ namespace osq {
         /// <summary>
         /// Parser with which to parse.
         /// </summary>
-        private Parser parser;
+        private Parser.Parser parser;
 
         /// <summary>
         /// Gets or sets the parser which transforms the osq script.
         /// </summary>
         /// <value>The parser which transforms the osq script.</value>
-        public Parser Parser {
+        public Parser.Parser Parser {
             get {
                 return this.parser;
             }
@@ -80,7 +80,7 @@ namespace osq {
         /// Initializes a new instance of the <see cref="Encoder"/> class.
         /// </summary>
         public Encoder() :
-            this(new Parser()) {
+            this(new Parser.Parser()) {
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace osq {
         /// </summary>
         /// <param name="reader">The reader.</param>
         public Encoder(LocatedTextReaderWrapper reader) :
-            this(new Parser(reader)) {
+            this(new Parser.Parser(reader)) {
         }
 
         /// <summary>
@@ -97,14 +97,14 @@ namespace osq {
         /// <param name="reader">The reader.</param>
         /// <param name="context">The execution context.</param>
         public Encoder(LocatedTextReaderWrapper reader, ExecutionContext context) :
-            this(new Parser(reader), context) {
+            this(new Parser.Parser(reader), context) {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Encoder"/> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
-        public Encoder(Parser parser) :
+        public Encoder(Parser.Parser parser) :
             this(parser, new ExecutionContext()) {
         }
 
@@ -113,7 +113,7 @@ namespace osq {
         /// </summary>
         /// <param name="parser">The parser.</param>
         /// <param name="context">The execution context.</param>
-        public Encoder(Parser parser, ExecutionContext context) {
+        public Encoder(Parser.Parser parser, ExecutionContext context) {
             Parser = parser;
             ExecutionContext = context;
         }
@@ -129,7 +129,7 @@ namespace osq {
 
             using(var bufferingReader = new BufferingTextReaderWrapper(Parser.InputReader))
             using(var myReader = new LocatedTextReaderWrapper(bufferingReader, Parser.InputReader.Location.Clone())) { // Sorry we have to do this...
-                var parser = new Parser(Parser, myReader);
+                var parser = new Parser.Parser(Parser, myReader);
 
                 NodeBase node;
 

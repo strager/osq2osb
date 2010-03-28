@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using osq.Parser;
 using osq.Tests.Helpers;
 
 namespace osq.Tests {

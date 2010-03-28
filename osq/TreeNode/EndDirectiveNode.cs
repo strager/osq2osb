@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("end([^\\s]+)")]

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using osq.Parser;
 
 namespace osq.TreeNode {
     /// <summary>
@@ -31,7 +32,7 @@ namespace osq.TreeNode {
         /// <returns>The directive node.</returns>
         /// <exception cref="BadDataException">Read an invalid directive.</exception>
         /// <exception cref="MissingDataException">Closing directive node was missing.</exception>
-        public static DirectiveNode Create(Parser parser) {
+        public static DirectiveNode Create(Parser.Parser parser) {
             var startLocation = parser.InputReader.Location.Clone();
             string line = parser.InputReader.ReadLine();
 
@@ -69,7 +70,7 @@ namespace osq.TreeNode {
         /// <param name="parameterReader"></param>
         /// <param name="directiveName"></param>
         /// <returns>A <see cref="DirectiveInfo"/> instance containing information about the directive, or <c>null</c> if the directive does not match the expression.</returns>
-        private static bool ParseDirectiveLine(Parser parser, string nameExpression, string line, Location location, out ITokenReader parameterReader, out string directiveName) {
+        private static bool ParseDirectiveLine(Parser.Parser parser, string nameExpression, string line, Location location, out ITokenReader parameterReader, out string directiveName) {
             parameterReader = null;
             directiveName = null;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("def(ine)?")]

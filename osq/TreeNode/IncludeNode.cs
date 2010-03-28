@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("inc(lude)?")]
@@ -10,7 +11,7 @@ namespace osq.TreeNode {
             private set;
         }
 
-        private Parser parentParser;
+        private Parser.Parser parentParser;
 
         public IncludeNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
@@ -37,7 +38,7 @@ namespace osq.TreeNode {
             // TODO Clean up
             using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
                 using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath), wraperOwnsStream: false)) {
-                    foreach(var node in (new Parser(parentParser, reader)).ReadNodes()) {
+                    foreach(var node in (new Parser.Parser(parentParser, reader)).ReadNodes()) {
                         output.Append(node.Execute(context));
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using NUnit.Framework;
+using osq.Parser;
 
 namespace osq.Tests {
     [TestFixture]
@@ -10,7 +11,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                var parser = new Parser(reader);
+                var parser = new Parser.Parser(reader);
 
                 foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
@@ -60,7 +61,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                var parser = new Parser(reader);
+                var parser = new Parser.Parser(reader);
 
                 foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
@@ -81,7 +82,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                var parser = new Parser(reader);
+                var parser = new Parser.Parser(reader);
 
                 foreach(var node in parser.ReadNodes()) {
                     output.Append(node.Execute(context));
@@ -101,7 +102,7 @@ namespace osq.Tests {
             var output = new StringBuilder();
 
             using(var reader = new LocatedTextReaderWrapper(input)) {
-                var parser = new Parser(reader);
+                var parser = new Parser.Parser(reader);
 
                 parser.Options.AllowVariableShorthand = false;
 

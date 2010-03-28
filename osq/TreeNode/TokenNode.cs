@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using osq.Parser;
 
 namespace osq.TreeNode {
     public class TokenNode : NodeBase {
@@ -28,7 +29,7 @@ namespace osq.TreeNode {
             var ret = Evaluate(context);
             
             if(ret is double) {
-                return ((double)ret).ToString(Parser.DefaultCulture);
+                return ((double)ret).ToString(Parser.Parser.DefaultCulture);
             }
             
             return ret.ToString();

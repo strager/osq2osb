@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using NUnit.Framework;
+using osq.Parser;
 
 namespace osq.Tests {
     [TestFixture]

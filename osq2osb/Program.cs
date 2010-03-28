@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using osq;
+using osq.Parser;
 using ExecutionContext = osq.ExecutionContext;
 
 namespace osq2osb {

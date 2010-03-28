@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using osq.TreeNode;
 
-namespace osq {
+namespace osq.Parser {
     /// <summary>
     /// Parses an osq script into <see cref="NodeBase"/> instances.
     /// </summary>

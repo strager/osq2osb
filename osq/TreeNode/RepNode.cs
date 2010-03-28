@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("rep")]

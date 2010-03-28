@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using osq.Parser;
 
 namespace osq.TreeNode {
     [DirectiveAttribute("local")]

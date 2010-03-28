@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using osq.Parser;
 using osq.TreeNode;
 
 namespace osq {
@@ -56,7 +57,7 @@ namespace osq {
             variableStack.Add(builtinVariables);
             variableStack.Add(globalVariables);
 
-            Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.DefaultCulture));
+            Func<object, double> num = (o) => (Convert.ToDouble(o, Parser.Parser.DefaultCulture));
 
             SetBuiltinVariable("int", (token, context) => (int)num(token.GetChildrenTokens()[0].Evaluate(context)));
 
