@@ -167,7 +167,7 @@ namespace osq {
             });
         }
 
-        public bool IsTrue(object value) {
+        public bool GetBoolFrom(object value) {
             if(value is double) {
                 return (double)value != 0;
             }
@@ -183,8 +183,8 @@ namespace osq {
             throw new DataTypeException("Condition returns unknown data type");
         }
 
-        public bool IsTrue(TokenNode tokenNode) {
-            return IsTrue(tokenNode.Evaluate(this));
+        public bool GetBoolFrom(TokenNode tokenNode) {
+            return GetBoolFrom(tokenNode.Evaluate(this));
         }
 
         public string GetStringOf(object value) {

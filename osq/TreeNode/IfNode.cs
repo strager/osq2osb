@@ -33,7 +33,7 @@ namespace osq.TreeNode {
 
             IEnumerable<NodeBase> nodes = ChildrenNodes;
 
-            bool condition = context.IsTrue(Condition);
+            bool condition = context.GetBoolFrom(Condition);
 
             while(true) {
                 if(condition == true) {
@@ -60,7 +60,7 @@ namespace osq.TreeNode {
                         continue;
                     }
 
-                    condition = context.IsTrue(((ElseIfNode)nextNode).Condition);
+                    condition = context.GetBoolFrom(((ElseIfNode)nextNode).Condition);
                 }
             }
 
