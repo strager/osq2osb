@@ -143,6 +143,33 @@ namespace osq.Tests.TokenNode {
 
             Assert.AreEqual("42", func(null, context).ToString());
         }
+
+        [Test]
+        public void TestVariableCallWithLonghand() {
+            var nodeChildren = new NodeBase[] {
+                new RawTextNode("text", null),
+                new RawTextNode("text", null),
+                new EndDirectiveNode(null, null, "endlet"),
+                new RawTextNode("blah", null),
+            };
+
+            var node = new DefineNode(
+                new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "test"),
+                }),
+                new CollectionNodeReader(nodeChildren),
+                "let"
+            );
+
+            var context = new ExecutionContext();
+
+            node.Execute(context);
+
+            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
+
+            Assert.AreEqual("texttext", func(null, context).ToString());
+        }
+
     }
 }
 
