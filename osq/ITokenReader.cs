@@ -5,6 +5,5 @@
         }
 
         Token ReadToken();
-        Token PeekToken();
     }
 }

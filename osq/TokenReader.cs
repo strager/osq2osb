@@ -64,24 +64,7 @@ namespace osq {
             }
         }
 
-        private Token peekedToken = null;
-
         public Token ReadToken() {
-            if(peekedToken != null) {
-                var ret = peekedToken;
-                peekedToken = null;
-                return ret;
-            }
-
-            return ReadTokenForced();
-        }
-
-        public Token PeekToken() {
-            peekedToken = ReadTokenForced();
-            return peekedToken;
-        }
-
-        private Token ReadTokenForced() {
             int nextCharacterCode = InputReader.Peek();
 
             if(nextCharacterCode < 0) {

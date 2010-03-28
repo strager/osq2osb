@@ -34,11 +34,9 @@ namespace osq.TreeNode {
 
             FunctionParameters = new List<string>();
 
-            Token token = tokenReader.PeekToken();
+            Token token = tokenReader.ReadToken();
 
             if(token != null && token.IsSymbol("(")) {
-                token = tokenReader.ReadToken();
-
                 while(token != null && !token.IsSymbol(")")) {
                     token = tokenReader.ReadToken();
 
@@ -50,9 +48,11 @@ namespace osq.TreeNode {
                 if(token == null) {
                     throw new MissingDataException("Closing parentheses");
                 }
+
+                token = null;
             }
 
-            var shorthand = ReadShorthandNode(tokenReader);
+            var shorthand = ReadShorthandNode(tokenReader, token);
 
             if(shorthand != null) {
                 ChildrenNodes.Add(shorthand);
@@ -69,16 +69,12 @@ namespace osq.TreeNode {
             }
         }
 
-        private NodeBase ReadShorthandNode(ITokenReader tokenReader) {
-            ICollection<Token> tokens = new List<Token>();
+        private NodeBase ReadShorthandNode(ITokenReader tokenReader, params Token[] previousTokens) {
+            ICollection<Token> tokens = new List<Token>(previousTokens.Where((token) => token != null));
             Token curToken;
 
             while((curToken = tokenReader.ReadToken()) != null) {
                 tokens.Add(curToken);
-            }
-
-            if(tokens.Count((token) => token.TokenType != TokenType.WhiteSpace) == 0) {
-                return null;
             }
 
             return ExpressionRewriter.Rewrite(tokens);
