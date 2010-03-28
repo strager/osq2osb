@@ -86,7 +86,7 @@ namespace osq.TreeNode {
                 subContext.PushScope();
 
                 try {
-                    var parameters = token.GetChildrenTokens();
+                    var parameters = token == null ? new TokenNode[] { } : token.GetChildrenTokens();
 
                     if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
                         parameters = parameters[0].GetChildrenTokens();

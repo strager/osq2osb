@@ -124,6 +124,25 @@ namespace osq.Tests.TokenNode {
 
             Assert.NotNull(context.GetVariable("test") as ExecutionContext.OsqFunction);
         }
+
+        [Test]
+        public void TestVariableCallWithShorthand() {
+            var node = new DefineNode(
+                new CollectionTokenReader(new[] {
+                    new Token(TokenType.Identifier, "test"),
+                    new Token(TokenType.Number, 42),
+                }),
+                null
+            );
+
+            var context = new ExecutionContext();
+
+            node.Execute(context);
+
+            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
+
+            Assert.AreEqual("42", func(null, context).ToString());
+        }
     }
 }
 
