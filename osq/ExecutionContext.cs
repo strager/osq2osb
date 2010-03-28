@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using osq.Parser;
@@ -182,11 +183,38 @@ namespace osq {
             }
 
             throw new DataTypeException("Condition returns unknown data type");
-            
         }
 
         public bool IsTrue(TokenNode tokenNode) {
             return IsTrue(tokenNode.Evaluate(this));
+        }
+
+        public string GetStringOf(object value) {
+            string asString = value as string;
+
+            if(asString != null) {
+                return asString;
+            }
+
+            if(value is int) {
+                return ((int)value).ToString(Parser.Parser.DefaultCulture);
+            }
+
+            if(value is double) {
+                return NumberHelpers.ToFloatingPointString((double)value, Parser.Parser.DefaultCulture.NumberFormat);
+            }
+
+            if(value is bool) {
+                return ((bool)value) ? "1" : "0";
+            }
+
+            IEnumerable asEnumerable = value as IEnumerable;
+
+            if(asEnumerable != null) {
+                return "(" + string.Join(",", asEnumerable.Cast<object>().Select(GetStringOf).ToArray()) + ")";
+            }
+
+            throw new DataTypeException("Don't know how to stringify value");
         }
 
         /// <summary>

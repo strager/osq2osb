@@ -61,6 +61,7 @@
     <Compile Include="BufferingTextReaderWrapper.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="ExecutionException.cs" />
+    <Compile Include="NumberHelpers.cs" />
     <Compile Include="Parser\INodeReader.cs" />
     <Compile Include="Parser\ITokenReader.cs" />
     <Compile Include="LinqBridge.cs" />
