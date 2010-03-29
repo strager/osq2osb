@@ -8,14 +8,24 @@ using osq.TreeNode;
 namespace osq.Tests.TreeNode {
     [TestFixture]
     class IfNodeTests {
+        private ITokenReader GetTrueCondition() {
+            return new CollectionTokenReader(new[] {
+                new Token(TokenType.Number, 1),
+            });
+        }
+
+        private ITokenReader GetFalseCondition() {
+            return new CollectionTokenReader(new[] {
+                new Token(TokenType.Number, 0),
+            });
+        }
+
         [Test]
         public void IfTrue() {
             var trueChild = new RawTextNode("test", null);
 
             var node = new IfNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Number, 1),
-                }),
+                GetTrueCondition(),
                 new CollectionNodeReader(new NodeBase[] {
                     trueChild,
                     new EndDirectiveNode(null, null, "endif"),
@@ -33,9 +43,7 @@ namespace osq.Tests.TreeNode {
             var trueChild = new RawTextNode("test", null);
 
             var node = new IfNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Number, 1),
-                }),
+                GetTrueCondition(),
                 new CollectionNodeReader(new NodeBase[] {
                     trueChild,
                     new ElseNode(null, null),
@@ -54,9 +62,7 @@ namespace osq.Tests.TreeNode {
             var trueChild = new RawTextNode("test", null);
 
             var node = new IfNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Number, 0),
-                }),
+                GetFalseCondition(),
                 new CollectionNodeReader(new NodeBase[] {
                     new ElseNode(null, null),
                     trueChild,
