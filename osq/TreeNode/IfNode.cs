@@ -18,14 +18,13 @@ namespace osq.TreeNode {
                 set;
             }
 
-            public string ExecuteChildren(ExecutionContext context) {
-                var output = new StringBuilder();
+            public ConditionSet(TokenNode condition) :
+                this(condition, new List<NodeBase>()) {
+            }
 
-                foreach(var child in ChildrenNodes) {
-                    output.Append(child.Execute(context));
-                }
-
-                return output.ToString();
+            public ConditionSet(TokenNode condition, IList<NodeBase> children) {
+                Condition = condition;
+                ChildrenNodes = children;
             }
         }
 
@@ -40,45 +39,30 @@ namespace osq.TreeNode {
             Conditions = new List<ConditionSet>();
 
             var condition = ExpressionRewriter.Rewrite(tokenReader);
-
-            var curConditionSet = new ConditionSet {
-                ChildrenNodes = new List<NodeBase>(),
-                Condition = condition
-            };
+            var curConditionSet = new ConditionSet(condition);
 
             Conditions.Add(curConditionSet);
 
-            NodeBase node;
-
-            while((node = nodeReader.ReadNode()) != null) {
+            var childrenNodes = nodeReader.TakeWhile((node) => {
                 var endDirective = node as EndDirectiveNode;
 
                 if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    break;
+                    return false;
                 }
 
-                var elseIfNode = node as ElseIfNode;
+                return true;
+            });
 
-                if(elseIfNode != null) {
-                    if(curConditionSet.Condition == null) {
+            foreach(var node in childrenNodes) {
+                bool isConditional;
+                var newCondition = GetConditionFromNode(node, out isConditional);
+
+                if(isConditional) {
+                    if(newCondition != null && curConditionSet.Condition == null) {
                         throw new BadDataException("Can't have an elseif node after an else node", node.Location);
                     }
 
-                    curConditionSet = new ConditionSet {
-                        ChildrenNodes = new List<NodeBase>(),
-                        Condition = elseIfNode.Condition
-                    };
-
-                    Conditions.Add(curConditionSet);
-
-                    continue;
-                }
-
-                if(node is ElseNode) {
-                    curConditionSet = new ConditionSet {
-                        ChildrenNodes = new List<NodeBase>(),
-                        Condition = null
-                    };
+                    curConditionSet = new ConditionSet(newCondition);
 
                     Conditions.Add(curConditionSet);
 
@@ -87,6 +71,26 @@ namespace osq.TreeNode {
 
                 curConditionSet.ChildrenNodes.Add(node);
             }
+        }
+
+        private static TokenNode GetConditionFromNode(NodeBase node, out bool isConditional) {
+            isConditional = true;
+
+            var asElseIf = node as ElseIfNode;
+
+            if(asElseIf != null) {
+                return asElseIf.Condition;
+            }
+
+            var asElse = node as ElseNode;
+
+            if(asElse != null) {
+                return null;
+            }
+
+            isConditional = false;
+
+            return null;
         }
 
         public ConditionSet GetTrueConditionSet(ExecutionContext context) {
@@ -100,7 +104,13 @@ namespace osq.TreeNode {
                 return "";
             }
 
-            return conditionSet.ExecuteChildren(context);
+            var output = new StringBuilder();
+
+            foreach(var child in conditionSet.ChildrenNodes) {
+                output.Append(child.Execute(context));
+            }
+
+            return output.ToString();
         }
     }
 }
