@@ -18,12 +18,11 @@ namespace osq.TreeNode {
             base(directiveName, location) {
             Filename = ExpressionRewriter.Rewrite(tokenReader);
 
-            throw new NotImplementedException("#include not done yet =X");
-
-            this.parentParser = null;
+            this.parentParser = nodeReader as Parser.Parser;
         }
 
         public override string Execute(ExecutionContext context) {
+            // TODO Clean up.
             var output = new StringBuilder();
 
             string filePath = Filename.Evaluate(context) as string;
@@ -36,12 +35,10 @@ namespace osq.TreeNode {
                 filePath = Path.GetDirectoryName(Location.FileName) + Path.DirectorySeparatorChar + filePath;
             }
 
-            // TODO Clean up
-            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read)) {
-                using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath), wraperOwnsStream: false)) {
-                    foreach(var node in (new Parser.Parser(parentParser, reader)).ReadNodes()) {
-                        output.Append(node.Execute(context));
-                    }
+            using(var inputFile = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            using(var reader = new LocatedTextReaderWrapper(inputFile, new Location(filePath), wrapperOwnsStream: false)) {
+                foreach(var node in GetNodeReader(reader)) {
+                    output.Append(node.Execute(context));
                 }
             }
 
@@ -50,6 +47,15 @@ namespace osq.TreeNode {
             }
 
             return output.ToString();
+        }
+
+        private INodeReader GetNodeReader(LocatedTextReaderWrapper textReader) {
+            // HACK I really hate this coupling.
+            if(this.parentParser == null) {
+                return new Parser.Parser(textReader);
+            }
+
+            return new Parser.Parser(this.parentParser, textReader);
         }
     }
 }
