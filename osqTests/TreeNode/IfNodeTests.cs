@@ -8,95 +8,116 @@ using osq.TreeNode;
 namespace osq.Tests.TreeNode {
     [TestFixture]
     class IfNodeTests {
-        private ITokenReader GetTrueCondition() {
-            return new CollectionTokenReader(new[] {
-                new Token(TokenType.Number, 1),
-            });
+        private readonly Token trueConditionToken = new Token(TokenType.Number, 1);
+        private readonly Token falseConditionToken = new Token(TokenType.Number, 0);
+
+        private readonly NodeBase goodNode = new RawTextNode("good", null);
+        private readonly NodeBase badNode = new RawTextNode("bad", null);
+
+        private ITokenReader TrueCondition {
+            get {
+                return new CollectionTokenReader(new[] {
+                    this.trueConditionToken
+                });
+            }
         }
 
-        private ITokenReader GetFalseCondition() {
-            return new CollectionTokenReader(new[] {
-                new Token(TokenType.Number, 0),
-            });
+        private ITokenReader FalseCondition {
+            get {
+                return new CollectionTokenReader(new[] {
+                    this.falseConditionToken
+                });
+            }
+        }
+
+        private NodeBase GoodNode {
+            get {
+                return this.goodNode;
+            }
+        }
+
+        private NodeBase BadNode {
+            get {
+                return this.badNode;
+            }
         }
 
         [Test]
         public void IfTrue() {
-            var trueChild = new RawTextNode("test", null);
-
             var node = new IfNode(
-                GetTrueCondition(),
-                new CollectionNodeReader(new NodeBase[] {
-                    trueChild,
+                TrueCondition,
+                new CollectionNodeReader(new[] {
+                    GoodNode,
                     new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
                 }),
                 "if"
             );
 
             var context = new ExecutionContext();
 
-            Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
+            Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
         }
 
         [Test]
         public void IfTrueElse() {
-            var trueChild = new RawTextNode("test", null);
-
             var node = new IfNode(
-                GetTrueCondition(),
-                new CollectionNodeReader(new NodeBase[] {
-                    trueChild,
+                TrueCondition,
+                new CollectionNodeReader(new[] {
+                    GoodNode,
                     new ElseNode(null, null),
+                    BadNode,
                     new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
                 }),
                 "if"
             );
 
             var context = new ExecutionContext();
 
-            Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
+            Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
         }
 
         [Test]
         public void IfFalseElse() {
-            var trueChild = new RawTextNode("test", null);
-
             var node = new IfNode(
-                GetFalseCondition(),
-                new CollectionNodeReader(new NodeBase[] {
+                FalseCondition,
+                new CollectionNodeReader(new[] {
+                    BadNode,
                     new ElseNode(null, null),
-                    trueChild,
+                    GoodNode,
                     new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
                 }),
                 "if"
             );
 
             var context = new ExecutionContext();
 
-            Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
+            Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
         }
 
         [Test]
         public void IfTrueElseIfTrue() {
-            var trueChild = new RawTextNode("test", null);
-
             var node = new IfNode(
-                GetTrueCondition(),
-                new CollectionNodeReader(new NodeBase[] {
-                    trueChild,
+                TrueCondition,
+                new CollectionNodeReader(new[] {
+                    GoodNode,
                     new ElseIfNode(
-                        GetTrueCondition(),
-                        new CollectionNodeReader(new NodeBase[] {
+                        TrueCondition,
+                        new CollectionNodeReader(new[] {
+                            BadNode,
                         })
                     ),
                     new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
                 }),
                 "if"
             );
 
             var context = new ExecutionContext();
 
-            Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
+            Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
         }
     }
 }
