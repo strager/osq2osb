@@ -43,15 +43,7 @@ namespace osq.TreeNode {
 
             Conditions.Add(curConditionSet);
 
-            var childrenNodes = nodeReader.TakeWhile((node) => {
-                var endDirective = node as EndDirectiveNode;
-
-                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    return false;
-                }
-
-                return true;
-            });
+            var childrenNodes = nodeReader.TakeWhile((node) => !IsEndDirective(node, DirectiveName));
 
             foreach(var node in childrenNodes) {
                 bool isConditional;

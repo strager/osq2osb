@@ -37,19 +37,9 @@ namespace osq.TreeNode {
             var shorthand = ReadShorthandNode(tokenReader);
 
             if(shorthand != null) {
-                ChildrenNodes = new List<NodeBase> {
-                    shorthand
-                };
+                ChildrenNodes = new List<NodeBase> { shorthand };
             } else {
-                ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
-                    var endDirective = node as EndDirectiveNode;
-
-                    if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                        return false;
-                    }
-
-                    return true;
-                }));
+                ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => !IsEndDirective(node, DirectiveName)));
             }
         }
 

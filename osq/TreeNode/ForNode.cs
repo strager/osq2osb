@@ -56,15 +56,7 @@ namespace osq.TreeNode {
             End = children[2];
             Step = children.Count > 3 ? children[3] : null;
 
-            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
-                var endDirective = node as EndDirectiveNode;
-
-                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    return false;
-                }
-
-                return true;
-            }));
+            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => !IsEndDirective(node, DirectiveName)));
         }
 
         public override string Execute(ExecutionContext context) {

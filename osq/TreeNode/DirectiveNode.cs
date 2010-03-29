@@ -124,6 +124,12 @@ namespace osq.TreeNode {
             return assembly.GetTypes().Where((type) => !type.IsAbstract && type.IsSubclassOf(typeof(DirectiveNode)));
         }
 
+        protected static bool IsEndDirective(NodeBase node, string name) {
+            var asEndDirective = node as EndDirectiveNode;
+
+            return asEndDirective != null && asEndDirective.TargetDirectiveName == name;
+        }
+
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>

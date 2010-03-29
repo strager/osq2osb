@@ -20,15 +20,7 @@ namespace osq.TreeNode {
             base(directiveName, location) {
             Value = ExpressionRewriter.Rewrite(tokenReader);
 
-            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
-                var endDirective = node as EndDirectiveNode;
-
-                if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    return false;
-                }
-
-                return true;
-            }));
+            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => !IsEndDirective(node, DirectiveName)));
         }
 
         public override string Execute(ExecutionContext context) {
