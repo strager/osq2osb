@@ -75,5 +75,28 @@ namespace osq.Tests.TreeNode {
 
             Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
         }
+
+        [Test]
+        public void IfTrueElseIfTrue() {
+            var trueChild = new RawTextNode("test", null);
+
+            var node = new IfNode(
+                GetTrueCondition(),
+                new CollectionNodeReader(new NodeBase[] {
+                    trueChild,
+                    new ElseIfNode(
+                        GetTrueCondition(),
+                        new CollectionNodeReader(new NodeBase[] {
+                        })
+                    ),
+                    new EndDirectiveNode(null, null, "endif"),
+                }),
+                "if"
+            );
+
+            var context = new ExecutionContext();
+
+            Assert.AreEqual(new[] { trueChild }, node.GetTrueConditionSet(context).ChildrenNodes);
+        }
     }
 }
