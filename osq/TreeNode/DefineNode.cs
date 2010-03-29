@@ -86,10 +86,10 @@ namespace osq.TreeNode {
                 subContext.PushScope();
 
                 try {
-                    var parameters = token == null ? new TokenNode[] { } : token.GetChildrenTokens();
+                    var parameters = token == null ? new TokenNode[] { } : token.ChildrenTokenNodes;
 
                     if(parameters.Count == 1 && parameters[0].Token.IsSymbol(",")) {
-                        parameters = parameters[0].GetChildrenTokens();
+                        parameters = parameters[0].ChildrenTokenNodes;
                     }
 
                     using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {

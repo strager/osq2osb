@@ -22,8 +22,15 @@ namespace osq.TreeNode {
             }
         }
 
+        public IList<TokenNode> ChildrenTokenNodes {
+            get;
+            private set;
+        }
+
         public TokenNode(Token token) {
             Token = token;
+
+            ChildrenTokenNodes = new List<TokenNode>();
         }
 
         public override string Execute(ExecutionContext context) {
@@ -49,13 +56,9 @@ namespace osq.TreeNode {
             }
         }
 
-        public IList<TokenNode> GetChildrenTokens() {
-            return ChildrenNodes.Select((node) => node as TokenNode).Where((node) => node != null).ToList();
-        }
-
         public override string ToString() {
             StringBuilder str = new StringBuilder();
-            var c = GetChildrenTokens();
+            var c = ChildrenTokenNodes;
 
             str.Append(Token.Value.ToString());
 
@@ -93,7 +96,7 @@ namespace osq.TreeNode {
                 return false;
             }
 
-            if(!otherTokenNode.ChildrenNodes.SequenceEqual(this.ChildrenNodes)) {
+            if(!otherTokenNode.ChildrenTokenNodes.SequenceEqual(this.ChildrenTokenNodes)) {
                 return false;
             }
 

@@ -1,4 +1,7 @@
-﻿namespace osq.TreeNode {
+﻿using System.Collections.Generic;
+using System.Text;
+
+namespace osq.TreeNode {
     public class RawTextNode : NodeBase {
         public string Content {
             get;

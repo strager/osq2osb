@@ -199,9 +199,9 @@ namespace osq.Tests.TreeNode {
             var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
 
             var functionCall = new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
 
             Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), func(functionCall, context) as IEnumerable);
         }
@@ -209,9 +209,9 @@ namespace osq.Tests.TreeNode {
         [Test]
         public void TestFunctionCallWithLonghand() {
             var functionContents = new osq.TreeNode.TokenNode(new Token(TokenType.Symbol, ","));
-            functionContents.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "a")));
-            functionContents.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "b")));
-            functionContents.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "c")));
+            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "a")));
+            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "b")));
+            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "c")));
 
             var nodeChildren = new NodeBase[] {
                 functionContents,
@@ -241,9 +241,9 @@ namespace osq.Tests.TreeNode {
             var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
 
             var functionCall = new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
-            functionCall.ChildrenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
+            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
 
             var ret = func(functionCall, context);
 

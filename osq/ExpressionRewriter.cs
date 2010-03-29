@@ -102,21 +102,21 @@ namespace osq {
 
             AddChildToOperator(tree, opcodeNode);
 
-            opcodeNode.ChildrenNodes.Add(right);
+            opcodeNode.ChildrenTokenNodes.Add(right);
 
             return opcodeNode;
         }
 
         private void AddChildToOperator(TokenNode child, TokenNode parent) {
             bool mergeCommas = (parent.Token.IsSymbol(",") && child.Token.IsSymbol(","));
-            bool mergeColons = (parent.Token.IsSymbol(":") && child.Token.IsSymbol(":") && child.GetChildrenTokens().Count == 2);
+            bool mergeColons = (parent.Token.IsSymbol(":") && child.Token.IsSymbol(":") && child.ChildrenTokenNodes.Count == 2);
 
             if(mergeCommas || mergeColons) {
-                foreach(var newChild in child.ChildrenNodes) {
-                    parent.ChildrenNodes.Add(newChild);
+                foreach(var newChild in child.ChildrenTokenNodes) {
+                    parent.ChildrenTokenNodes.Add(newChild);
                 }
             } else {
-                parent.ChildrenNodes.Add(child);
+                parent.ChildrenTokenNodes.Add(child);
             }
         }
 
@@ -148,7 +148,7 @@ namespace osq {
             var token = this.tokens.Dequeue();
             var node = new TokenNode(token);
 
-            node.ChildrenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), UnaryOperatorTiers)));
+            node.ChildrenTokenNodes.Add(ReadLevel(GetOperatorTier(token.Value.ToString(), UnaryOperatorTiers)));
 
             return node;
         }
@@ -163,7 +163,7 @@ namespace osq {
                 var arguments = ReadLevel(0);
 
                 if(arguments != null) {
-                    identifierNode.ChildrenNodes.Add(arguments);
+                    identifierNode.ChildrenTokenNodes.Add(arguments);
                 }
 
                 ReadClosingParentheses();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using osq.Parser;
@@ -20,8 +21,14 @@ namespace osq.TreeNode {
             private set;
         }
 
+        public IList<NodeBase> ChildrenNodes {
+            get;
+            private set;
+        }
+
         protected DirectiveNode(string directiveName, Location location) :
             base(location) {
+            ChildrenNodes = new List<NodeBase>();
             DirectiveName = directiveName;
         }
 
@@ -131,6 +138,16 @@ namespace osq.TreeNode {
         /// </returns>
         public override string ToString() {
             return "#" + DirectiveName;
+        }
+
+        public string ExecuteChildren(ExecutionContext context) {
+            var output = new StringBuilder();
+
+            foreach(var child in ChildrenNodes) {
+                output.Append(child.Execute(context));
+            }
+
+            return output.ToString();
         }
     }
 }

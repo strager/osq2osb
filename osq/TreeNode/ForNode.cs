@@ -35,7 +35,7 @@ namespace osq.TreeNode {
                 throw new DataTypeException("Expected comma-separated list", this);
             }
 
-            var children = parameters.GetChildrenTokens();
+            var children = parameters.ChildrenTokenNodes;
 
             if(children.Count < 3 || children.Count > 4) {
                 throw new MissingDataException("#for directive requires 3 to 4 parameters", location);
