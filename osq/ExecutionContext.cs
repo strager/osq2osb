@@ -170,22 +170,56 @@ namespace osq {
         }
 
         public bool GetBoolFrom(object value) {
+            if(value == null) {
+                return false;
+            }
+
+            string asString = value as string;
+
+            if(asString != null) {
+                return asString != "";
+            }
+
+            if(value is int) {
+                return (int)value != 0;
+            }
+
             if(value is double) {
-                return (double)value != 0;
+                double d = (double)value;   // Double D is the smart one.
+
+                if(double.IsInfinity(d)) {
+                    return true;
+                }
+
+                if(double.IsNaN(d)) {
+                    return false;
+                }
+
+                return d != 0;
             }
             
             if(value is string) {
                 return !string.IsNullOrEmpty((string)value);
             }
             
-            if(value is Boolean) {
-                return (Boolean)value;
+            if(value is bool) {
+                return (bool)value;
+            }
+
+            IEnumerable asEnumerable = value as IEnumerable;
+
+            if(asEnumerable != null) {
+                return asEnumerable.Cast<object>().Any();
             }
 
             throw new DataTypeException("Condition returns unknown data type");
         }
 
         public bool GetBoolFrom(TokenNode tokenNode) {
+            if(tokenNode == null) {
+                throw new ArgumentNullException("tokenNode");
+            }
+
             return GetBoolFrom(tokenNode.Evaluate(this));
         }
 
