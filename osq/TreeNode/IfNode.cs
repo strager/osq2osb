@@ -5,81 +5,102 @@ using System.Text;
 using osq.Parser;
 
 namespace osq.TreeNode {
-    // TODO Rewrite.
     [DirectiveAttribute("if")]
     public class IfNode : DirectiveNode {
-        public TokenNode Condition {
-            get;
-            private set;
+        public class ConditionSet {
+            public IList<NodeBase> ChildrenNodes {
+                get;
+                set;
+            }
+
+            public TokenNode Condition {
+                get;
+                set;
+            }
+
+            public string ExecuteChildren(ExecutionContext context) {
+                var output = new StringBuilder();
+
+                foreach(var child in ChildrenNodes) {
+                    output.Append(child.Execute(context));
+                }
+
+                return output.ToString();
+            }
         }
 
-        public IList<NodeBase> ChildrenNodes {
+        public IList<ConditionSet> Conditions {
             get;
-            private set;
+            set;
         }
 
+        // TODO Clean up.
         public IfNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
-            Condition = ExpressionRewriter.Rewrite(tokenReader);
+            Conditions = new List<ConditionSet>();
 
-            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
+            var condition = ExpressionRewriter.Rewrite(tokenReader);
+
+            var curConditionSet = new ConditionSet {
+                ChildrenNodes = new List<NodeBase>(),
+                Condition = condition
+            };
+
+            Conditions.Add(curConditionSet);
+
+            NodeBase node;
+
+            while((node = nodeReader.ReadNode()) != null) {
                 var endDirective = node as EndDirectiveNode;
 
                 if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
-                    return false;
+                    break;
                 }
 
-                return true;
-            }));
+                var elseIfNode = node as ElseIfNode;
+
+                if(elseIfNode != null) {
+                    if(curConditionSet.Condition == null) {
+                        throw new BadDataException("Can't have an elseif node after an else node", node.Location);
+                    }
+
+                    curConditionSet = new ConditionSet {
+                        ChildrenNodes = new List<NodeBase>(),
+                        Condition = elseIfNode.Condition
+                    };
+
+                    Conditions.Add(curConditionSet);
+
+                    continue;
+                }
+
+                if(node is ElseNode) {
+                    curConditionSet = new ConditionSet {
+                        ChildrenNodes = new List<NodeBase>(),
+                        Condition = null
+                    };
+
+                    Conditions.Add(curConditionSet);
+
+                    continue;
+                }
+
+                curConditionSet.ChildrenNodes.Add(node);
+            }
+        }
+
+        public ConditionSet GetTrueConditionSet(ExecutionContext context) {
+            return Conditions.FirstOrDefault((conditionSet) => conditionSet.Condition == null || context.GetBoolFrom(conditionSet.Condition) == true);
         }
 
         public override string Execute(ExecutionContext context) {
-            var output = new StringBuilder();
+            var conditionSet = GetTrueConditionSet(context);
 
-            IEnumerable<NodeBase> nodes = ChildrenNodes;
-
-            bool condition = context.GetBoolFrom(Condition);
-
-            while(true) {
-                if(condition == true) {
-                    nodes = nodes.TakeWhile((child) => !(child is ElseNode || child is ElseIfNode));
-
-                    foreach(var node in nodes) {
-                        output.Append(node.Execute(context));
-                    }
-
-                    break;
-                } else {
-                    nodes = nodes.SkipWhile((child) => !(child is ElseNode || child is ElseIfNode));
-
-                    if(nodes.Count() == 0) {
-                        break;
-                    }
-
-                    var nextNode = nodes.First();
-
-                    nodes = nodes.Skip(1);
-
-                    if(nextNode is ElseNode) {
-                        condition = true;
-                        continue;
-                    }
-
-                    condition = context.GetBoolFrom(((ElseIfNode)nextNode).Condition);
-                }
+            if(conditionSet == null) {
+                return "";
             }
 
-            return output.ToString();
-        }
-
-        public string ExecuteChildren(ExecutionContext context) {
-            var output = new StringBuilder();
-
-            foreach(var child in ChildrenNodes) {
-                output.Append(child.Execute(context));
-            }
-
-            return output.ToString();
+            return conditionSet.ExecuteChildren(context);
         }
     }
 }
