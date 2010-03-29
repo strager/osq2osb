@@ -29,6 +29,10 @@
             Location = location;
         }
 
+        public bool IsSymbol(string expected) {
+            return TokenType == TokenType.Symbol && (string)Value == expected;
+        }
+
         public override string ToString() {
             return Value.ToString();
         }
@@ -71,8 +75,18 @@
             return true;
         }
 
-        public bool IsSymbol(string expected) {
-            return TokenType == TokenType.Symbol && (string)Value == expected;
+        public override int GetHashCode() {
+            int hashCode = TokenType.GetHashCode();
+            
+            if(Value != null) {
+                hashCode ^= Value.GetHashCode();
+            }
+
+            if(Location != null) {
+                hashCode ^= Location.GetHashCode();
+            }
+
+            return hashCode;
         }
     }
 }
