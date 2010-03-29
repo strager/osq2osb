@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using osq.Parser;
@@ -12,6 +13,11 @@ namespace osq.TreeNode {
         }
 
         public TokenNode Values {
+            get;
+            private set;
+        }
+
+        public IList<NodeBase> ChildrenNodes {
             get;
             private set;
         }
@@ -34,7 +40,7 @@ namespace osq.TreeNode {
 
             Values = ExpressionRewriter.Rewrite(tokenReader);
 
-            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
                 var endDirective = node as EndDirectiveNode;
 
                 if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
@@ -56,6 +62,16 @@ namespace osq.TreeNode {
                 context.SetVariable(Variable, value);
 
                 output.Append(ExecuteChildren(context));
+            }
+
+            return output.ToString();
+        }
+
+        private string ExecuteChildren(ExecutionContext context) {
+            var output = new StringBuilder();
+
+            foreach(var child in ChildrenNodes) {
+                output.Append(child.Execute(context));
             }
 
             return output.ToString();

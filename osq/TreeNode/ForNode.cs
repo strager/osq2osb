@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,11 @@ namespace osq.TreeNode {
             private set;
         }
 
+        public IList<NodeBase> ChildrenNodes {
+            get;
+            private set;
+        }
+
         public ForNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
             base(directiveName, location) {
             var parameters = ExpressionRewriter.Rewrite(tokenReader);
@@ -50,7 +56,7 @@ namespace osq.TreeNode {
             End = children[2];
             Step = children.Count > 3 ? children[3] : null;
 
-            ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+            ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
                 var endDirective = node as EndDirectiveNode;
 
                 if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
@@ -77,6 +83,16 @@ namespace osq.TreeNode {
                 if(counter >= context.GetDoubleFrom(End.Evaluate(context))) {
                     break;
                 }
+            }
+
+            return output.ToString();
+        }
+
+        private string ExecuteChildren(ExecutionContext context) {
+            var output = new StringBuilder();
+
+            foreach(var child in ChildrenNodes) {
+                output.Append(child.Execute(context));
             }
 
             return output.ToString();

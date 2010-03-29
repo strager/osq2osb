@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using osq.Parser;
 
 namespace osq.TreeNode {
@@ -13,6 +14,11 @@ namespace osq.TreeNode {
         }
 
         public IList<string> FunctionParameters {
+            get;
+            private set;
+        }
+
+        public IList<NodeBase> ChildrenNodes {
             get;
             private set;
         }
@@ -56,9 +62,11 @@ namespace osq.TreeNode {
             var shorthand = ReadShorthandNode(tokenReader, token);
 
             if(shorthand != null) {
-                ChildrenNodes.Add(shorthand);
+                ChildrenNodes = new List<NodeBase> {
+                    shorthand
+                };
             } else {
-                ChildrenNodes.AddMany(nodeReader.TakeWhile((node) => {
+                ChildrenNodes = new List<NodeBase>(nodeReader.TakeWhile((node) => {
                     var endDirective = node as EndDirectiveNode;
 
                     if(endDirective != null && endDirective.TargetDirectiveName == DirectiveName) {
@@ -113,6 +121,16 @@ namespace osq.TreeNode {
             }));
 
             return "";
+        }
+
+        private string ExecuteChildren(ExecutionContext context) {
+            var output = new StringBuilder();
+
+            foreach(var child in ChildrenNodes) {
+                output.Append(child.Execute(context));
+            }
+
+            return output.ToString();
         }
     }
 }
