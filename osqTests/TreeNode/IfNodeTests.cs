@@ -60,6 +60,23 @@ namespace osq.Tests.TreeNode {
         }
 
         [Test]
+        public void IfFalse() {
+            var node = new IfNode(
+                FalseCondition,
+                new CollectionNodeReader(new[] {
+                    BadNode,
+                    new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
+                }),
+                "if"
+            );
+
+            var context = new ExecutionContext();
+
+            Assert.IsNull(node.GetTrueConditionSet(context));
+        }
+
+        [Test]
         public void IfTrueElse() {
             var node = new IfNode(
                 TrueCondition,
@@ -103,12 +120,8 @@ namespace osq.Tests.TreeNode {
                 TrueCondition,
                 new CollectionNodeReader(new[] {
                     GoodNode,
-                    new ElseIfNode(
-                        TrueCondition,
-                        new CollectionNodeReader(new[] {
-                            BadNode,
-                        })
-                    ),
+                    new ElseIfNode(TrueCondition, null),
+                    BadNode,
                     new EndDirectiveNode(null, null, "endif"),
                     BadNode,
                 }),
@@ -118,6 +131,44 @@ namespace osq.Tests.TreeNode {
             var context = new ExecutionContext();
 
             Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
+        }
+
+        [Test]
+        public void IfFalseElseIfTrue() {
+            var node = new IfNode(
+                FalseCondition,
+                new CollectionNodeReader(new[] {
+                    BadNode,
+                    new ElseIfNode(TrueCondition, null),
+                    GoodNode,
+                    new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
+                }),
+                "if"
+            );
+
+            var context = new ExecutionContext();
+
+            Assert.AreEqual(new[] { GoodNode }, node.GetTrueConditionSet(context).ChildrenNodes);
+        }
+
+        [Test]
+        public void IfFalseElseIfFalse() {
+            var node = new IfNode(
+                FalseCondition,
+                new CollectionNodeReader(new[] {
+                    BadNode,
+                    new ElseIfNode(FalseCondition, null),
+                    BadNode,
+                    new EndDirectiveNode(null, null, "endif"),
+                    BadNode,
+                }),
+                "if"
+            );
+
+            var context = new ExecutionContext();
+
+            Assert.IsNull(node.GetTrueConditionSet(context));
         }
     }
 }
