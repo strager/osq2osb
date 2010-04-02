@@ -61,7 +61,7 @@ namespace osq.Tests.TreeNode {
 
             Assert.AreEqual(new Token[] { }, node.FunctionParameters);
             Assert.AreEqual(new NodeBase[] {
-                new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "a"))
+                new TokenNode(new Token(TokenType.Identifier, "a"))
             }, node.ChildrenNodes);
         }
 
