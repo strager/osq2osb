@@ -10,31 +10,35 @@ namespace osq.TreeNode {
     public class ForNode : DirectiveNode {
         public string Variable {
             get;
-            private set;
+            set;
         }
 
         public TokenNode Start {
             get;
-            private set;
+            set;
         }
 
         public TokenNode End {
             get;
-            private set;
+            set;
         }
 
         public TokenNode Step {
             get;
-            private set;
+            set;
         }
 
-        public IList<NodeBase> ChildrenNodes {
+        public IEnumerable<NodeBase> ChildrenNodes {
             get;
-            private set;
+            set;
+        }
+
+        public ForNode(string directiveName = null, Location location = null) :
+            base(directiveName, location) {
         }
 
         public ForNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
-            base(directiveName, location) {
+            this(directiveName, location) {
             var parameters = ExpressionRewriter.Rewrite(tokenReader);
 
             if(!parameters.Token.IsSymbol(",")) {
@@ -81,6 +85,10 @@ namespace osq.TreeNode {
         }
 
         private string ExecuteChildren(ExecutionContext context) {
+            if(ChildrenNodes == null) {
+                return "";
+            }
+
             var output = new StringBuilder();
 
             foreach(var child in ChildrenNodes) {
