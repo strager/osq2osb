@@ -10,21 +10,25 @@ namespace osq.TreeNode {
     public class DefineNode : DirectiveNode {
         public string Variable {
             get;
-            private set;
+            set;
         }
 
-        public IList<string> FunctionParameters {
+        public IEnumerable<string> FunctionParameters {
             get;
-            private set;
+            set;
         }
 
-        public IList<NodeBase> ChildrenNodes {
+        public IEnumerable<NodeBase> ChildrenNodes {
             get;
-            private set;
+            set;
+        }
+
+        public DefineNode(string directiveName = null, Location location = null) :
+            base(directiveName, location) {
         }
 
         public DefineNode(ITokenReader tokenReader, INodeReader nodeReader, string directiveName = null, Location location = null) :
-            base(directiveName, location) {
+            this(directiveName, location) {
             var startLocation = tokenReader.CurrentLocation;
 
             Token variable = tokenReader.ReadToken();
@@ -39,7 +43,9 @@ namespace osq.TreeNode {
 
             Variable = variable.ToString();
 
-            FunctionParameters = new List<string>();
+            // TODO Extract method.
+            var functionParameters = new List<string>();
+            FunctionParameters = functionParameters;
 
             Token token = tokenReader.ReadToken();
 
@@ -48,7 +54,7 @@ namespace osq.TreeNode {
                     token = tokenReader.ReadToken();
 
                     if(token.TokenType == TokenType.Identifier) {
-                        FunctionParameters.Add(token.Value.ToString());
+                        functionParameters.Add(token.Value.ToString());
                     }
                 }
 
@@ -90,7 +96,9 @@ namespace osq.TreeNode {
                         parameters = parameters[0].ChildrenTokenNodes;
                     }
 
-                    using(var paramNameEnumerator = FunctionParameters.GetEnumerator()) {
+                    var parameterVariables = FunctionParameters ?? new string[] { };
+
+                    using(var paramNameEnumerator = parameterVariables.GetEnumerator()) {
                         foreach(var child in parameters) {
                             if(!paramNameEnumerator.MoveNext()) {
                                 break;
@@ -114,6 +122,10 @@ namespace osq.TreeNode {
         }
 
         private string ExecuteChildren(ExecutionContext context) {
+            if(ChildrenNodes == null) {
+                return "";
+            }
+
             var output = new StringBuilder();
 
             foreach(var child in ChildrenNodes) {

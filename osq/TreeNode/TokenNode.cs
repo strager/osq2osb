@@ -27,10 +27,14 @@ namespace osq.TreeNode {
             private set;
         }
 
-        public TokenNode(Token token) {
+        public TokenNode(Token token, IEnumerable<TokenNode> children = null) {
             Token = token;
 
-            ChildrenTokenNodes = new List<TokenNode>();
+            if(children == null) {
+                ChildrenTokenNodes = new List<TokenNode>();
+            } else {
+                ChildrenTokenNodes = children.ToList();
+            }
         }
 
         public override string Execute(ExecutionContext context) {

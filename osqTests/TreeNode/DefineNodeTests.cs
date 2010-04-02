@@ -23,7 +23,7 @@ namespace osq.Tests.TreeNode {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual("test", node.Variable);
         }
@@ -43,13 +43,13 @@ namespace osq.Tests.TreeNode {
                     new Token(TokenType.Identifier, "blah"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual(new[] { "a", "b", "c" }, node.FunctionParameters);
         }
 
         [Test]
-        public void TestShorthand() {
+        public void TestShorthandParsing() {
             var node = new DefineNode(
                 new CollectionTokenReader(new[] {
                     new Token(TokenType.Identifier, "test"),
@@ -57,7 +57,7 @@ namespace osq.Tests.TreeNode {
                     new Token(TokenType.Identifier, "a"),
                 }),
                 null
-                );
+            );
 
             Assert.AreEqual(new Token[] { }, node.FunctionParameters);
             Assert.AreEqual(new NodeBase[] {
@@ -66,7 +66,7 @@ namespace osq.Tests.TreeNode {
         }
 
         [Test]
-        public void TestLonghand() {
+        public void TestLonghandParsing() {
             var nodeChildren = new NodeBase[] {
                 new RawTextNode("text", null),
                 new RawTextNode("text", null),
@@ -80,45 +80,20 @@ namespace osq.Tests.TreeNode {
                 }),
                 new CollectionNodeReader(nodeChildren),
                 "def"
-                );
+            );
 
             Assert.AreEqual(nodeChildren.Take(2), node.ChildrenNodes);
         }
 
         [Test]
-        public void TestVariableIsSetWithShorthand() {
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                    new Token(TokenType.Number, 42),
-                }),
-                null
-                );
-
-            var context = new ExecutionContext();
-
-            node.Execute(context);
-
-            Assert.NotNull(context.GetVariable("test") as ExecutionContext.OsqFunction);
-        }
-
-        [Test]
-        public void TestVariableIsSetWithLonghand() {
-            var nodeChildren = new NodeBase[] {
-                new RawTextNode("text", null),
-                new RawTextNode("text", null),
-                new EndDirectiveNode(null, null, "endlet"),
-                new RawTextNode("blah", null),
+        public void TestVariableIsSet() {
+            var node = new DefineNode {
+                Variable = "test",
+                ChildrenNodes = new[] {
+                    new TokenNode(new Token(TokenType.Number, 42))
+                },
             };
 
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                }),
-                new CollectionNodeReader(nodeChildren),
-                "let"
-                );
-
             var context = new ExecutionContext();
 
             node.Execute(context);
@@ -127,14 +102,13 @@ namespace osq.Tests.TreeNode {
         }
 
         [Test]
-        public void TestVariableCallWithShorthand() {
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                    new Token(TokenType.Number, 42),
-                }),
-                null
-                );
+        public void TestVariableCall() {
+            var node = new DefineNode {
+                Variable = "test",
+                ChildrenNodes = new[] {
+                    new TokenNode(new Token(TokenType.Number, 42))
+                },
+            };
 
             var context = new ExecutionContext();
 
@@ -146,110 +120,35 @@ namespace osq.Tests.TreeNode {
         }
 
         [Test]
-        public void TestVariableCallWithLonghand() {
-            var nodeChildren = new NodeBase[] {
-                new RawTextNode("text", null),
-                new RawTextNode("text", null),
-                new EndDirectiveNode(null, null, "endlet"),
-                new RawTextNode("blah", null),
+        public void TestFunctionCall() {
+            var node = new DefineNode {
+                Variable = "test",
+                ChildrenNodes = new[] {
+                    new TokenNode(new Token(TokenType.Symbol, ","), new[] {
+                        new TokenNode(new Token(TokenType.Identifier, "a")),
+                        new TokenNode(new Token(TokenType.Identifier, "b")),
+                        new TokenNode(new Token(TokenType.Identifier, "c")),
+                    })
+                },
+                FunctionParameters = new[] {
+                    "a", "b", "c"
+                },
             };
 
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                }),
-                new CollectionNodeReader(nodeChildren),
-                "let"
-                );
-
             var context = new ExecutionContext();
 
             node.Execute(context);
 
             var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
 
-            Assert.AreEqual("texttext", func(null, context).ToString());
-        }
-
-        [Test]
-        public void TestFunctionCallWithShorthand() {
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                    new Token(TokenType.Symbol, "("),
-                    new Token(TokenType.Identifier, "a"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "b"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "c"),
-                    new Token(TokenType.Symbol, ")"),
-                    new Token(TokenType.Identifier, "a"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "b"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "c"),
-                }),
-                null
-                );
-
-            var context = new ExecutionContext();
-
-            node.Execute(context);
-
-            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
-
-            var functionCall = new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
+            var functionCall = new TokenNode(new Token(TokenType.Identifier, "test"), new[] {
+                new TokenNode(new Token(TokenType.Number, 1)),
+                new TokenNode(new Token(TokenType.Number, 2)),
+                new TokenNode(new Token(TokenType.Number, 3)),
+            });
 
             Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), func(functionCall, context) as IEnumerable);
         }
-
-        [Test]
-        public void TestFunctionCallWithLonghand() {
-            var functionContents = new osq.TreeNode.TokenNode(new Token(TokenType.Symbol, ","));
-            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "a")));
-            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "b")));
-            functionContents.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "c")));
-
-            var nodeChildren = new NodeBase[] {
-                functionContents,
-                new EndDirectiveNode(null, null, "endlet"),
-                new RawTextNode("blah", null),
-            };
-
-            var node = new DefineNode(
-                new CollectionTokenReader(new[] {
-                    new Token(TokenType.Identifier, "test"),
-                    new Token(TokenType.Symbol, "("),
-                    new Token(TokenType.Identifier, "a"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "b"),
-                    new Token(TokenType.Symbol, ","),
-                    new Token(TokenType.Identifier, "c"),
-                    new Token(TokenType.Symbol, ")"),
-                }),
-                new CollectionNodeReader(nodeChildren),
-                "let"
-                );
-
-            var context = new ExecutionContext();
-
-            node.Execute(context);
-
-            var func = context.GetVariable("test") as ExecutionContext.OsqFunction;
-
-            var functionCall = new osq.TreeNode.TokenNode(new Token(TokenType.Identifier, "test"));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 1)));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 2)));
-            functionCall.ChildrenTokenNodes.Add(new osq.TreeNode.TokenNode(new Token(TokenType.Number, 3)));
-
-            var ret = func(functionCall, context);
-
-            Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), ret as IEnumerable);
-        }
-
     }
 }
 
