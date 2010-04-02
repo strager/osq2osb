@@ -147,7 +147,7 @@ namespace osq.Tests.TreeNode {
                 new TokenNode(new Token(TokenType.Number, 3)),
             });
 
-            Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), func(functionCall, context) as IEnumerable);
+            Assert.AreEqual(context.GetStringOf(new[] { 1, 2, 3 }), func(functionCall, context));
         }
     }
 }
