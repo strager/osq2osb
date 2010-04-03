@@ -31,64 +31,21 @@ namespace osq {
         private List<ConvertedNode> scriptNodes = null;
 
         /// <summary>
-        /// Parser with which to parse.
-        /// </summary>
-        private Parser.Parser parser;
-
-        /// <summary>
         /// Gets or sets the parser which transforms the osq script.
         /// </summary>
         /// <value>The parser which transforms the osq script.</value>
         public Parser.Parser Parser {
-            get {
-                return this.parser;
-            }
-
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                }
-
-                this.parser = value;
-            }
+            get;
+            set;
         }
-
-        /// <summary>
-        /// Execution context of the conversion from osq to osb.
-        /// </summary>
-        private ExecutionContext executionContext;
 
         /// <summary>
         /// Gets or sets the execution context of the conversion from osq to osb.
         /// </summary>
         /// <value>The execution context of the conversion from osq to osb.</value>
         public ExecutionContext ExecutionContext {
-            get {
-                return this.executionContext;
-            }
-
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                }
-
-                this.executionContext = value;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Encoder"/> class.
-        /// </summary>
-        public Encoder() :
-            this(new Parser.Parser()) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Encoder"/> class.
-        /// </summary>
-        /// <param name="reader">The reader.</param>
-        public Encoder(LocatedTextReaderWrapper reader) :
-            this(new Parser.Parser(reader)) {
+            get;
+            set;
         }
 
         /// <summary>
@@ -96,7 +53,7 @@ namespace osq {
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <param name="context">The execution context.</param>
-        public Encoder(LocatedTextReaderWrapper reader, ExecutionContext context) :
+        public Encoder(LocatedTextReaderWrapper reader, ExecutionContext context = null) :
             this(new Parser.Parser(reader), context) {
         }
 
@@ -104,18 +61,10 @@ namespace osq {
         /// Initializes a new instance of the <see cref="Encoder"/> class.
         /// </summary>
         /// <param name="parser">The parser.</param>
-        public Encoder(Parser.Parser parser) :
-            this(parser, new ExecutionContext()) {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Encoder"/> class.
-        /// </summary>
-        /// <param name="parser">The parser.</param>
         /// <param name="context">The execution context.</param>
-        public Encoder(Parser.Parser parser, ExecutionContext context) {
+        public Encoder(Parser.Parser parser, ExecutionContext context = null) {
             Parser = parser;
-            ExecutionContext = context;
+            ExecutionContext = context ?? new ExecutionContext();
         }
 
         /// <summary>
@@ -123,6 +72,14 @@ namespace osq {
         /// </summary>
         /// <returns>The osb script.</returns>
         public string Encode() {
+            if(ExecutionContext == null) {
+                throw new InvalidOperationException("ExecutionContext must not be null");
+            }
+
+            if(Parser == null) {
+                throw new InvalidOperationException("Parser must not be null");
+            }
+
             scriptNodes = new List<ConvertedNode>();
 
             var output = new StringBuilder();
