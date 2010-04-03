@@ -167,6 +167,15 @@ namespace osq {
 
                 return !areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
             });
+
+            SetBuiltinVariable("format", (token, context) => {
+                var children = token.ChildrenTokenNodes;
+
+                var format = children.First().Evaluate(this).ToString();
+                var args = children.Skip(1).Select((tokenNode) => tokenNode.Evaluate(this)).ToArray();
+
+                return string.Format(numberFormat, format, args);
+            });
         }
 
         public bool GetBoolFrom(object value) {

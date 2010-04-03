@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using osq.Parser;
+using osq.TreeNode;
 
 namespace osq.Tests {
     [TestFixture]
@@ -94,6 +96,21 @@ namespace osq.Tests {
             var context = new ExecutionContext();
 
             Assert.IsFalse(context.GetBoolFrom((object)null));
+        }
+
+        [Test]
+        public void TestFormat() {
+            var context = new ExecutionContext();
+
+            var formatFunc = (ExecutionContext.OsqFunction)context.GetVariable("format");
+
+            var ret = formatFunc(new TokenNode(null, new[] {
+                new TokenNode(new Token(TokenType.String, "this is a {0} {1:D9}")),
+                new TokenNode(new Token(TokenType.String, "test")),
+                new TokenNode(new Token(TokenType.Number, 10)),
+            }), context);
+
+            Assert.AreEqual("this is a test 000000010", ret);
         }
     }
 }
