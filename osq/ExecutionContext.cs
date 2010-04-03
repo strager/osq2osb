@@ -171,6 +171,14 @@ namespace osq {
             SetBuiltinVariable("format", (token, context) => {
                 var children = token.ChildrenTokenNodes;
 
+                {
+                    var child = children.First();
+
+                    if(child.Token.IsSymbol(",")) {
+                        children = child.ChildrenTokenNodes;
+                    }
+                }
+
                 var format = children.First().Evaluate(this).ToString();
                 var args = children.Skip(1).Select((tokenNode) => tokenNode.Evaluate(this)).ToArray();
 

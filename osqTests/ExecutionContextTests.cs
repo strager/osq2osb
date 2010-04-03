@@ -105,9 +105,11 @@ namespace osq.Tests {
             var formatFunc = (ExecutionContext.OsqFunction)context.GetVariable("format");
 
             var ret = formatFunc(new TokenNode(null, new[] {
-                new TokenNode(new Token(TokenType.String, "this is a {0} {1:D9}")),
-                new TokenNode(new Token(TokenType.String, "test")),
-                new TokenNode(new Token(TokenType.Number, 10)),
+                new TokenNode(new Token(TokenType.Symbol, ","), new[] {
+                    new TokenNode(new Token(TokenType.String, "this is a {0} {1:D9}")),
+                    new TokenNode(new Token(TokenType.String, "test")),
+                    new TokenNode(new Token(TokenType.Number, 10)),
+                })
             }), context);
 
             Assert.AreEqual("this is a test 000000010", ret);
