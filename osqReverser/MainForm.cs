@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using osq;
+using osq.Parser;
 using Encoder = osq.Encoder;
 
 namespace osqReverser {
     public partial class MainForm : Form {
-        private readonly Encoder reverser = new Encoder();
+        private readonly Encoder reverser = new Encoder {
+            Parser = new Parser(),
+            ExecutionContext = new ExecutionContext(),
+        };
 
         public MainForm() {
             InitializeComponent();

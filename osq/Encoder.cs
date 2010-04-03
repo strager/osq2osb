@@ -51,20 +51,18 @@ namespace osq {
         /// <summary>
         /// Initializes a new instance of the <see cref="Encoder"/> class.
         /// </summary>
-        /// <param name="reader">The reader.</param>
-        /// <param name="context">The execution context.</param>
-        public Encoder(LocatedTextReaderWrapper reader, ExecutionContext context = null) :
-            this(new Parser.Parser(reader), context) {
+        /// <remarks>The <see cref="Encoder"/> instance created is unusable without a set <see cref="Parser"/> and <see cref="ExecutionContext"/>.</remarks>
+        public Encoder() {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Encoder"/> class.
+        /// Initializes a new instance of the <see cref="Encoder"/> class with sensible defaults.
         /// </summary>
-        /// <param name="parser">The parser.</param>
-        /// <param name="context">The execution context.</param>
-        public Encoder(Parser.Parser parser, ExecutionContext context = null) {
-            Parser = parser;
-            ExecutionContext = context ?? new ExecutionContext();
+        /// <param name="reader">The reader.</param>
+        /// <remarks>The <see cref="Encoder"/> instance created is readily usable with a default <see cref="Parser"/> and <see cref="ExecutionContext"/>.</remarks>
+        public Encoder(LocatedTextReaderWrapper reader) {
+            Parser = new Parser.Parser(reader);
+            ExecutionContext = new ExecutionContext();
         }
 
         /// <summary>
