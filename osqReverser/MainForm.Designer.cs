@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.osqScript = new System.Windows.Forms.TextBox();
             this.osbScript = new System.Windows.Forms.TextBox();
             this.osq2osb = new System.Windows.Forms.Button();
@@ -48,7 +47,9 @@
             this.osqScript.Name = "osqScript";
             this.osqScript.Size = new System.Drawing.Size(581, 776);
             this.osqScript.TabIndex = 0;
-            this.osqScript.Text = resources.GetString("osqScript.Text");
+            this.osqScript.Text = "#let x 42\r\n#let y x + 5\r\n#def z x + 5\r\n \r\n#let x 0\r\n \r\n${y} // Gives 47\r\n${z} // " +
+                "Gives 5\r\n\r\n#for i,1,100,i\r\n${sqrt(i)} ^ 2 = ${i}\r\n#endfor\r\n\r\n${rand()} ${rand()}" +
+                "\r\n\r\n#if 1 > 0\r\n<3\r\n#else\r\n</3\r\n#endif\r\n";
             // 
             // osbScript
             // 

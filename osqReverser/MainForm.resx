@@ -117,27 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="osqScript.Text" xml:space="preserve">
-    <value>#let x 42
-#let y ${x + 5}
-#def z ${x + 5}
- 
-#let x 0
- 
-${y} // Gives 47
-${z} // Gives 5
-
-#for i,1,100,i
-${sqrt(i)} ^ 2 = ${i}
-#endfor
-
-${rand()} ${rand()}
-
-#if 1 &gt; 0
-&lt;3
-#else
-&lt;/3
-#endif
-</value>
-  </data>
 </root>
