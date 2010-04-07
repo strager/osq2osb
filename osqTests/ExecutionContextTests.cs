@@ -114,5 +114,37 @@ namespace osq.Tests {
 
             Assert.AreEqual("this is a test 000000010", ret);
         }
+
+        [Test]
+        public void TestMin() {
+            var context = new ExecutionContext();
+
+            var formatFunc = (ExecutionContext.OsqFunction)context.GetVariable("min");
+
+            var ret = formatFunc(new TokenNode(null, new[] {
+                new TokenNode(new Token(TokenType.Symbol, ","), new[] {
+                    new TokenNode(new Token(TokenType.Number, 10)),
+                    new TokenNode(new Token(TokenType.Number, 100)),
+                })
+            }), context);
+
+            Assert.AreEqual(10, ret);
+        }
+
+        [Test]
+        public void TestMax() {
+            var context = new ExecutionContext();
+
+            var formatFunc = (ExecutionContext.OsqFunction)context.GetVariable("max");
+
+            var ret = formatFunc(new TokenNode(null, new[] {
+                new TokenNode(new Token(TokenType.Symbol, ","), new[] {
+                    new TokenNode(new Token(TokenType.Number, 10)),
+                    new TokenNode(new Token(TokenType.Number, 100)),
+                })
+            }), context);
+
+            Assert.AreEqual(100, ret);
+        }
     }
 }

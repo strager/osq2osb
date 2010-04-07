@@ -74,7 +74,24 @@ namespace osq {
 
             SetBuiltinVariable("tan", (token, context) => Math.Tan(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
 
+            SetBuiltinVariable("atan", (token, context) => Math.Atan(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+
+            SetBuiltinVariable("atan2", (token, context) => {
+                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                return Math.Atan2(context.GetDoubleFrom(args.ElementAt(0)), context.GetDoubleFrom(args.ElementAt(1)));
+            });
+
             SetBuiltinVariable("concat", (token, context) => new Token(TokenType.String, string.Join("", token.ChildrenTokenNodes.Select((t) => (string)t.Evaluate(context)).ToArray())));
+
+            SetBuiltinVariable("min", (token, context) => {
+                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                return args.Min();
+            });
+
+            SetBuiltinVariable("max", (token, context) => {
+                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                return args.Max();
+            });
 
             SetBuiltinVariable("+", (token, context) => token.ChildrenTokenNodes.Aggregate((double)0, (r, t) => r + GetDoubleFrom(t.Evaluate(context))));
 
