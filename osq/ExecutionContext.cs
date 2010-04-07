@@ -60,107 +60,107 @@ namespace osq {
             variableStack.Add(builtinVariables);
             variableStack.Add(globalVariables);
 
-            SetBuiltinVariable("int", (token, context) => (int)GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context)));
+            SetBuiltinVariable("int", (token, context) => (int)GetDoubleFrom(token.GetFunctionParameters(context).First()));
 
-            SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+            SetBuiltinVariable("sqrt", (token, context) => Math.Sqrt(GetDoubleFrom(token.GetFunctionParameters(context).First())));
 
             SetBuiltinVariable("rand", (token, context) => this.rand.NextDouble());
 
             SetBuiltinVariable("pi", Math.PI);
 
-            SetBuiltinVariable("sin", (token, context) => Math.Sin(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+            SetBuiltinVariable("sin", (token, context) => Math.Sin(GetDoubleFrom(token.GetFunctionParameters(context).First())));
 
-            SetBuiltinVariable("cos", (token, context) => Math.Cos(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+            SetBuiltinVariable("cos", (token, context) => Math.Cos(GetDoubleFrom(token.GetFunctionParameters(context).First())));
 
-            SetBuiltinVariable("tan", (token, context) => Math.Tan(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+            SetBuiltinVariable("tan", (token, context) => Math.Tan(GetDoubleFrom(token.GetFunctionParameters(context).First())));
 
-            SetBuiltinVariable("atan", (token, context) => Math.Atan(GetDoubleFrom(token.ChildrenTokenNodes[0].Evaluate(context))));
+            SetBuiltinVariable("atan", (token, context) => Math.Atan(GetDoubleFrom(token.GetFunctionParameters(context).First())));
 
             SetBuiltinVariable("atan2", (token, context) => {
-                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                var args = token.GetFunctionParameters(context);
                 return Math.Atan2(context.GetDoubleFrom(args.ElementAt(0)), context.GetDoubleFrom(args.ElementAt(1)));
             });
 
-            SetBuiltinVariable("concat", (token, context) => new Token(TokenType.String, string.Join("", token.ChildrenTokenNodes.Select((t) => (string)t.Evaluate(context)).ToArray())));
+            SetBuiltinVariable("concat", (token, context) => new Token(TokenType.String, string.Join("", token.GetFunctionParameters(context).Select(GetStringOf).ToArray())));
 
             SetBuiltinVariable("min", (token, context) => {
-                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                var args = token.GetFunctionParameters(context);
                 return args.Min();
             });
 
             SetBuiltinVariable("max", (token, context) => {
-                var args = token.ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                var args = token.GetFunctionParameters(context);
                 return args.Max();
             });
 
-            SetBuiltinVariable("+", (token, context) => token.ChildrenTokenNodes.Aggregate((double)0, (r, t) => r + GetDoubleFrom(t.Evaluate(context))));
+            SetBuiltinVariable("+", (token, context) => token.GetOperatorParameters(context).Aggregate((double)0, (r, val) => r + GetDoubleFrom(val)));
 
             SetBuiltinVariable("-", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                if(children.Count == 1) {
-                    return -GetDoubleFrom(children[0].Evaluate(context));
+                if(children.Count() == 1) {
+                    return -GetDoubleFrom(children.First());
                 }
 
-                return GetDoubleFrom(children[0].Evaluate(context)) - GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) - GetDoubleFrom(children.ElementAt(1));
             });
 
-            SetBuiltinVariable("*", (token, context) => token.ChildrenTokenNodes.Aggregate((double)1, (r, t) => r * GetDoubleFrom(t.Evaluate(context))));
+            SetBuiltinVariable("*", (token, context) => token.GetOperatorParameters(context).Aggregate((double)1, (r, val) => r * GetDoubleFrom(val)));
 
             SetBuiltinVariable("/", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) / GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) / GetDoubleFrom(children.ElementAt(1));
             });
 
             SetBuiltinVariable("%", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) % GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) % GetDoubleFrom(children.ElementAt(1));
             });
 
             SetBuiltinVariable("^", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return Math.Pow(GetDoubleFrom(children[0].Evaluate(context)), GetDoubleFrom(children[1].Evaluate(context)));
+                return Math.Pow(GetDoubleFrom(children.ElementAt(0)), GetDoubleFrom(children.ElementAt(1)));
             });
 
-            SetBuiltinVariable(",", (token, context) => token.ChildrenTokenNodes.Select(child => child.Evaluate(context)).ToArray());
+            SetBuiltinVariable(",", (token, context) => token.GetOperatorParameters(context).ToArray());
 
             SetBuiltinVariable(":", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                double val = (GetDoubleFrom(children[0].Evaluate(context)) * 60 + GetDoubleFrom(children[1].Evaluate(context))) * 1000;
+                double val = (GetDoubleFrom(children.ElementAt(0)) * 60 + GetDoubleFrom(children.ElementAt(1))) * 1000;
 
-                if(children.Count == 3) {
-                    val += GetDoubleFrom(children[2].Evaluate(context));
+                if(children.Count() == 3) {
+                    val += GetDoubleFrom(children.ElementAt(2));
                 }
 
                 return val;
             });
 
             SetBuiltinVariable(">", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) > GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) > GetDoubleFrom(children.ElementAt(1));
             });
 
             SetBuiltinVariable("<", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) < GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) < GetDoubleFrom(children.ElementAt(1));
             });
 
             SetBuiltinVariable(">=", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) >= GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) >= GetDoubleFrom(children.ElementAt(1));
             });
 
             SetBuiltinVariable("<=", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return GetDoubleFrom(children[0].Evaluate(context)) <= GetDoubleFrom(children[1].Evaluate(context));
+                return GetDoubleFrom(children.ElementAt(0)) <= GetDoubleFrom(children.ElementAt(1));
             });
 
             Func<object, object, bool> areEqual = (a, b) => {
@@ -174,30 +174,22 @@ namespace osq {
             };
 
             SetBuiltinVariable("==", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
+                return areEqual(children.ElementAt(0), children.ElementAt(1));
             });
 
             SetBuiltinVariable("!=", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetOperatorParameters(context);
 
-                return !areEqual(children[0].Evaluate(context), children[1].Evaluate(context));
+                return !areEqual(children.ElementAt(0), children.ElementAt(1));
             });
 
             SetBuiltinVariable("format", (token, context) => {
-                var children = token.ChildrenTokenNodes;
+                var children = token.GetFunctionParameters(context);
 
-                {
-                    var child = children.First();
-
-                    if(child.Token.IsSymbol(",")) {
-                        children = child.ChildrenTokenNodes;
-                    }
-                }
-
-                var format = children.First().Evaluate(this).ToString();
-                var args = children.Skip(1).Select((tokenNode) => tokenNode.Evaluate(this)).ToArray();
+                var format = GetStringOf(children.First());
+                var args = children.Skip(1).ToArray();
 
                 return string.Format(numberFormat, format, args);
             });

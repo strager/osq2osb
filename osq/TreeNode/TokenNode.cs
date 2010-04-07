@@ -60,6 +60,22 @@ namespace osq.TreeNode {
             }
         }
 
+        public IEnumerable<object> GetOperatorParameters(ExecutionContext context) {
+            return ChildrenTokenNodes.Select((tokenNode) => tokenNode.Evaluate(context));
+        }
+
+        public IEnumerable<object> GetFunctionParameters(ExecutionContext context) {
+            if(Token != null && Token.IsSymbol(",")) {
+                return Evaluate(context) as IEnumerable<object>;
+            }
+
+            if(ChildrenTokenNodes.Count == 1) {
+                return ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+            }
+
+            return ChildrenTokenNodes.Select((tokenNode) => tokenNode.Evaluate(context));
+        }
+
         public override string ToString() {
             StringBuilder str = new StringBuilder();
             var c = ChildrenTokenNodes;
