@@ -146,5 +146,18 @@ namespace osq.Tests {
 
             Assert.AreEqual(100, ret);
         }
+
+        [Test]
+        public void TestInt() {
+            var context = new ExecutionContext();
+
+            var formatFunc = (ExecutionContext.OsqFunction)context.GetVariable("int");
+
+            var ret = formatFunc(new TokenNode(null, new[] {
+                new TokenNode(new Token(TokenType.Number, 13.37)),
+            }), context);
+
+            Assert.AreEqual(13, ret);
+        }
     }
 }

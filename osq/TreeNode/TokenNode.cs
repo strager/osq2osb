@@ -70,7 +70,10 @@ namespace osq.TreeNode {
             }
 
             if(ChildrenTokenNodes.Count == 1) {
-                return ChildrenTokenNodes[0].Evaluate(context) as IEnumerable<object>;
+                var child = ChildrenTokenNodes[0].Evaluate(context);
+                var childAsEnumerable = child as IEnumerable<object>;
+
+                return childAsEnumerable ?? new object[] { child };
             }
 
             return ChildrenTokenNodes.Select((tokenNode) => tokenNode.Evaluate(context));
